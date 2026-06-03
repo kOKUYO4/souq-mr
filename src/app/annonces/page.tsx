@@ -45,6 +45,7 @@ function AnnoncesContent() {
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleCatChange = (cat: string) => { setSelectedCat(cat); setPage(1); };
+  const activeFilterCount = [priceMin, priceMax].filter(Boolean).length + (condition !== "all" ? 1 : 0) + (negotiable ? 1 : 0) + (cod ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-sand-50">
@@ -75,9 +76,15 @@ function AnnoncesContent() {
                 <option value="popular">{isRTL ? "الأكثر مشاهدة" : "Plus populaire"}</option>
               </select>
               <button onClick={() => setFilterOpen(!filterOpen)}
-                className={`flex items-center gap-1.5 px-3 py-2 border rounded-xl text-xs font-semibold transition-all ${filterOpen ? "border-sand-400 bg-sand-50 text-sand-500" : "border-sand-200 text-night-400 hover:border-sand-300"}`}>
+                className={`flex items-center gap-1.5 px-3 py-2 border rounded-xl text-xs font-semibold transition-all ${filterOpen || activeFilterCount > 0 ? "border-sand-400 bg-sand-50 text-sand-500" : "border-sand-200 text-night-400 hover:border-sand-300"}`}>
                 <SlidersHorizontal size={13} />
                 {isRTL ? "فلتر" : "Filtres"}
+                {activeFilterCount > 0 && (
+                  <span className="w-4 h-4 rounded-full text-white text-[10px] font-bold flex items-center justify-center"
+                    style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
+                    {activeFilterCount}
+                  </span>
+                )}
               </button>
               <button onClick={() => setView(view === "grid" ? "list" : "grid")}
                 className="p-2 border border-sand-200 rounded-xl text-night-400 hover:border-sand-400 transition-all">
