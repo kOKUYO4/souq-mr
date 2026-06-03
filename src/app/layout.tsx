@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { FavoritesProvider } from "@/context/FavoritesContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
@@ -30,9 +31,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen bg-cream font-body antialiased">
         <LanguageProvider>
-          <Navbar />
-          <main className="pt-16">{children}</main>
-          <Footer />
+          <FavoritesProvider>
+            <Navbar />
+            <main className="pt-16">{children}</main>
+            <Footer />
+          </FavoritesProvider>
         </LanguageProvider>
       </body>
     </html>
