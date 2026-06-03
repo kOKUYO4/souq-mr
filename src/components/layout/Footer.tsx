@@ -45,6 +45,8 @@ export default function Footer() {
       { href: "/aide", label: t.footer.help },
       { href: "/securite", label: isRTL ? "نصائح الأمان" : "Guide anti-arnaque" },
       { href: "/escrow", label: isRTL ? "الضمان المالي" : "Service Escrow" },
+      { href: "/paiement", label: isRTL ? "طرق الدفع" : "Modes de paiement" },
+      { href: "/tontine", label: isRTL ? "الادخار الجماعي" : "Tontine numérique" },
       { href: "/contact", label: t.footer.contact },
       { href: "/conditions", label: t.footer.terms },
       { href: "/confidentialite", label: t.footer.privacy },
