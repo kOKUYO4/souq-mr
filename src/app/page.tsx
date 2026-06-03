@@ -8,6 +8,7 @@ import TrustedSellers from "@/components/home/TrustedSellers";
 import Newsletter from "@/components/home/Newsletter";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
 import LiveActivity from "@/components/home/LiveActivity";
+import TrendingSection from "@/components/home/TrendingSection";
 
 export default function HomePage() {
   return (
@@ -18,6 +19,7 @@ export default function HomePage() {
       <RecentlyViewed />
       <FeaturedListings />
       <FlashSales />
+      <TrendingSection />
       <HagglingBanner />
       <UniqueFeatures />
       <TrustedSellers />
