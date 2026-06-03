@@ -1,0 +1,25 @@
+{
+  "name": "SOUQ.MR — السوق الرقمي الكبير لموريتانيا",
+  "short_name": "SOUQ.MR",
+  "description": "La première marketplace mauritanienne — Achetez, vendez et négociez",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1B2A4A",
+  "theme_color": "#C9A84C",
+  "orientation": "portrait-primary",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": ["shopping", "business"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Vendre", "short_name": "Vendre", "url": "/vendre", "description": "Déposer une annonce" },
+    { "name": "Rechercher", "short_name": "Chercher", "url": "/recherche", "description": "Recherche rapide" },
+    { "name": "Mes Favoris", "short_name": "Favoris", "url": "/favoris", "description": "Mes annonces favorites" }
+  ],
+  "screenshots": [
+    { "src": "/screenshot-mobile.png", "sizes": "390x844", "type": "image/png", "form_factor": "narrow" }
+  ]
+}
