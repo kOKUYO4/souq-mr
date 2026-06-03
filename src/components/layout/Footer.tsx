@@ -55,6 +55,8 @@ export default function Footer() {
       { href: "/portefeuille", label: isRTL ? "المحفظة" : "Portefeuille" },
       { href: "/classement", label: isRTL ? "أفضل البائعين" : "Classement" },
       { href: "/verification", label: isRTL ? "التحقق من الهوية" : "Vérification" },
+      { href: "/actualites", label: isRTL ? "الأخبار" : "Actualités" },
+      { href: "/statistiques", label: isRTL ? "الإحصائيات" : "Statistiques" },
       { href: "/contact", label: t.footer.contact },
       { href: "/conditions", label: t.footer.terms },
       { href: "/confidentialite", label: t.footer.privacy },
