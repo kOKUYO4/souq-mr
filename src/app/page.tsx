@@ -9,11 +9,13 @@ import Newsletter from "@/components/home/Newsletter";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
 import LiveActivity from "@/components/home/LiveActivity";
 import TrendingSection from "@/components/home/TrendingSection";
+import BazaarLiveBanner from "@/components/home/BazaarLiveBanner";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
+      <BazaarLiveBanner />
       <LiveActivity />
       <Categories />
       <RecentlyViewed />
