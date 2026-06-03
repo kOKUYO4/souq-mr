@@ -6,12 +6,14 @@ import HagglingBanner from "@/components/home/HagglingBanner";
 import UniqueFeatures from "@/components/home/UniqueFeatures";
 import TrustedSellers from "@/components/home/TrustedSellers";
 import Newsletter from "@/components/home/Newsletter";
+import RecentlyViewed from "@/components/home/RecentlyViewed";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
       <Categories />
+      <RecentlyViewed />
       <FeaturedListings />
       <FlashSales />
       <HagglingBanner />

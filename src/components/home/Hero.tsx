@@ -1,7 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import { Search, MapPin, Tag, ChevronDown, TrendingUp, Shield, Truck } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Search, MapPin, Tag, ChevronDown, Shield, Truck } from "lucide-react";
+
+function useCountUp(target: number, duration = 1500) {
+  const [val, setVal] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      obs.disconnect();
+      const start = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min((now - start) / duration, 1);
+        setVal(Math.round(p * target));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, { threshold: 0.5 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [target, duration]);
+  return { val, ref };
+}
 import IslamicPattern from "@/components/ui/IslamicPattern";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -16,10 +39,23 @@ const cities = {
 };
 
 const stats = [
-  { icon: Tag, value: "24K+", labelFr: "Annonces actives", labelAr: "إعلان نشط" },
-  { icon: Shield, value: "8K+", labelFr: "Vendeurs vérifiés", labelAr: "بائع موثق" },
-  { icon: Truck, value: "15", labelFr: "Villes couvertes", labelAr: "مدينة مغطاة" },
+  { icon: Tag, target: 24000, suffix: "+", labelFr: "Annonces actives", labelAr: "إعلان نشط" },
+  { icon: Shield, target: 8000, suffix: "+", labelFr: "Vendeurs vérifiés", labelAr: "بائع موثق" },
+  { icon: Truck, target: 15, suffix: "", labelFr: "Villes couvertes", labelAr: "مدينة مغطاة" },
 ];
+
+function StatItem({ icon: Icon, target, suffix, label }: { icon: React.ElementType; target: number; suffix: string; label: string }) {
+  const { val, ref } = useCountUp(target);
+  const display = target >= 1000 ? `${(val / 1000).toFixed(val >= target ? 0 : 1)}K${suffix}` : `${val}${suffix}`;
+  return (
+    <div ref={ref} className="flex flex-col items-center gap-1">
+      <div className="flex items-center gap-2">
+        <Icon size={16} className="text-sand-400" />
+        <span className="text-2xl font-bold text-white font-display">{display}</span>
+      </div>
+    </div>
+  );
+}
 
 export default function Hero() {
   const { t, isRTL, locale } = useLanguage();
@@ -153,12 +189,9 @@ export default function Hero() {
 
         {/* Statistiques */}
         <div className={`flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 ${isRTL ? "sm:flex-row-reverse" : ""}`}>
-          {stats.map(({ icon: Icon, value, labelFr, labelAr }, i) => (
+          {stats.map(({ icon, target, suffix, labelFr, labelAr }, i) => (
             <div key={i} className={`flex flex-col items-center gap-1 ${isRTL ? "font-arabic" : ""}`}>
-              <div className="flex items-center gap-2">
-                <Icon size={16} className="text-sand-400" />
-                <span className="text-2xl font-bold text-white font-display">{value}</span>
-              </div>
+              <StatItem icon={icon} target={target} suffix={suffix} label={isRTL ? labelAr : labelFr} />
               <span className="text-xs text-sand-400/70 uppercase tracking-wide">
                 {isRTL ? labelAr : labelFr}
               </span>

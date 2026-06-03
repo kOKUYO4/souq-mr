@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { recordView } from "@/components/home/RecentlyViewed";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -60,6 +61,9 @@ export default function AnnonceDetailPage() {
 
   const listing = listings.find((l) => l.id === id) || listings[0];
   const liked = isFavorite(listing.id);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => { recordView(listing.id); }, [listing.id]);
   const sellerReviews = reviews.filter((r) => r.sellerId === listing.seller.id);
 
   const prevImg = () => setImgIdx((i) => Math.max(0, i - 1));
