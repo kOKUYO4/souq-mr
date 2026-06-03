@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { SlidersHorizontal, Grid, List, ChevronLeft, ChevronRight } from "lucide-react";
 import ListingCard from "@/components/listings/ListingCard";
@@ -43,6 +43,8 @@ function AnnoncesContent() {
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [page]);
 
   const handleCatChange = (cat: string) => { setSelectedCat(cat); setPage(1); };
   const activeFilterCount = [priceMin, priceMax].filter(Boolean).length + (condition !== "all" ? 1 : 0) + (negotiable ? 1 : 0) + (cod ? 1 : 0);
