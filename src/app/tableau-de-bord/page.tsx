@@ -440,14 +440,45 @@ export default function TableauDeBordPage() {
 
         {/* === MESSAGES === */}
         {activeTab === "messages" && (
-          <div className="bg-white rounded-2xl shadow-card p-6 text-center">
-            <div className="text-5xl mb-4">💬</div>
-            <h3 className="text-lg font-semibold text-night-500 mb-2">
-              {isRTL ? "انتقل إلى الرسائل" : "Accéder à la messagerie"}
-            </h3>
-            <Link href="/messages" className="btn-gold inline-flex mt-4 px-8 py-3">
-              {isRTL ? "فتح الرسائل" : "Ouvrir la messagerie"}
-            </Link>
+          <div className="space-y-3">
+            {sellers.slice(0, 4).map((s, i) => {
+              const convListings = [listings[0], listings[1], listings[2], listings[3]];
+              const unread = [2, 0, 1, 0][i];
+              const lastMsgs = {
+                fr: ["Bonjour, est-ce encore disponible ?", "Quel est le dernier prix ?", "Je vous rappelle ce soir", "Merci pour votre offre"],
+                ar: ["مرحبا، هل لا يزال متوفراً؟", "ما هو آخر سعر؟", "سأتصل بك الليلة", "شكراً على عرضك"],
+              };
+              const times = ["14:32", "12:10", "Hier", "Lun"];
+              return (
+                <Link key={s.id} href={`/messages`}
+                  className={`flex items-center gap-3 bg-white rounded-2xl p-4 shadow-card hover:shadow-card-hover transition-all ${unread ? "border-l-4 border-sand-400" : ""} ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <div className="relative flex-shrink-0">
+                    <img src={s.avatar} alt="" className="w-12 h-12 rounded-full bg-sand-100" />
+                    {unread > 0 && (
+                      <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-[10px] font-bold text-night-500 flex items-center justify-center"
+                        style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
+                        {unread}
+                      </span>
+                    )}
+                  </div>
+                  <div className={`flex-1 min-w-0 ${isRTL ? "text-right" : ""}`}>
+                    <div className={`flex items-center justify-between mb-0.5 ${isRTL ? "flex-row-reverse" : ""}`}>
+                      <p className={`text-sm font-semibold ${unread ? "text-night-500" : "text-night-400"}`}>{isRTL ? s.nameAr : s.name}</p>
+                      <span className="text-xs text-night-400/50">{times[i]}</span>
+                    </div>
+                    <p className={`text-xs truncate ${unread ? "text-night-500 font-medium" : "text-night-400/60"}`}>
+                      {isRTL ? lastMsgs.ar[i] : lastMsgs.fr[i]}
+                    </p>
+                    <p className="text-[10px] text-sand-400/70 truncate mt-0.5">{isRTL ? convListings[i].titleAr : convListings[i].title}</p>
+                  </div>
+                </Link>
+              );
+            })}
+            <div className="text-center pt-2">
+              <Link href="/messages" className="btn-gold inline-flex px-8 py-2.5 text-sm">
+                {isRTL ? "فتح المحادثات" : "Ouvrir la messagerie"}
+              </Link>
+            </div>
           </div>
         )}
       </div>
