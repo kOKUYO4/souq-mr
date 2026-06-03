@@ -20,6 +20,8 @@ function AnnoncesContent() {
   const [condition, setCondition] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
   const [page, setPage] = useState(1);
+  const [negotiable, setNegotiable] = useState(false);
+  const [cod, setCod] = useState(false);
 
   const filtered = useMemo(() => {
     let items = listings.filter((l) => {
@@ -28,13 +30,15 @@ function AnnoncesContent() {
       if (condition === "used" && l.condition !== "used") return false;
       if (priceMin && l.price < parseInt(priceMin)) return false;
       if (priceMax && l.price > parseInt(priceMax)) return false;
+      if (negotiable && !l.negotiable) return false;
+      if (cod && !l.cod) return false;
       return true;
     });
     if (sortBy === "price-asc") items = [...items].sort((a, b) => a.price - b.price);
     if (sortBy === "price-desc") items = [...items].sort((a, b) => b.price - a.price);
     if (sortBy === "popular") items = [...items].sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
     return items;
-  }, [selectedCat, condition, priceMin, priceMax, sortBy]);
+  }, [selectedCat, condition, priceMin, priceMax, sortBy, negotiable, cod]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -104,15 +108,15 @@ function AnnoncesContent() {
               </div>
               <div className={`flex gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
                 <label className={`flex items-center gap-2 text-xs text-night-500 cursor-pointer ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <input type="checkbox" className="rounded" />
+                  <input type="checkbox" checked={negotiable} onChange={(e) => { setNegotiable(e.target.checked); setPage(1); }} className="rounded accent-sand-400" />
                   {isRTL ? "قابل للتفاوض" : "Négociable"}
                 </label>
                 <label className={`flex items-center gap-2 text-xs text-night-500 cursor-pointer ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <input type="checkbox" className="rounded" />
+                  <input type="checkbox" checked={cod} onChange={(e) => { setCod(e.target.checked); setPage(1); }} className="rounded accent-sand-400" />
                   {isRTL ? "الدفع عند الاستلام" : "Paiement à la livraison"}
                 </label>
               </div>
-              <button onClick={() => { setPriceMin(""); setPriceMax(""); setCondition("all"); setPage(1); }}
+              <button onClick={() => { setPriceMin(""); setPriceMax(""); setCondition("all"); setNegotiable(false); setCod(false); setPage(1); }}
                 className="px-4 py-2 text-sm text-night-400 hover:text-sand-500 transition-colors underline">
                 {isRTL ? "إعادة تعيين" : "Réinitialiser"}
               </button>
