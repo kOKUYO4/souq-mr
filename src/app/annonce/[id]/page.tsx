@@ -26,6 +26,19 @@ export default function AnnonceDetailPage() {
   const [activeTab, setActiveTab] = useState<"desc" | "attrs" | "seller">("desc");
   const [hagglingOpen, setHagglingOpen] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const title = isRTL ? listing.titleAr : listing.title;
+    if (navigator.share) {
+      await navigator.share({ title, url }).catch(() => {});
+    } else {
+      await navigator.clipboard.writeText(url).catch(() => {});
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }
+  };
 
   const listing = listings.find((l) => l.id === id) || listings[0];
   const liked = isFavorite(listing.id);
@@ -94,8 +107,9 @@ export default function AnnonceDetailPage() {
                   >
                     <Heart size={16} className={liked ? "fill-red-500 text-red-500" : "text-night-400"} />
                   </button>
-                  <button className="w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow">
-                    <Share2 size={16} className="text-night-400" />
+                  <button onClick={(e) => { e.stopPropagation(); handleShare(); }}
+                    className="w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow transition-all hover:scale-110 relative">
+                    {shareCopied ? <CheckCircle2 size={16} className="text-islamic-500" /> : <Share2 size={16} className="text-night-400" />}
                   </button>
                   <button className="w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow">
                     <ZoomIn size={16} className="text-night-400" />
