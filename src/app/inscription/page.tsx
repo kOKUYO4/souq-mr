@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
@@ -18,9 +18,13 @@ const steps = [
 
 export default function InscriptionPage() {
   const { isRTL } = useLanguage();
-  const { sendOtp, verifyOtp, token } = useAuth();
+  const { sendOtp, verifyOtp, token, isAuthenticated } = useAuth();
   const { success, error: toastError } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) router.replace("/tableau-de-bord");
+  }, [isAuthenticated, router]);
 
   const [step, setStep] = useState(0);
   const [phone, setPhone] = useState("");

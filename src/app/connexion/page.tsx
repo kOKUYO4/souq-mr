@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Phone, Globe, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
@@ -11,8 +11,12 @@ import { useLanguage } from "@/context/LanguageContext";
 
 export default function ConnexionPage() {
   const { isRTL } = useLanguage();
-  const { sendOtp, verifyOtp } = useAuth();
+  const { sendOtp, verifyOtp, isAuthenticated } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) router.replace("/tableau-de-bord");
+  }, [isAuthenticated, router]);
 
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
