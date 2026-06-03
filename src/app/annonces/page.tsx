@@ -2,7 +2,8 @@
 
 import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { SlidersHorizontal, Grid, List, ChevronLeft, ChevronRight } from "lucide-react";
+import { SlidersHorizontal, Grid, List, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import ListingCard from "@/components/listings/ListingCard";
 import { listings, categories } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
@@ -12,6 +13,7 @@ const PAGE_SIZE = 8;
 function AnnoncesContent() {
   const { isRTL, locale } = useLanguage();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [selectedCat, setSelectedCat] = useState(searchParams.get("cat") || "all");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -51,6 +53,25 @@ function AnnoncesContent() {
 
   return (
     <div className="min-h-screen bg-sand-50">
+      {/* Mini hero */}
+      <div className="relative py-8 overflow-hidden" style={{ background: "linear-gradient(135deg, #1B2A4A, #0C1426)" }}>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+          <h1 className={`text-2xl font-display font-bold text-white mb-3 ${isRTL ? "font-arabic" : ""}`}>
+            {isRTL ? "تصفح الإعلانات" : "Toutes les annonces"}
+          </h1>
+          <div className="relative">
+            <input type="text" placeholder={isRTL ? "ابحث في الإعلانات..." : "Rechercher dans les annonces..."}
+              dir={isRTL ? "rtl" : "ltr"}
+              className="w-full bg-white/10 border border-white/20 text-white placeholder-white/40 rounded-xl px-5 py-3 pr-12 text-sm outline-none focus:border-sand-400/60 transition-colors"
+              onKeyDown={(e) => {
+                const val = (e.target as HTMLInputElement).value;
+                if (e.key === "Enter" && val) router.push(`/recherche?q=${encodeURIComponent(val)}`);
+              }} />
+            <Search size={16} className={`absolute top-1/2 -translate-y-1/2 text-white/40 ${isRTL ? "left-4" : "right-4"}`} />
+          </div>
+        </div>
+      </div>
+
       {/* Barre filtres sticky */}
       <div className="sticky top-16 z-40 bg-white border-b border-sand-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
