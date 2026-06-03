@@ -48,6 +48,8 @@ export default function Footer() {
       { href: "/paiement", label: isRTL ? "طرق الدفع" : "Modes de paiement" },
       { href: "/tontine", label: isRTL ? "الادخار الجماعي" : "Tontine numérique" },
       { href: "/livraison", label: isRTL ? "التوصيل" : "Livraison" },
+      { href: "/parrainage", label: isRTL ? "برنامج الإحالة" : "Parrainage" },
+      { href: "/bazaar-live", label: isRTL ? "🔴 بازار مباشر" : "🔴 Bazaar Live" },
       { href: "/contact", label: t.footer.contact },
       { href: "/conditions", label: t.footer.terms },
       { href: "/confidentialite", label: t.footer.privacy },
