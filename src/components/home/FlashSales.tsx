@@ -1,15 +1,39 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { Zap, Clock, ArrowRight, ArrowLeft, Eye } from "lucide-react";
 import { listings, formatPrice } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 
+function useCountdown() {
+  const [time, setTime] = useState({ h: 0, m: 0, s: 0 });
+  useEffect(() => {
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 0);
+    const tick = () => {
+      const diff = Math.max(0, endOfDay.getTime() - Date.now());
+      setTime({
+        h: Math.floor(diff / 3600000),
+        m: Math.floor((diff % 3600000) / 60000),
+        s: Math.floor((diff % 60000) / 1000),
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return time;
+}
+
 export default function FlashSales() {
   const { isRTL, locale } = useLanguage();
+  const { h, m, s } = useCountdown();
 
   const deals = listings.filter((l) => l.originalPrice && l.originalPrice > l.price).slice(0, 6);
   if (!deals.length) return null;
+
+  const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
     <section className="py-16 bg-white">
@@ -24,11 +48,18 @@ export default function FlashSales() {
               <h2 className={`text-2xl font-bold text-night-500 ${isRTL ? "font-arabic" : "font-display"}`}>
                 {isRTL ? "عروض اليوم" : "Flash Ventes"}
               </h2>
-              <div className={`flex items-center gap-1.5 text-xs text-night-400/60 mt-0.5 ${isRTL ? "flex-row-reverse" : ""}`}>
-                <Clock size={11} />
-                <span className={isRTL ? "font-arabic" : ""}>
-                  {isRTL ? "عروض لفترة محدودة" : "Offres à durée limitée"}
+              <div className={`flex items-center gap-2 mt-0.5 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <Clock size={11} className="text-red-400" />
+                <span className="text-xs text-night-400/60">
+                  {isRTL ? "ينتهي خلال:" : "Se termine dans :"}
                 </span>
+                <div className={`flex items-center gap-0.5 ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <span className="bg-night-500 text-white text-[11px] font-mono font-bold px-1.5 py-0.5 rounded">{pad(h)}</span>
+                  <span className="text-red-400 font-bold text-xs">:</span>
+                  <span className="bg-night-500 text-white text-[11px] font-mono font-bold px-1.5 py-0.5 rounded">{pad(m)}</span>
+                  <span className="text-red-400 font-bold text-xs">:</span>
+                  <span className="bg-night-500 text-white text-[11px] font-mono font-bold px-1.5 py-0.5 rounded">{pad(s)}</span>
+                </div>
               </div>
             </div>
           </div>
