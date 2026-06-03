@@ -51,6 +51,7 @@ export default function Navbar() {
     { href: "/annonces", label: isRTL ? "الإعلانات" : "Annonces" },
     { href: "/pro", label: isRTL ? "للتجار" : "Espace Pro" },
     { href: "/carte", label: isRTL ? "🗺️ الخريطة" : "🗺️ Carte" },
+    { href: "/souk-vocal", label: isRTL ? "🎙️ صوقي" : "🎙️ Souk Vocal" },
   ];
 
   return (
