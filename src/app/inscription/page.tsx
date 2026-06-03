@@ -8,6 +8,7 @@ import Logo from "@/components/ui/Logo";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 const steps = [
   { fr: "Téléphone", ar: "الهاتف" },
@@ -17,7 +18,8 @@ const steps = [
 
 export default function InscriptionPage() {
   const { isRTL } = useLanguage();
-  const { sendOtp, verifyOtp } = useAuth();
+  const { sendOtp, verifyOtp, token } = useAuth();
+  const { success, error: toastError } = useToast();
   const router = useRouter();
 
   const [step, setStep] = useState(0);
@@ -67,14 +69,19 @@ export default function InscriptionPage() {
   const handleFinish = async () => {
     if (!name.trim()) return;
     setLoading(true);
-    // Update profile name via API
-    await fetch("/api/profile/update", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, nameAr }),
-    }).catch(() => {});
-    setLoading(false);
-    router.push("/tableau-de-bord");
+    try {
+      await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ name, nameAr }),
+      });
+      success(isRTL ? "مرحباً بك في سوق.مر! 🎉" : "Bienvenue sur SOUQ.MR ! 🎉");
+      router.push("/tableau-de-bord");
+    } catch {
+      toastError(isRTL ? "خطأ في إنشاء الحساب" : "Erreur lors de la création du compte");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

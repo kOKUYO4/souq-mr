@@ -7,11 +7,13 @@ import Link from "next/link";
 import { categories } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 
 export default function VendrePage() {
   const { isRTL } = useLanguage();
   const { isAuthenticated, isLoading: authLoading, token } = useAuth();
+  const { success, error: toastError } = useToast();
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [images, setImages] = useState<string[]>([]);
@@ -64,9 +66,9 @@ export default function VendrePage() {
       });
       const json = await res.json();
       if (json.success) {
-        setSubmitted(true);
+        setSubmitted(true); success(isRTL ? "تم نشر إعلانك! 🚀" : "Annonce publiée avec succès ! 🚀");
       } else {
-        setSubmitError(json.error || "Erreur lors de la publication");
+        toastError(json.error || (isRTL ? "خطأ في النشر" : "Erreur lors de la publication"));
       }
     } catch {
       setSubmitError("Erreur réseau. Veuillez réessayer.");

@@ -3,6 +3,7 @@ import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { ToastProvider } from "@/context/ToastContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
@@ -41,9 +42,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <LanguageProvider>
             <FavoritesProvider>
-              <Navbar />
-              <main className="pt-16">{children}</main>
-              <Footer />
+              <ToastProvider>
+                <Navbar />
+                <main className="pt-16">{children}</main>
+                <Footer />
+              </ToastProvider>
             </FavoritesProvider>
           </LanguageProvider>
         </AuthProvider>

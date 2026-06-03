@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Heart, MapPin, Eye, MessageCircle, CheckCircle2 } from "lucide-react";
 import type { Listing } from "@/data/mockData";
 import { formatPrice, timeAgo } from "@/data/mockData";
 import Badge from "@/components/ui/Badge";
 import { useLanguage } from "@/context/LanguageContext";
+import { useFavorites } from "@/context/FavoritesContext";
+import { useToast } from "@/context/ToastContext";
 
 interface ListingCardProps {
   listing: Listing;
@@ -15,7 +16,9 @@ interface ListingCardProps {
 
 export default function ListingCard({ listing, featured = false }: ListingCardProps) {
   const { t, locale, isRTL } = useLanguage();
-  const [liked, setLiked] = useState(false);
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const { success } = useToast();
+  const liked = isFavorite(listing.id);
 
   const sellerBadgeLabel = {
     pro: t.trust.pro,
@@ -48,7 +51,7 @@ export default function ListingCard({ listing, featured = false }: ListingCardPr
 
           {/* Bouton favori */}
           <button
-            onClick={(e) => { e.preventDefault(); setLiked(!liked); }}
+            onClick={(e) => { e.preventDefault(); toggleFavorite(listing.id); success(liked ? (isRTL ? "تمت الإزالة من المفضلة" : "Retiré des favoris") : (isRTL ? "تمت الإضافة إلى المفضلة ❤️" : "Ajouté aux favoris ❤️")); }}
             className={`absolute top-3 ${isRTL ? "left-3" : "right-3"} w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center transition-all hover:scale-110`}
           >
             <Heart
