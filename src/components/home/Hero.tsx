@@ -125,7 +125,10 @@ export default function Hero() {
             />
 
             {/* Bouton rechercher */}
-            <button className="btn-gold rounded-xl px-6 py-3 text-sm font-semibold whitespace-nowrap">
+            <button
+              onClick={() => query && window.location.assign(`/recherche?q=${encodeURIComponent(query)}`)}
+              className="btn-gold rounded-xl px-6 py-3 text-sm font-semibold whitespace-nowrap"
+            >
               <Search size={16} />
               {t.hero.searchBtn}
             </button>
@@ -140,6 +143,7 @@ export default function Hero() {
           {searches.map((s) => (
             <button
               key={s}
+              onClick={() => window.location.assign(`/recherche?q=${encodeURIComponent(s)}`)}
               className="px-3 py-1 rounded-full text-xs text-sand-300 border border-sand-400/20 hover:border-sand-400/60 hover:text-sand-400 transition-all bg-night-600/30 hover:bg-night-600/50"
             >
               {s}
