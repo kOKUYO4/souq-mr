@@ -5,10 +5,11 @@ import Link from "next/link";
 import {
   Eye, MessageCircle, Tag, TrendingUp, Star, Edit3, Pause, Play,
   Trash2, Zap, Plus, BarChart3, CheckCircle2, Clock, XCircle,
-  ChevronUp, ChevronDown, ArrowRight,
+  ChevronUp, ChevronDown, ArrowRight, Lock, Loader2,
 } from "lucide-react";
 import { listings, sellerStats, formatPrice, sellers } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 
 const currentSeller = sellers[0];
@@ -18,6 +19,36 @@ const statuses: ListingStatus[] = ["active", "paused", "sold"];
 
 export default function TableauDeBordPage() {
   const { isRTL, locale } = useLanguage();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-sand-50 flex items-center justify-center">
+        <Loader2 size={32} className="animate-spin text-sand-400" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-sand-gradient flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl p-8 text-center max-w-sm w-full shadow-card">
+          <div className="w-14 h-14 rounded-full bg-sand-100 flex items-center justify-center mx-auto mb-4">
+            <Lock size={24} className="text-sand-400" />
+          </div>
+          <h2 className="text-lg font-bold text-night-500 mb-2">
+            {isRTL ? "تسجيل الدخول مطلوب" : "Connexion requise"}
+          </h2>
+          <p className="text-sm text-night-400/70 mb-6">
+            {isRTL ? "يجب تسجيل الدخول للوصول إلى لوحة التحكم" : "Connectez-vous pour accéder à votre tableau de bord"}
+          </p>
+          <Link href="/connexion" className="btn-gold w-full justify-center">
+            {isRTL ? "تسجيل الدخول" : "Se connecter"}
+          </Link>
+        </div>
+      </div>
+    );
+  }
   const [activeTab, setActiveTab] = useState<"overview" | "listings" | "messages" | "stats">("overview");
   const [listingFilter, setListingFilter] = useState<"all" | ListingStatus>("all");
 

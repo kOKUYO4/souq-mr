@@ -1,61 +1,175 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
-import { Search, Filter } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense, useState, useEffect, useRef, useCallback } from "react";
+import { Search, SlidersHorizontal, X, TrendingUp } from "lucide-react";
 import ListingCard from "@/components/listings/ListingCard";
-import { listings } from "@/data/mockData";
+import { ListingsGridSkeleton } from "@/components/ui/Skeleton";
+import { listings as allListings } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
+
+const TRENDING = {
+  fr: ["iPhone 14", "Toyota Hilux", "Climatiseur", "Appartement Tevragh", "Galaxy S23"],
+  ar: ["آيفون 14", "تويوتا هايلوكس", "مكيف هواء", "شقة تيفرغ", "غالاكسي S23"],
+};
 
 function SearchResults() {
   const searchParams = useSearchParams();
-  const q = searchParams.get("q") || "";
-  const { isRTL } = useLanguage();
+  const router = useRouter();
+  const { isRTL, locale } = useLanguage();
 
-  const results = listings.filter((l) =>
-    l.title.toLowerCase().includes(q.toLowerCase()) ||
-    l.titleAr.includes(q) ||
-    l.description.toLowerCase().includes(q.toLowerCase())
-  );
+  const [q, setQ] = useState(searchParams.get("q") || "");
+  const [debouncedQ, setDebouncedQ] = useState(q);
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState(allListings);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [sortBy, setSortBy] = useState("recent");
+  const [condition, setCondition] = useState("all");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const runSearch = useCallback(async (query: string) => {
+    if (!query.trim()) { setResults(allListings); setSuggestions([]); return; }
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 280));
+    const q2 = query.toLowerCase();
+    let filtered = allListings.filter(
+      (l) => l.title.toLowerCase().includes(q2) || l.titleAr.includes(query) ||
+        l.description.toLowerCase().includes(q2) || l.category.toLowerCase().includes(q2)
+    );
+    if (condition !== "all") filtered = filtered.filter((l) => l.condition === condition);
+    if (sortBy === "price-asc") filtered = [...filtered].sort((a, b) => a.price - b.price);
+    if (sortBy === "price-desc") filtered = [...filtered].sort((a, b) => b.price - a.price);
+    setResults(filtered);
+    setSuggestions(filtered.slice(0, 5).map((l) => (isRTL ? l.titleAr : l.title)));
+    setLoading(false);
+  }, [condition, sortBy, isRTL]);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedQ(q);
+      router.replace(q ? `/recherche?q=${encodeURIComponent(q)}` : "/recherche", { scroll: false });
+    }, 350);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [q, router]);
+
+  useEffect(() => { runSearch(debouncedQ); }, [debouncedQ, runSearch]);
+
+  const handleKey = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") { setShowSuggestions(false); runSearch(q); }
+    if (e.key === "Escape") { setShowSuggestions(false); inputRef.current?.blur(); }
+  };
 
   return (
     <div className="min-h-screen bg-sand-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <div className={`flex items-center gap-3 mb-8 ${isRTL ? "flex-row-reverse" : ""}`}>
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              defaultValue={q}
-              placeholder={isRTL ? "ابحث في سوق.مر..." : "Rechercher sur SOUQ.MR..."}
-              className="w-full input-field pl-10"
-            />
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-sand-300" />
+      <div className="sticky top-16 z-40 bg-white border-b border-sand-100 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <div className="relative">
+            <div className={`flex items-center gap-2 bg-sand-50 rounded-2xl border-2 transition-all ${showSuggestions ? "border-sand-400" : "border-sand-100"}`}>
+              <Search size={18} className={`flex-shrink-0 text-sand-400 ${isRTL ? "mr-4 ml-0" : "ml-4 mr-0"}`} />
+              <input
+                ref={inputRef}
+                type="text"
+                value={q}
+                onChange={(e) => { setQ(e.target.value); setShowSuggestions(true); }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                onKeyDown={handleKey}
+                placeholder={isRTL ? "ابحث في سوق.مر..." : "Rechercher sur SOUQ.MR..."}
+                dir={isRTL ? "rtl" : "ltr"}
+                className="flex-1 py-3 bg-transparent text-night-500 placeholder-sand-300 outline-none text-base"
+              />
+              {q && (
+                <button onClick={() => { setQ(""); setResults(allListings); }}
+                  className={`p-2 ${isRTL ? "ml-2" : "mr-2"} text-sand-300 hover:text-night-400 transition-colors`}>
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+            {showSuggestions && q.length >= 2 && suggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-card-hover border border-sand-100 overflow-hidden z-50">
+                {suggestions.map((s, i) => (
+                  <button key={i} onMouseDown={() => { setQ(s); setShowSuggestions(false); runSearch(s); }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-sand-50 transition-colors text-sm text-night-500 ${isRTL ? "flex-row-reverse text-right" : ""}`}>
+                    <Search size={13} className="text-sand-300 flex-shrink-0" />
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <button className="btn-outline px-4 py-3 text-sm flex items-center gap-2">
-            <Filter size={16} />
-            {isRTL ? "فلتر" : "Filtres"}
-          </button>
+          <div className={`flex items-center gap-2 mt-3 overflow-x-auto ${isRTL ? "flex-row-reverse" : ""}`}>
+            <button onClick={() => {}}
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border border-sand-200 text-night-400 hover:border-sand-300 transition-all">
+              <SlidersHorizontal size={12} />
+              {isRTL ? "فلتر" : "Filtres"}
+            </button>
+            {(["recent", "price-asc", "price-desc"] as const).map((s) => (
+              <button key={s} onClick={() => setSortBy(s)}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${sortBy === s ? "text-night-500" : "bg-sand-50 text-night-400 hover:bg-sand-100"}`}
+                style={sortBy === s ? { background: "linear-gradient(135deg, #C9A84C, #B8922E)" } : undefined}>
+                {s === "recent" ? (isRTL ? "الأحدث" : "Plus récent") : s === "price-asc" ? (isRTL ? "الأرخص" : "Prix ↑") : (isRTL ? "الأغلى" : "Prix ↓")}
+              </button>
+            ))}
+            {(["all", "new", "used"] as const).map((c) => (
+              <button key={c} onClick={() => setCondition(c)}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${condition === c ? "bg-night-500 text-white" : "bg-sand-50 text-night-400 hover:bg-sand-100"}`}>
+                {c === "all" ? (isRTL ? "الكل" : "Tout") : c === "new" ? (isRTL ? "جديد" : "Neuf") : (isRTL ? "مستعمل" : "Occasion")}
+              </button>
+            ))}
+          </div>
         </div>
+      </div>
 
-        {q && (
-          <p className={`text-sm text-night-400/60 mb-6 ${isRTL ? "text-right" : ""}`}>
-            {results.length} {isRTL ? `نتيجة لـ "${q}"` : `résultats pour "${q}"`}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {!q && (
+          <div className="mb-10">
+            <div className={`flex items-center gap-2 mb-4 ${isRTL ? "flex-row-reverse" : ""}`}>
+              <TrendingUp size={16} className="text-sand-500" />
+              <h2 className="text-sm font-bold text-night-500">{isRTL ? "الأكثر بحثاً" : "Tendances du moment"}</h2>
+            </div>
+            <div className={`flex flex-wrap gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+              {TRENDING[locale].map((t) => (
+                <button key={t} onClick={() => { setQ(t); runSearch(t); }}
+                  className="px-4 py-2 bg-white rounded-xl text-sm text-night-500 font-medium shadow-sm hover:shadow-card transition-all border border-sand-100 hover:border-sand-300">
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {debouncedQ && (
+          <p className={`text-sm text-night-400/60 mb-5 ${isRTL ? "text-right" : ""}`}>
+            {loading ? (isRTL ? "جارٍ البحث..." : "Recherche en cours...") :
+              `${results.length} ${isRTL ? `نتيجة لـ "${debouncedQ}"` : `résultats pour "${debouncedQ}"`}`}
           </p>
         )}
 
-        {results.length > 0 ? (
+        {loading ? (
+          <ListingsGridSkeleton count={8} />
+        ) : results.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {results.map((l) => <ListingCard key={l.id} listing={l} />)}
           </div>
-        ) : (
-          <div className="text-center py-20">
+        ) : debouncedQ ? (
+          <div className="text-center py-24">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-xl font-semibold text-night-500 mb-2">
               {isRTL ? "لا توجد نتائج" : "Aucun résultat"}
             </h3>
-            <p className="text-night-400/60 text-sm">
-              {isRTL ? `لم يتم العثور على نتائج لـ "${q}"` : `Aucune annonce trouvée pour "${q}"`}
+            <p className="text-night-400/60 text-sm mb-6">
+              {isRTL ? `لا توجد إعلانات تطابق "${debouncedQ}"` : `Aucune annonce pour "${debouncedQ}"`}
             </p>
+            <button onClick={() => setQ("")} className="btn-gold text-sm py-2.5 px-5">
+              {isRTL ? "مسح البحث" : "Effacer la recherche"}
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {allListings.map((l) => <ListingCard key={l.id} listing={l} />)}
           </div>
         )}
       </div>
@@ -65,7 +179,7 @@ function SearchResults() {
 
 export default function RecherchePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-sand-50 flex items-center justify-center"><div className="text-sand-400">Chargement...</div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-sand-50 pt-20 px-4"><ListingsGridSkeleton count={8} /></div>}>
       <SearchResults />
     </Suspense>
   );

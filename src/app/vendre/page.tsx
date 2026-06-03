@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, Mic, Camera, Plus, X, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Upload, Mic, Camera, Plus, X, CheckCircle2, Lock, Loader2 } from "lucide-react";
+import Link from "next/link";
 import { categories } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 
 export default function VendrePage() {
   const { isRTL } = useLanguage();
+  const { isAuthenticated, isLoading: authLoading, token } = useAuth();
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [images, setImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
@@ -16,10 +21,58 @@ export default function VendrePage() {
   });
   const [voiceMode, setVoiceMode] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  if (!authLoading && !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-sand-gradient flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl p-8 text-center max-w-sm w-full shadow-card">
+          <div className="w-14 h-14 rounded-full bg-sand-100 flex items-center justify-center mx-auto mb-4">
+            <Lock size={24} className="text-sand-400" />
+          </div>
+          <h2 className="text-lg font-bold text-night-500 mb-2">
+            {isRTL ? "تسجيل الدخول مطلوب" : "Connexion requise"}
+          </h2>
+          <p className="text-sm text-night-400/70 mb-6">
+            {isRTL ? "يجب تسجيل الدخول لنشر إعلان" : "Connectez-vous pour déposer une annonce"}
+          </p>
+          <Link href="/connexion" className="btn-gold w-full justify-center">
+            {isRTL ? "تسجيل الدخول" : "Se connecter"}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitError("");
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/listings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          ...formData,
+          price: parseInt(formData.price),
+          images: images.length ? images : ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800"],
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setSubmitted(true);
+      } else {
+        setSubmitError(json.error || "Erreur lors de la publication");
+      }
+    } catch {
+      setSubmitError("Erreur réseau. Veuillez réessayer.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -267,8 +320,13 @@ export default function VendrePage() {
           </div>
 
           {/* Bouton publier */}
-          <button type="submit" className="w-full btn-gold py-4 text-base font-bold">
-            🚀 {isRTL ? "انشر الإعلان مجاناً" : "Publier l'annonce gratuitement"}
+          {submitError && (
+            <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-600">
+              {submitError}
+            </div>
+          )}
+          <button type="submit" disabled={submitting} className="w-full btn-gold py-4 text-base font-bold disabled:opacity-60">
+            {submitting ? <Loader2 size={20} className="animate-spin mx-auto" /> : <>🚀 {isRTL ? "انشر الإعلان مجاناً" : "Publier l'annonce gratuitement"}</>}
           </button>
 
           <p className={`text-center text-xs text-night-400/50 ${isRTL ? "font-arabic" : ""}`}>
