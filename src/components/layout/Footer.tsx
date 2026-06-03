@@ -60,6 +60,7 @@ export default function Footer() {
       { href: "/statistiques", label: isRTL ? "الإحصائيات" : "Statistiques" },
       { href: "/application", label: isRTL ? "📱 تحميل التطبيق" : "📱 Télécharger l'app" },
       { href: "/promotions", label: isRTL ? "🔥 التخفيضات" : "🔥 Promotions" },
+      { href: "/offres", label: isRTL ? "🤝 عروضي" : "🤝 Mes offres" },
       { href: "/contact", label: t.footer.contact },
       { href: "/conditions", label: t.footer.terms },
       { href: "/confidentialite", label: t.footer.privacy },

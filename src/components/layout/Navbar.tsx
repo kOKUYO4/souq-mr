@@ -215,6 +215,10 @@ export default function Navbar() {
               { href: "/tableau-de-bord", label: isRTL ? "لوحة التحكم" : "Dashboard" },
               { href: "/favoris", label: isRTL ? "المفضلة" : "Favoris" },
               { href: "/messages", label: isRTL ? "الرسائل" : "Messages" },
+              { href: "/offres", label: isRTL ? "🤝 العروض" : "🤝 Mes offres" },
+              { href: "/portefeuille", label: isRTL ? "💰 المحفظة" : "💰 Portefeuille" },
+              { href: "/promotions", label: isRTL ? "🔥 التخفيضات" : "🔥 Promotions" },
+              { href: "/classement", label: isRTL ? "🏆 الترتيب" : "🏆 Classement" },
             ].map((link) => (
               <Link key={link.href} href={link.href}
                 className="block px-3 py-2.5 text-sand-200 hover:text-sand-400 hover:bg-night-600/50 rounded-lg transition-colors"
