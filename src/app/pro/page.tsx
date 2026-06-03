@@ -170,7 +170,7 @@ export default function ProPage() {
         </div>
 
         {/* Fonctionnalités pro */}
-        <div className="grid sm:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-3 gap-6 mb-16">
           {[
             { icon: BarChart3, titleFr: "Statistiques avancées", titleAr: "إحصائيات متقدمة", descFr: "Vues, clics, conversions, revenus en temps réel", descAr: "المشاهدات والنقرات والتحويلات والإيرادات لحظياً" },
             { icon: Tag, titleFr: "Boost d'annonces", titleAr: "تعزيز الإعلانات", descFr: "Mettez vos annonces en avant pour plus de visibilité", descAr: "أبرز إعلاناتك لمزيد من الظهور" },
@@ -185,6 +185,56 @@ export default function ProPage() {
               <p className="text-sm text-night-400/70">{isRTL ? feat.descAr : feat.descFr}</p>
             </div>
           ))}
+        </div>
+
+        {/* Témoignages marchands */}
+        <div className="mb-6">
+          <h3 className={`text-xl font-display font-bold text-night-500 text-center mb-8 ${isRTL ? "font-arabic" : ""}`}>
+            {isRTL ? "ماذا يقول تجارنا المحترفون" : "Ce que disent nos marchands pro"}
+          </h3>
+          <div className="grid sm:grid-cols-3 gap-6">
+            {[
+              {
+                nameFr: "Sidi Ould Vall", nameAr: "سيدي ولد فال",
+                roleFr: "Concessionnaire auto", roleAr: "تاجر سيارات",
+                quoteFr: "Depuis que j'ai le badge Pro, mes annonces reçoivent 3× plus de contacts. SOUQ.MR a transformé mon business.",
+                quoteAr: "منذ حصولي على شارة المحترف، تلقت إعلاناتي 3 أضعاف التواصل. سوق.مر غيّر تجارتي.",
+                rating: 5, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=SidiVall",
+              },
+              {
+                nameFr: "Marième Diallo", nameAr: "مريم جالو",
+                roleFr: "Boutique mode", roleAr: "متجر أزياء",
+                quoteFr: "Les statistiques avancées m'ont aidé à comprendre mes clients. Mon chiffre d'affaires a doublé en 3 mois.",
+                quoteAr: "ساعتني الإحصائيات المتقدمة على فهم عملائي. تضاعف رقم أعمالي في 3 أشهر.",
+                rating: 5, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marieme",
+              },
+              {
+                nameFr: "Ahmed Ould Ndiaye", nameAr: "أحمد ولد ديي",
+                roleFr: "Électronique & High-Tech", roleAr: "إلكترونيات وتقنية",
+                quoteFr: "Le service Escrow a vraiment rassuré mes clients. Moins de négociations, plus de ventes directes.",
+                quoteAr: "خدمة الضمان المالي طمأنت عملائي كثيراً. أقل تفاوض، مزيد من المبيعات المباشرة.",
+                rating: 5, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=AhmedN",
+              },
+            ].map((t, i) => (
+              <div key={i} className={`bg-white rounded-2xl p-6 shadow-card ${isRTL ? "text-right" : ""}`}>
+                <div className="flex mb-3">
+                  {[...Array(t.rating)].map((_, j) => (
+                    <Star key={j} size={14} className="text-sand-400 fill-sand-400" />
+                  ))}
+                </div>
+                <p className={`text-sm text-night-400/80 mb-4 italic leading-relaxed ${isRTL ? "font-arabic" : ""}`}>
+                  "{isRTL ? t.quoteAr : t.quoteFr}"
+                </p>
+                <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <img src={t.avatar} alt="" className="w-10 h-10 rounded-full bg-sand-100" />
+                  <div className={isRTL ? "text-right" : ""}>
+                    <p className={`text-sm font-bold text-night-500 ${isRTL ? "font-arabic" : ""}`}>{isRTL ? t.nameAr : t.nameFr}</p>
+                    <p className={`text-xs text-sand-500 ${isRTL ? "font-arabic" : ""}`}>{isRTL ? t.roleAr : t.roleFr}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
