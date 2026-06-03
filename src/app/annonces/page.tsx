@@ -140,6 +140,10 @@ function AnnoncesContent() {
           <p className="text-sm text-night-400">
             <span className="font-semibold text-night-500">{filtered.length}</span>
             {" "}{isRTL ? "إعلان" : "annonces"}
+            {selectedCat !== "all" && (() => {
+              const cat = categories.find(c => c.id === selectedCat);
+              return cat ? <span className="text-sand-500 font-medium"> — {isRTL ? cat.nameAr : cat.name}</span> : null;
+            })()}
             {totalPages > 1 && (
               <span className="text-night-400/50">
                 {" "}— {isRTL ? `صفحة ${page} من ${totalPages}` : `page ${page}/${totalPages}`}
