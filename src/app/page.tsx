@@ -4,6 +4,7 @@ import FeaturedListings from "@/components/home/FeaturedListings";
 import HagglingBanner from "@/components/home/HagglingBanner";
 import UniqueFeatures from "@/components/home/UniqueFeatures";
 import TrustedSellers from "@/components/home/TrustedSellers";
+import Newsletter from "@/components/home/Newsletter";
 
 export default function HomePage() {
   return (
@@ -14,6 +15,7 @@ export default function HomePage() {
       <HagglingBanner />
       <UniqueFeatures />
       <TrustedSellers />
+      <Newsletter />
     </>
   );
 }

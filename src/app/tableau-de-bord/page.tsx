@@ -20,6 +20,8 @@ const statuses: ListingStatus[] = ["active", "paused", "sold"];
 export default function TableauDeBordPage() {
   const { isRTL, locale } = useLanguage();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const [activeTab, setActiveTab] = useState<"overview" | "listings" | "messages" | "stats">("overview");
+  const [listingFilter, setListingFilter] = useState<"all" | ListingStatus>("all");
 
   if (authLoading) {
     return (
@@ -49,8 +51,6 @@ export default function TableauDeBordPage() {
       </div>
     );
   }
-  const [activeTab, setActiveTab] = useState<"overview" | "listings" | "messages" | "stats">("overview");
-  const [listingFilter, setListingFilter] = useState<"all" | ListingStatus>("all");
 
   const myListings = listings.slice(0, 6).map((l, i) => ({
     ...l,
