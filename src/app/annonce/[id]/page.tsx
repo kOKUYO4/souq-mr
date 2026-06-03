@@ -396,6 +396,30 @@ export default function AnnonceDetailPage() {
               )}
             </div>
 
+            {/* Localisation */}
+            <div className="bg-white rounded-2xl overflow-hidden shadow-card">
+              <div className="h-28 relative overflow-hidden"
+                style={{ background: "linear-gradient(135deg, #E8F0F5 0%, #D4E4EE 100%)" }}>
+                {/* Fake map tiles */}
+                <div className="absolute inset-0 opacity-30"
+                  style={{ backgroundImage: "repeating-linear-gradient(0deg, #B8CCd8 0px, transparent 1px, transparent 40px, #B8CCd8 40px), repeating-linear-gradient(90deg, #B8CCd8 0px, transparent 1px, transparent 40px, #B8CCd8 40px)" }} />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg"
+                      style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
+                      <MapPin size={16} className="text-night-500" />
+                    </div>
+                    <div className="w-2 h-2 rounded-full bg-sand-400/50" />
+                  </div>
+                </div>
+                <div className="absolute bottom-2 right-2 text-[10px] text-night-400/40">© SOUQ.MR Maps</div>
+              </div>
+              <div className={`px-4 py-3 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <MapPin size={14} className="text-sand-400 flex-shrink-0" />
+                <span className="text-sm text-night-500 font-medium">{isRTL ? listing.locationAr : listing.location}</span>
+              </div>
+            </div>
+
             {/* Livraison */}
             <div className="bg-white rounded-2xl p-5 shadow-card">
               <h4 className={`font-semibold text-night-500 mb-3 text-sm ${isRTL ? "text-right" : ""}`}>
