@@ -44,6 +44,7 @@ export default function Footer() {
     help: [
       { href: "/aide", label: t.footer.help },
       { href: "/securite", label: isRTL ? "نصائح الأمان" : "Guide anti-arnaque" },
+      { href: "/escrow", label: isRTL ? "الضمان المالي" : "Service Escrow" },
       { href: "/contact", label: t.footer.contact },
       { href: "/conditions", label: t.footer.terms },
       { href: "/confidentialite", label: t.footer.privacy },

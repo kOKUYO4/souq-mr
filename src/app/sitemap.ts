@@ -17,6 +17,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/securite`, priority: 0.5, changeFrequency: "monthly" as const },
     { url: `${BASE}/conditions`, priority: 0.3, changeFrequency: "yearly" as const },
     { url: `${BASE}/confidentialite`, priority: 0.3, changeFrequency: "yearly" as const },
+    { url: `${BASE}/notifications`, priority: 0.4, changeFrequency: "daily" as const },
+    { url: `${BASE}/carte`, priority: 0.6, changeFrequency: "weekly" as const },
+    { url: `${BASE}/escrow`, priority: 0.6, changeFrequency: "monthly" as const },
+    { url: `${BASE}/souk-vocal`, priority: 0.5, changeFrequency: "monthly" as const },
   ];
 
   const categoryPages = categories.map((cat) => ({
