@@ -207,6 +207,7 @@ export default function ProfilPage() {
             {/* Formulaire avis */}
             {reviewFormOpen && (
               <ReviewForm
+                sellerId={seller.id}
                 sellerName={seller.name}
                 sellerNameAr={seller.nameAr}
                 onSubmit={() => setReviewFormOpen(false)}
