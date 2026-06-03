@@ -47,6 +47,8 @@ export default function TrustedSellers() {
                   <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center">
                     <CheckCircle2 size={14} className="text-islamic-400" />
                   </div>
+                  {/* Online indicator */}
+                  <div className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white bg-islamic-400" />
                 </div>
 
                 {/* Nom */}
@@ -70,9 +72,12 @@ export default function TrustedSellers() {
                   <span className="text-[10px] text-night-400/50">({seller.reviews})</span>
                 </div>
 
-                {/* Nombre d'annonces */}
+                {/* Nombre d'annonces + response time */}
                 <p className="text-[10px] text-night-400/50 mt-1">
                   {seller.listings} {isRTL ? "إعلان" : "annonces"}
+                </p>
+                <p className="text-[10px] text-islamic-400 mt-0.5">
+                  ⚡ {seller.responseTime || "< 2h"}
                 </p>
               </Link>
             );
