@@ -18,6 +18,42 @@ import StarRating from "@/components/social/StarRating";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/context/ToastContext";
+import type { Listing } from "@/data/mockData";
+
+function PriceAlertCard({ listing, isRTL, onSuccess }: { listing: Listing; isRTL: boolean; onSuccess: (msg: string) => void }) {
+  const [alertPrice, setAlertPrice] = useState("");
+  const [alertSet, setAlertSet] = useState(false);
+  const handleSet = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!alertPrice) return;
+    setAlertSet(true);
+    onSuccess(isRTL ? `سيتم إخطارك عند ${parseInt(alertPrice).toLocaleString()} أوقية 🔔` : `Alerte activée à ${parseInt(alertPrice).toLocaleString()} MRU 🔔`);
+  };
+  return (
+    <div className="bg-sand-50 border border-sand-200 rounded-2xl p-4">
+      <div className={`flex items-center gap-2 mb-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+        <span className="text-base">🔔</span>
+        <span className="text-xs font-bold text-night-500">{isRTL ? "تنبيه السعر" : "Alerte prix"}</span>
+      </div>
+      {alertSet ? (
+        <p className={`text-xs text-islamic-500 font-medium ${isRTL ? "text-right" : ""}`}>
+          ✓ {isRTL ? "سيتم إخطارك عند انخفاض السعر" : "Vous serez notifié si le prix baisse"}
+        </p>
+      ) : (
+        <form onSubmit={handleSet} className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+          <input type="number" value={alertPrice} onChange={(e) => setAlertPrice(e.target.value)}
+            placeholder={isRTL ? "السعر المستهدف" : "Prix cible (MRU)"}
+            className="flex-1 text-xs py-2 px-3 bg-white border border-sand-200 rounded-xl text-night-500 outline-none focus:border-sand-400"
+            dir="ltr" />
+          <button type="submit" className="px-3 py-2 rounded-xl text-[10px] font-bold text-night-500 whitespace-nowrap flex-shrink-0"
+            style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
+            {isRTL ? "تفعيل" : "Activer"}
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
 
 export default function AnnonceDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -436,6 +472,11 @@ export default function AnnonceDetailPage() {
                 </div>
               ))}
             </div>
+
+            {/* Alerte prix */}
+            {listing.negotiable && (
+              <PriceAlertCard listing={listing} isRTL={isRTL} onSuccess={(msg) => success(msg)} />
+            )}
 
             {/* Guide sécurité */}
             <div className="bg-islamic-50 border border-islamic-100 rounded-2xl p-4">
