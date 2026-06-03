@@ -50,6 +50,7 @@ export default function ListingCard({ listing, featured = false, variant = "grid
               alt={isRTL ? listing.titleAr : listing.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
+              onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1605902711622-cfb43c4437b5?w=400&q=60"; }}
             />
             <div className={`absolute top-2 ${isRTL ? "right-2" : "left-2"} flex flex-col gap-1`}>
               <Badge type={listing.condition === "new" ? "new" : "used"} />
@@ -133,6 +134,7 @@ export default function ListingCard({ listing, featured = false, variant = "grid
             alt={isRTL ? listing.titleAr : listing.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
+            onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1605902711622-cfb43c4437b5?w=400&q=60"; }}
           />
 
           {/* Badges superposés image */}
