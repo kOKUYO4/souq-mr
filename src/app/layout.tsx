@@ -10,6 +10,7 @@ import MobileNav from "@/components/layout/MobileNav";
 import RamadanBanner from "@/components/home/RamadanBanner";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import PWAInstallBanner from "@/components/ui/PWAInstallBanner";
+import { CompareProvider } from "@/components/listings/CompareBar";
 
 export const viewport: Viewport = {
   themeColor: "#C9A84C",
@@ -56,13 +57,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <LanguageProvider>
             <FavoritesProvider>
               <ToastProvider>
-                <Navbar />
-                <RamadanBanner />
-                <main className="pt-16 pb-16 sm:pb-0">{children}</main>
-                <Footer />
-                <MobileNav />
-                <ScrollToTop />
-                <PWAInstallBanner />
+                <CompareProvider>
+                  <Navbar />
+                  <RamadanBanner />
+                  <main className="pt-16 pb-16 sm:pb-0">{children}</main>
+                  <Footer />
+                  <MobileNav />
+                  <ScrollToTop />
+                  <PWAInstallBanner />
+                </CompareProvider>
               </ToastProvider>
             </FavoritesProvider>
           </LanguageProvider>

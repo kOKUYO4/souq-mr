@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Heart, MapPin, Eye, MessageCircle, CheckCircle2, Share2 } from "lucide-react";
+import { Heart, MapPin, Eye, MessageCircle, CheckCircle2, Share2, Scale } from "lucide-react";
 import type { Listing } from "@/data/mockData";
 import { formatPrice, timeAgo } from "@/data/mockData";
 import Badge from "@/components/ui/Badge";
@@ -10,6 +10,7 @@ import HagglingModal from "@/components/social/HagglingModal";
 import { useLanguage } from "@/context/LanguageContext";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useToast } from "@/context/ToastContext";
+import { useCompare } from "@/components/listings/CompareBar";
 
 interface ListingCardProps {
   listing: Listing;
@@ -21,7 +22,9 @@ export default function ListingCard({ listing, featured = false, variant = "grid
   const { t, locale, isRTL } = useLanguage();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { success } = useToast();
+  const { toggleCompare, isComparing } = useCompare();
   const liked = isFavorite(listing.id);
+  const comparing = isComparing(listing.id);
   const [hagglingOpen, setHagglingOpen] = useState(false);
 
   const sellerBadgeLabel = {
@@ -182,6 +185,13 @@ export default function ListingCard({ listing, featured = false, variant = "grid
               title={isRTL ? "مشاركة" : "Partager"}
             >
               <Share2 size={14} className={shareCopied ? "text-islamic-400" : "text-night-400"} />
+            </button>
+            <button
+              onClick={(e) => { e.preventDefault(); toggleCompare(listing); }}
+              className={`w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center transition-all hover:scale-110 opacity-0 group-hover:opacity-100 ${comparing ? "!opacity-100" : ""}`}
+              title={isRTL ? "مقارنة" : "Comparer"}
+            >
+              <Scale size={14} className={comparing ? "text-sand-500" : "text-night-400"} />
             </button>
           </div>
 
