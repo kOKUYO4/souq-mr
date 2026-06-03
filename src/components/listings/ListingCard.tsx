@@ -44,7 +44,13 @@ export default function ListingCard({ listing, featured = false, variant = "grid
     e.preventDefault();
     const url = `${typeof window !== "undefined" ? window.location.origin : ""}/annonce/${listing.id}`;
     if (navigator.share) { navigator.share({ title: isRTL ? listing.titleAr : listing.title, url }).catch(() => {}); }
-    else { navigator.clipboard.writeText(url).then(() => { setShareCopied(true); setTimeout(() => setShareCopied(false), 2000); }); }
+    else {
+      navigator.clipboard.writeText(url).then(() => {
+        setShareCopied(true);
+        success(isRTL ? "تم نسخ الرابط ✓" : "Lien copié ✓");
+        setTimeout(() => setShareCopied(false), 2000);
+      });
+    }
   };
 
   if (variant === "list") {
