@@ -25,7 +25,7 @@ export default function FeaturedListings() {
             <h2 className="section-title">{t.listings.featured}</h2>
           </div>
           <Link
-            href="/annonces?featured=true"
+            href="/annonces"
             className={`hidden sm:flex items-center gap-1.5 text-sand-500 text-sm font-semibold hover:gap-2.5 transition-all ${isRTL ? "flex-row-reverse" : ""}`}
           >
             {t.listings.seeAll}

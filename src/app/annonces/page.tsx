@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { SlidersHorizontal, Grid, List, ChevronLeft, ChevronRight } from "lucide-react";
 import ListingCard from "@/components/listings/ListingCard";
 import { listings, categories } from "@/data/mockData";
@@ -8,9 +9,10 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const PAGE_SIZE = 8;
 
-export default function AnnoncesPage() {
+function AnnoncesContent() {
   const { isRTL, locale } = useLanguage();
-  const [selectedCat, setSelectedCat] = useState("all");
+  const searchParams = useSearchParams();
+  const [selectedCat, setSelectedCat] = useState(searchParams.get("cat") || "all");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filterOpen, setFilterOpen] = useState(false);
   const [priceMin, setPriceMin] = useState("");
@@ -178,5 +180,13 @@ export default function AnnoncesPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AnnoncesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-sand-50" />}>
+      <AnnoncesContent />
+    </Suspense>
   );
 }

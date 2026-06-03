@@ -65,8 +65,6 @@ export default function AnnonceDetailPage() {
   const prevImg = () => setImgIdx((i) => Math.max(0, i - 1));
   const nextImg = () => setImgIdx((i) => Math.min(listing.images.length - 1, i + 1));
 
-  /* Annonces similaires */
-  const similar = listings.filter((l) => l.id !== listing.id && l.category === listing.category).slice(0, 3);
 
   return (
     <div className="min-h-screen bg-sand-50">
@@ -292,26 +290,6 @@ export default function AnnonceDetailPage() {
                 </div>
               )}
             </div>
-
-            {/* Annonces similaires */}
-            {similar.length > 0 && (
-              <div>
-                <h3 className={`font-bold text-night-500 mb-4 ${isRTL ? "text-right" : ""}`}>
-                  {isRTL ? "إعلانات مشابهة" : "Annonces similaires"}
-                </h3>
-                <div className="grid sm:grid-cols-3 gap-4">
-                  {similar.map((l) => (
-                    <Link key={l.id} href={`/annonce/${l.id}`} className="listing-card block">
-                      <img src={l.images[0]} alt="" className="w-full h-36 object-cover" />
-                      <div className={`p-3 ${isRTL ? "text-right" : ""}`}>
-                        <p className="text-sm font-semibold text-night-500 line-clamp-1">{isRTL ? l.titleAr : l.title}</p>
-                        <p className="text-sm font-bold text-sand-500 mt-1">{formatPrice(l.price)} MRU</p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Signalement */}
             <div className={`text-center ${isRTL ? "" : ""}`}>
