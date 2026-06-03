@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { CheckCircle2, Star, Zap, BarChart3, Shield, Tag } from "lucide-react";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 import { useLanguage } from "@/context/LanguageContext";
@@ -48,6 +49,14 @@ const plans = [
 
 export default function ProPage() {
   const { isRTL, locale } = useLanguage();
+  const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
+  const discount = 0.20;
+
+  function getPrice(base: number) {
+    if (base === 0) return 0;
+    if (billing === "annual") return Math.round(base * (1 - discount));
+    return base;
+  }
 
   return (
     <div className="min-h-screen bg-sand-gradient">
@@ -72,6 +81,31 @@ export default function ProPage() {
 
       {/* Plans tarifaires */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+        {/* Toggle mensuel / annuel */}
+        <div className="flex justify-center mb-10">
+          <div className="inline-flex items-center gap-1 bg-sand-100 rounded-xl p-1">
+            <button
+              onClick={() => setBilling("monthly")}
+              className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
+                billing === "monthly" ? "bg-white text-night-500 shadow-sm" : "text-night-400/70 hover:text-night-500"
+              }`}
+            >
+              {isRTL ? "شهري" : "Mensuel"}
+            </button>
+            <button
+              onClick={() => setBilling("annual")}
+              className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 ${
+                billing === "annual" ? "bg-white text-night-500 shadow-sm" : "text-night-400/70 hover:text-night-500"
+              }`}
+            >
+              {isRTL ? "سنوي" : "Annuel"}
+              <span className="text-[10px] text-white font-bold px-1.5 py-0.5 rounded-full" style={{ background: "linear-gradient(135deg, #2D6A4F, #1A3F2A)" }}>
+                -20%
+              </span>
+            </button>
+          </div>
+        </div>
+
         <div className="grid md:grid-cols-3 gap-6 mb-16">
           {plans.map((plan) => (
             <div
@@ -97,11 +131,16 @@ export default function ProPage() {
                 </h3>
                 <div className={`flex items-baseline gap-1 mb-6 ${isRTL ? "flex-row-reverse" : ""}`}>
                   <span className={`text-3xl font-display font-bold ${plan.highlighted ? "text-sand-400" : "text-night-500"}`}>
-                    {plan.price === 0 ? (isRTL ? "مجاني" : "Gratuit") : plan.price.toLocaleString()}
+                    {plan.price === 0 ? (isRTL ? "مجاني" : "Gratuit") : getPrice(plan.price).toLocaleString()}
                   </span>
                   {plan.price > 0 && (
                     <span className={`text-sm ${plan.highlighted ? "text-sand-300/70" : "text-night-400/60"}`}>
                       MRU {isRTL ? plan.period.ar : plan.period.fr}
+                    </span>
+                  )}
+                  {plan.price > 0 && billing === "annual" && (
+                    <span className={`text-xs line-through ml-1 ${plan.highlighted ? "text-sand-400/50" : "text-night-400/40"}`}>
+                      {plan.price.toLocaleString()}
                     </span>
                   )}
                 </div>
