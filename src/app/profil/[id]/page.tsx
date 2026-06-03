@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { MapPin, Calendar, MessageCircle, Share2, CheckCircle2, BarChart3, Star } from "lucide-react";
@@ -31,8 +31,15 @@ export default function ProfilPage() {
   const { isRTL, locale, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<"listings" | "reviews" | "about">("listings");
   const [reviewFormOpen, setReviewFormOpen] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const seller = sellers.find((s) => s.id === id) || sellers[0];
+
+  const handleShare = useCallback(() => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    if (navigator.share) { navigator.share({ title: seller.name, url }).catch(() => {}); }
+    else { navigator.clipboard.writeText(url).then(() => { setShareCopied(true); setTimeout(() => setShareCopied(false), 2000); }); }
+  }, [seller.name]);
   const sellerListings = listings.filter((l) => l.seller.id === seller.id);
   const sellerReviews = reviews.filter((r) => r.sellerId === seller.id);
   const badge = badgeStyle[seller.badge];
@@ -122,8 +129,8 @@ export default function ProfilPage() {
                 <MessageCircle size={15} />
                 {isRTL ? "رسالة" : "Message"}
               </Link>
-              <button className="btn-outline py-2.5 px-4 text-sm">
-                <Share2 size={15} />
+              <button onClick={handleShare} className="btn-outline py-2.5 px-4 text-sm" title={isRTL ? "مشاركة" : "Partager"}>
+                {shareCopied ? <CheckCircle2 size={15} className="text-islamic-400" /> : <Share2 size={15} />}
               </button>
             </div>
           </div>

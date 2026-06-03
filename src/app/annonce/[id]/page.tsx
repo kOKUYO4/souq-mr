@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { recordView } from "@/components/home/RecentlyViewed";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -30,6 +30,7 @@ export default function AnnonceDetailPage() {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
   const [reported, setReported] = useState(false);
+  const touchStartX = useRef(0);
   const { success, warning } = useToast();
 
   const handleReport = async () => {
@@ -78,14 +79,20 @@ export default function AnnonceDetailPage() {
 
       {/* Lightbox image */}
       {lightboxOpen && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onClick={() => setLightboxOpen(false)}>
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          onClick={() => setLightboxOpen(false)}
+          onKeyDown={(e) => { if (e.key === "ArrowLeft") prevImg(); if (e.key === "ArrowRight") nextImg(); if (e.key === "Escape") setLightboxOpen(false); }}
+          tabIndex={0} autoFocus>
           <img src={listing.images[imgIdx]} alt="" className="max-h-screen max-w-screen-lg object-contain" />
-          <button onClick={(e) => { e.stopPropagation(); prevImg(); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20">
-            <ChevronLeft size={24} />
-          </button>
-          <button onClick={(e) => { e.stopPropagation(); nextImg(); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20">
-            <ChevronRight size={24} />
-          </button>
+          <span className="absolute top-4 right-4 text-white/50 text-sm">{imgIdx + 1} / {listing.images.length}</span>
+          {listing.images.length > 1 && <>
+            <button onClick={(e) => { e.stopPropagation(); prevImg(); }} disabled={imgIdx === 0} className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-20">
+              <ChevronLeft size={24} />
+            </button>
+            <button onClick={(e) => { e.stopPropagation(); nextImg(); }} disabled={imgIdx === listing.images.length - 1} className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-20">
+              <ChevronRight size={24} />
+            </button>
+          </>}
         </div>
       )}
 
@@ -106,7 +113,14 @@ export default function AnnonceDetailPage() {
           <div className="lg:col-span-2 space-y-5">
             {/* Galerie */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-card">
-              <div className="relative h-72 sm:h-[420px] bg-sand-100 cursor-zoom-in" onClick={() => setLightboxOpen(true)}>
+              <div className="relative h-72 sm:h-[420px] bg-sand-100 cursor-zoom-in"
+                onClick={() => setLightboxOpen(true)}
+                onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+                onTouchEnd={(e) => {
+                  const dx = e.changedTouches[0].clientX - touchStartX.current;
+                  if (Math.abs(dx) > 50) dx < 0 ? nextImg() : prevImg();
+                }}
+              >
                 <img
                   src={listing.images[imgIdx]}
                   alt={isRTL ? listing.titleAr : listing.title}
