@@ -1,6 +1,7 @@
 "use client";
 
 import { MapPin, Mic, CreditCard, Moon } from "lucide-react";
+import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function UniqueFeatures() {
@@ -94,29 +95,38 @@ export default function UniqueFeatures() {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((feat, i) => (
-            <div
-              key={i}
-              className={`relative p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover ${isRTL ? "text-right" : ""}`}
-              style={{ background: feat.bg, boxShadow: "0 2px 16px rgba(27,42,74,0.06)" }}
-            >
-              {/* Tag */}
-              <div className="absolute top-4 right-4">
-                <span className="text-xs font-semibold text-night-400/50">{feat.tag}</span>
-              </div>
-
-              {/* Icône */}
+          {features.map((feat, i) => {
+            const isVocal = feat.title === "Souk Vocal" || feat.title === "السوق الصوتي";
+            const card = (
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-white"
-                style={{ background: feat.color }}
+                key={i}
+                className={`relative p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover ${isRTL ? "text-right" : ""} ${isVocal ? "cursor-pointer ring-1 ring-night-400/10" : ""}`}
+                style={{ background: feat.bg, boxShadow: "0 2px 16px rgba(27,42,74,0.06)" }}
               >
-                {feat.icon}
-              </div>
+                {/* Tag */}
+                <div className="absolute top-4 right-4">
+                  <span className="text-xs font-semibold text-night-400/50">{feat.tag}</span>
+                </div>
 
-              <h3 className="font-bold text-night-500 mb-2">{feat.title}</h3>
-              <p className="text-sm text-night-400/70 leading-relaxed">{feat.desc}</p>
-            </div>
-          ))}
+                {/* Icône */}
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-white"
+                  style={{ background: feat.color }}
+                >
+                  {feat.icon}
+                </div>
+
+                <h3 className="font-bold text-night-500 mb-2">{feat.title}</h3>
+                <p className="text-sm text-night-400/70 leading-relaxed">{feat.desc}</p>
+                {isVocal && (
+                  <p className="text-xs text-sand-500 font-semibold mt-3">
+                    {isRTL ? "جرّب الآن ←" : "Essayer →"}
+                  </p>
+                )}
+              </div>
+            );
+            return isVocal ? <Link key={i} href="/souk-vocal">{card}</Link> : <div key={i}>{card}</div>;
+          })}
         </div>
       </div>
     </section>

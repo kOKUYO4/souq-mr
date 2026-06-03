@@ -85,7 +85,7 @@ function CompareBar() {
               </div>
             ))}
             <div className={`flex gap-2 pt-1 ${isRTL ? "flex-row-reverse" : ""}`}>
-              <Link href={`/annonces?compare=${compareList.map((l) => l.id).join(",")}`}
+              <Link href={`/comparer?ids=${compareList.map((l) => l.id).join(",")}`}
                 className="flex-1 py-2 rounded-xl text-xs font-bold text-night-500 flex items-center justify-center gap-1.5 transition-opacity hover:opacity-90"
                 style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
                 {isRTL ? "مقارنة" : "Comparer"}

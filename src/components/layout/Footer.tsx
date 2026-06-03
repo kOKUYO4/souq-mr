@@ -38,6 +38,8 @@ export default function Footer() {
       { href: "/annonces", label: isRTL ? "الإعلانات" : "Annonces" },
       { href: "/vendre", label: isRTL ? "أبيع" : "Vendre" },
       { href: "/pro", label: isRTL ? "للتجار" : "Espace Pro" },
+      { href: "/carte", label: isRTL ? "خريطة الإعلانات" : "Carte des annonces" },
+      { href: "/notifications", label: isRTL ? "الإشعارات" : "Notifications" },
     ],
     help: [
       { href: "/aide", label: t.footer.help },

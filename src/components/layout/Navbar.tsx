@@ -50,6 +50,7 @@ export default function Navbar() {
     { href: "/categories", label: t.nav.categories, hasDropdown: true },
     { href: "/annonces", label: isRTL ? "الإعلانات" : "Annonces" },
     { href: "/pro", label: isRTL ? "للتجار" : "Espace Pro" },
+    { href: "/carte", label: isRTL ? "🗺️ الخريطة" : "🗺️ Carte" },
   ];
 
   return (
