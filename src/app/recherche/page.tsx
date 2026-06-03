@@ -28,8 +28,13 @@ function SearchResults() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [sortBy, setSortBy] = useState("recent");
   const [condition, setCondition] = useState("all");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const activeFilterCount = [priceMin, priceMax].filter(Boolean).length;
 
   const runSearch = useCallback(async (query: string) => {
     if (!query.trim()) { setResults(allListings); setSuggestions([]); setPage(1); return; }
@@ -41,13 +46,15 @@ function SearchResults() {
         l.description.toLowerCase().includes(q2) || l.category.toLowerCase().includes(q2)
     );
     if (condition !== "all") filtered = filtered.filter((l) => l.condition === condition);
+    if (priceMin) filtered = filtered.filter((l) => l.price >= parseInt(priceMin));
+    if (priceMax) filtered = filtered.filter((l) => l.price <= parseInt(priceMax));
     if (sortBy === "price-asc") filtered = [...filtered].sort((a, b) => a.price - b.price);
     if (sortBy === "price-desc") filtered = [...filtered].sort((a, b) => b.price - a.price);
     setResults(filtered);
     setPage(1);
     setSuggestions(filtered.slice(0, 5).map((l) => (isRTL ? l.titleAr : l.title)));
     setLoading(false);
-  }, [condition, sortBy, isRTL]);
+  }, [condition, sortBy, priceMin, priceMax, isRTL]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -104,10 +111,16 @@ function SearchResults() {
             )}
           </div>
           <div className={`flex items-center gap-2 mt-3 overflow-x-auto ${isRTL ? "flex-row-reverse" : ""}`}>
-            <button onClick={() => {}}
-              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border border-sand-200 text-night-400 hover:border-sand-300 transition-all">
+            <button onClick={() => setFilterOpen(!filterOpen)}
+              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${filterOpen || activeFilterCount > 0 ? "border-sand-400 bg-sand-50 text-sand-500" : "border-sand-200 text-night-400 hover:border-sand-300"}`}>
               <SlidersHorizontal size={12} />
               {isRTL ? "فلتر" : "Filtres"}
+              {activeFilterCount > 0 && (
+                <span className="w-4 h-4 rounded-full text-white text-[10px] font-bold flex items-center justify-center"
+                  style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
+                  {activeFilterCount}
+                </span>
+              )}
             </button>
             {(["recent", "price-asc", "price-desc"] as const).map((s) => (
               <button key={s} onClick={() => setSortBy(s)}
@@ -123,6 +136,30 @@ function SearchResults() {
               </button>
             ))}
           </div>
+          {filterOpen && (
+            <div className={`flex flex-wrap items-end gap-4 mt-3 pt-3 border-t border-sand-100 ${isRTL ? "flex-row-reverse" : ""}`}>
+              <div>
+                <label className={`text-[11px] text-night-400/60 mb-1 block ${isRTL ? "text-right" : ""}`}>
+                  {isRTL ? "السعر الأدنى" : "Prix min (MRU)"}
+                </label>
+                <input type="number" value={priceMin} onChange={(e) => setPriceMin(e.target.value)}
+                  placeholder="0" className="input-field w-28 py-1.5 text-xs" />
+              </div>
+              <div>
+                <label className={`text-[11px] text-night-400/60 mb-1 block ${isRTL ? "text-right" : ""}`}>
+                  {isRTL ? "السعر الأقصى" : "Prix max (MRU)"}
+                </label>
+                <input type="number" value={priceMax} onChange={(e) => setPriceMax(e.target.value)}
+                  placeholder="∞" className="input-field w-28 py-1.5 text-xs" />
+              </div>
+              {(priceMin || priceMax) && (
+                <button onClick={() => { setPriceMin(""); setPriceMax(""); }}
+                  className="text-xs text-night-400/60 hover:text-sand-500 transition-colors underline">
+                  {isRTL ? "إعادة تعيين" : "Réinitialiser"}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
