@@ -235,7 +235,11 @@ export default function ListingCard({ listing, featured = false, variant = "grid
 
           {/* Vendeur + stats */}
           <div className={`flex items-center justify-between pt-3 border-t border-sand-100 ${isRTL ? "flex-row-reverse" : ""}`}>
-            <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+            <Link
+              href={listing.seller.badge === "pro" ? `/boutique/${listing.seller.id}` : `/profil/${listing.seller.id}`}
+              onClick={(e) => e.stopPropagation()}
+              className={`flex items-center gap-2 hover:opacity-80 transition-opacity ${isRTL ? "flex-row-reverse" : ""}`}
+            >
               <img
                 src={listing.seller.avatar}
                 alt={listing.seller.name}
@@ -252,7 +256,7 @@ export default function ListingCard({ listing, featured = false, variant = "grid
                   </div>
                 )}
               </div>
-            </div>
+            </Link>
 
             <div className={`flex items-center gap-3 text-xs text-night-400/50 ${isRTL ? "flex-row-reverse" : ""}`}>
               <span className="flex items-center gap-1">

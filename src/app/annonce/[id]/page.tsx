@@ -300,9 +300,18 @@ export default function AnnonceDetailPage() {
                     </div>
                     <p className="text-xs text-night-400/50 mt-0.5">{listing.seller.listings} {isRTL ? "إعلان" : "annonces"}</p>
                   </div>
-                  <Link href={`/profil/${listing.seller.id}`} className="btn-outline text-xs py-2 px-4 flex-shrink-0">
-                    {isRTL ? "الملف الشخصي" : "Voir profil"}
-                  </Link>
+                  <div className="flex gap-2 flex-shrink-0">
+                    {listing.seller.badge === "pro" && (
+                      <Link href={`/boutique/${listing.seller.id}`}
+                        className="text-xs py-2 px-3 rounded-xl font-semibold text-night-500"
+                        style={{ background: "linear-gradient(135deg, #C9A84C30, #B8922E20)", border: "1px solid #C9A84C50" }}>
+                        🏪 {isRTL ? "البوتيك" : "Boutique"}
+                      </Link>
+                    )}
+                    <Link href={`/profil/${listing.seller.id}`} className="btn-outline text-xs py-2 px-4">
+                      {isRTL ? "الملف الشخصي" : "Voir profil"}
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
