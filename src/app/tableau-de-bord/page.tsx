@@ -22,6 +22,8 @@ export default function TableauDeBordPage() {
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const [activeTab, setActiveTab] = useState<"overview" | "listings" | "messages" | "stats">("overview");
   const [listingFilter, setListingFilter] = useState<"all" | ListingStatus>("all");
+  const [boostTarget, setBoostTarget] = useState<string | null>(null);
+  const [boostedIds, setBoostedIds] = useState<Set<string>>(new Set(["l1"]));
 
   if (authLoading) {
     return (
@@ -55,7 +57,7 @@ export default function TableauDeBordPage() {
   const myListings = listings.slice(0, 6).map((l, i) => ({
     ...l,
     status: (["active", "active", "active", "paused", "sold", "active"][i]) as ListingStatus,
-    boosted: i === 0,
+    boosted: boostedIds.has(l.id),
     offers: [3, 0, 1, 0, 2, 0][i],
     messages: [7, 2, 4, 1, 0, 3][i],
   }));
@@ -342,8 +344,12 @@ export default function TableauDeBordPage() {
                           <button className="p-1.5 rounded-lg text-night-400/60 hover:text-night-500 hover:bg-sand-50 transition-all" title={l.status === "active" ? (isRTL ? "إيقاف" : "Mettre en pause") : (isRTL ? "تفعيل" : "Activer")}>
                             {l.status === "active" ? <Pause size={14} /> : <Play size={14} />}
                           </button>
-                          <button className="p-1.5 rounded-lg text-night-400/60 hover:text-sand-500 hover:bg-sand-50 transition-all" title="Boost">
-                            <Zap size={14} />
+                          <button
+                            onClick={() => !l.boosted && setBoostTarget(l.id)}
+                            className={`p-1.5 rounded-lg transition-all ${l.boosted ? "text-sand-500 bg-sand-50 cursor-default" : "text-night-400/60 hover:text-sand-500 hover:bg-sand-50"}`}
+                            title={l.boosted ? (isRTL ? "مُعزَّز" : "Boosté") : "Boost"}
+                          >
+                            <Zap size={14} className={l.boosted ? "fill-sand-400" : ""} />
                           </button>
                           <button className="p-1.5 rounded-lg text-night-400/60 hover:text-red-500 hover:bg-red-50 transition-all" title={isRTL ? "حذف" : "Supprimer"}>
                             <Trash2 size={14} />
@@ -445,6 +451,79 @@ export default function TableauDeBordPage() {
           </div>
         )}
       </div>
+
+      {/* ── BOOST MODAL ── */}
+      {boostTarget && (() => {
+        const listing = myListings.find((l) => l.id === boostTarget);
+        if (!listing) return null;
+        const boostPlans = [
+          { days: 3, price: 990, multiplier: 2, labelFr: "3 jours", labelAr: "3 أيام" },
+          { days: 7, price: 1990, multiplier: 3, labelFr: "7 jours", labelAr: "7 أيام", popular: true },
+          { days: 30, price: 5990, multiplier: 5, labelFr: "30 jours", labelAr: "30 يوماً" },
+        ];
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-night-800/80 backdrop-blur-sm" onClick={() => setBoostTarget(null)}>
+            <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-gold-lg" onClick={(e) => e.stopPropagation()}>
+              <div className={`flex items-start justify-between mb-5 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <div className={isRTL ? "text-right" : ""}>
+                  <h3 className="font-bold text-night-500 text-lg">
+                    {isRTL ? "⚡ عزّز إعلانك" : "⚡ Booster l'annonce"}
+                  </h3>
+                  <p className="text-xs text-night-400/60 mt-0.5 line-clamp-1 max-w-[200px]">
+                    {isRTL ? listing.titleAr : listing.title}
+                  </p>
+                </div>
+                <button onClick={() => setBoostTarget(null)} className="p-1 text-night-400/50 hover:text-night-500 transition-colors">
+                  <XCircle size={20} />
+                </button>
+              </div>
+
+              <div className="bg-sand-50 rounded-xl p-3 mb-5 flex items-center gap-3">
+                <img src={listing.images[0]} alt="" className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-night-400/60">{isRTL ? "الإعلان الحالي" : "Annonce sélectionnée"}</p>
+                  <p className="text-sm font-semibold text-night-500 line-clamp-1">{isRTL ? listing.titleAr : listing.title}</p>
+                  <p className="text-xs text-sand-500 font-bold">{listing.price.toLocaleString()} MRU</p>
+                </div>
+              </div>
+
+              <div className="space-y-3 mb-5">
+                {boostPlans.map((plan) => (
+                  <button
+                    key={plan.days}
+                    onClick={() => {
+                      setBoostedIds((prev) => new Set([...prev, boostTarget]));
+                      setBoostTarget(null);
+                    }}
+                    className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all hover:-translate-y-0.5 ${
+                      plan.popular ? "border-sand-400 bg-sand-50" : "border-sand-100 hover:border-sand-300"
+                    } ${isRTL ? "flex-row-reverse" : ""}`}
+                  >
+                    <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-night-500"
+                        style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
+                        <Zap size={18} />
+                      </div>
+                      <div className={isRTL ? "text-right" : ""}>
+                        <p className="font-bold text-night-500 text-sm">{isRTL ? plan.labelAr : plan.labelFr}</p>
+                        <p className="text-xs text-night-400/60">
+                          {isRTL ? `×${plan.multiplier} مشاهدات` : `×${plan.multiplier} vues`}
+                          {plan.popular && <span className="ml-2 text-sand-500 font-semibold">{isRTL ? "الأفضل" : "Populaire"}</span>}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="font-bold text-sand-500 text-sm">{plan.price.toLocaleString()} MRU</span>
+                  </button>
+                ))}
+              </div>
+
+              <p className="text-center text-xs text-night-400/50">
+                {isRTL ? "سيُفعَّل الدفع في الإصدار القادم" : "Paiement disponible prochainement"}
+              </p>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
