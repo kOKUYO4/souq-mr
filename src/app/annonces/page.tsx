@@ -34,6 +34,7 @@ function AnnoncesContent() {
       if (cod && !l.cod) return false;
       return true;
     });
+    if (sortBy === "recent") items = [...items].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     if (sortBy === "price-asc") items = [...items].sort((a, b) => a.price - b.price);
     if (sortBy === "price-desc") items = [...items].sort((a, b) => b.price - a.price);
     if (sortBy === "popular") items = [...items].sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
