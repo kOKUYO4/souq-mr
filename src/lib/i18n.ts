@@ -1,0 +1,181 @@
+/* Système de traduction bilingue FR/AR pour SOUQ.MR */
+
+export type Locale = "fr" | "ar";
+
+export const translations = {
+  fr: {
+    // Navigation
+    nav: {
+      home: "Accueil",
+      categories: "Catégories",
+      sell: "Vendre",
+      messages: "Messages",
+      profile: "Profil",
+      login: "Connexion",
+      register: "S'inscrire",
+      search: "Rechercher...",
+      language: "العربية",
+      darkMode: "Mode sombre",
+    },
+    // Hero
+    hero: {
+      badge: "🇲🇷 Le grand souk numérique de Mauritanie",
+      title: "Achetez, Vendez,",
+      titleHighlight: "Négociez",
+      titleEnd: "comme au souk",
+      subtitle:
+        "La première marketplace mauritanienne — des milliers d'annonces à Nouakchott, Nouadhibou et partout en Mauritanie.",
+      searchPlaceholder: "Que recherchez-vous ? Voiture, téléphone, vêtement...",
+      searchBtn: "Rechercher",
+      sellBtn: "Déposer une annonce",
+      stats: {
+        listings: "Annonces actives",
+        sellers: "Vendeurs vérifiés",
+        cities: "Villes couvertes",
+      },
+    },
+    // Catégories
+    categories: {
+      title: "Explorez par catégorie",
+      subtitle: "Trouvez ce que vous cherchez parmi nos catégories",
+      vehicles: "Véhicules",
+      phones: "Téléphones & Électronique",
+      fashion: "Mode & Vêtements",
+      beauty: "Beauté & Bien-être",
+      home: "Maison & Mobilier",
+      jobs: "Emploi & Services",
+      animals: "Animaux",
+      other: "Autres",
+      seeAll: "Voir tout",
+    },
+    // Annonces
+    listings: {
+      featured: "Annonces vedettes",
+      recent: "Annonces récentes",
+      new: "Nouveau",
+      used: "Occasion",
+      negotiate: "Prix négociable",
+      cod: "Paiement à la livraison",
+      verified: "Vendeur vérifié",
+      seeAll: "Voir toutes les annonces",
+      posted: "Publié il y a",
+      views: "vues",
+      contactSeller: "Contacter",
+      makeOffer: "Faire une offre",
+      addToFavorites: "Ajouter aux favoris",
+    },
+    // Négociation
+    haggle: {
+      title: "Négocie comme au Souk",
+      subtitle: "Propose ton prix, le vendeur répond",
+      askLastPrice: "Dernier prix ?",
+      makeOffer: "Faire une offre",
+      yourOffer: "Votre offre (MRU)",
+      send: "Envoyer l'offre",
+    },
+    // Footer
+    footer: {
+      tagline: "Le grand souk numérique de Mauritanie",
+      about: "À propos",
+      contact: "Contact",
+      help: "Aide",
+      privacy: "Confidentialité",
+      terms: "Conditions",
+      rights: "Tous droits réservés",
+      madeWith: "Fait avec ❤️ en Mauritanie",
+    },
+    // Trust
+    trust: {
+      title: "Vendeurs de confiance",
+      subtitle: "Des vendeurs vérifiés pour des transactions sécurisées",
+      verified: "Vérifié",
+      pro: "Marchand Pro",
+      regular: "Habitué du Souk",
+    },
+  },
+  ar: {
+    nav: {
+      home: "الرئيسية",
+      categories: "الأقسام",
+      sell: "أبيع",
+      messages: "الرسائل",
+      profile: "الملف الشخصي",
+      login: "تسجيل الدخول",
+      register: "إنشاء حساب",
+      search: "ابحث عن...",
+      language: "Français",
+      darkMode: "الوضع الليلي",
+    },
+    hero: {
+      badge: "🇲🇷 السوق الرقمي الكبير لموريتانيا",
+      title: "اشتري، بيع،",
+      titleHighlight: "فاوض",
+      titleEnd: "كما في السوق",
+      subtitle:
+        "أول سوق إلكتروني موريتاني — آلاف الإعلانات في نواكشوط ونواذيبو وكل أنحاء موريتانيا",
+      searchPlaceholder: "ماذا تبحث عن؟ سيارة، هاتف، ملابس...",
+      searchBtn: "بحث",
+      sellBtn: "أضف إعلانك",
+      stats: {
+        listings: "إعلان نشط",
+        sellers: "بائع موثق",
+        cities: "مدينة مغطاة",
+      },
+    },
+    categories: {
+      title: "تصفح حسب القسم",
+      subtitle: "ابحث عما تريد في أقسامنا",
+      vehicles: "السيارات والمركبات",
+      phones: "الهواتف والإلكترونيات",
+      fashion: "الأزياء والملابس",
+      beauty: "الجمال والعناية",
+      home: "المنزل والأثاث",
+      jobs: "العمل والخدمات",
+      animals: "الحيوانات",
+      other: "أخرى",
+      seeAll: "عرض الكل",
+    },
+    listings: {
+      featured: "إعلانات مميزة",
+      recent: "أحدث الإعلانات",
+      new: "جديد",
+      used: "مستعمل",
+      negotiate: "السعر قابل للتفاوض",
+      cod: "الدفع عند الاستلام",
+      verified: "بائع موثق",
+      seeAll: "عرض جميع الإعلانات",
+      posted: "نشر منذ",
+      views: "مشاهدة",
+      contactSeller: "تواصل",
+      makeOffer: "اعرض سعرك",
+      addToFavorites: "أضف للمفضلة",
+    },
+    haggle: {
+      title: "فاوض كما في السوق",
+      subtitle: "اعرض سعرك والبائع سيرد",
+      askLastPrice: "آخر سعر؟",
+      makeOffer: "اعرض سعرك",
+      yourOffer: "عرضك (أوقية)",
+      send: "أرسل العرض",
+    },
+    footer: {
+      tagline: "السوق الرقمي الكبير لموريتانيا",
+      about: "من نحن",
+      contact: "اتصل بنا",
+      help: "المساعدة",
+      privacy: "الخصوصية",
+      terms: "الشروط",
+      rights: "جميع الحقوق محفوظة",
+      madeWith: "صُنع بـ ❤️ في موريتانيا",
+    },
+    trust: {
+      title: "بائعون موثوقون",
+      subtitle: "بائعون موثقون لمعاملات آمنة",
+      verified: "موثق",
+      pro: "تاجر محترف",
+      regular: "زبون دائم",
+    },
+  },
+} as const;
+
+export type TranslationKey = keyof typeof translations.fr;

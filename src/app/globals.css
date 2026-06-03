@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #C9A84C;
+  --night: #1B2A4A;
+  --cream: #FAF6EF;
+  --islamic: #2D6A4F;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply bg-cream text-night-500 font-body antialiased; }
+  [dir="rtl"] { font-family: 'Noto Sans Arabic', sans-serif; }
+  [dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+}
+
+@layer components {
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-night-500 transition-all duration-200 cursor-pointer;
+    background: linear-gradient(135deg, #C9A84C 0%, #E8C96A 50%, #B8922E 100%);
+    box-shadow: 0 4px 24px rgba(201, 168, 76, 0.35);
+  }
+  .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(201, 168, 76, 0.45); }
+  .btn-night {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-night-500 transition-all duration-200 cursor-pointer;
+  }
+  .btn-night:hover { @apply bg-night-600; transform: translateY(-1px); }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold border-2 border-sand-400 text-sand-500 transition-all duration-200 cursor-pointer bg-transparent;
+  }
+  .btn-outline:hover { @apply bg-sand-400 text-night-500; }
+  .listing-card {
+    @apply bg-white rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer;
+    box-shadow: 0 2px 16px rgba(27, 42, 74, 0.10);
+  }
+  .listing-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(27, 42, 74, 0.18); }
+  .badge { @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold; }
+  .badge-gold { @apply badge bg-sand-100 text-sand-600; }
+  .badge-green { @apply badge bg-islamic-50 text-islamic-400; }
+  .badge-night { @apply badge bg-night-50 text-night-500; }
+  .badge-new { @apply badge text-white; background: linear-gradient(135deg, #C9A84C, #B8922E); }
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border border-sand-200 bg-white text-night-500 placeholder-sand-300 outline-none transition-all duration-200;
+  }
+  .input-field:focus { @apply border-sand-400; box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15); }
+  .islamic-pattern {
+    background-image:
+      repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(201,168,76,0.04) 20px, rgba(201,168,76,0.04) 21px),
+      repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(201,168,76,0.04) 20px, rgba(201,168,76,0.04) 21px);
+  }
+  .section-title { @apply text-2xl md:text-3xl font-display font-bold text-night-500; }
+  .price-tag { @apply font-bold text-sand-500; font-variant-numeric: tabular-nums; }
+}
+
+@layer utilities {
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #C9A84C 0%, #E8C96A 50%, #B8922E 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { @apply bg-sand-50 rounded-full; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { @apply bg-sand-300 rounded-full; }
+}
