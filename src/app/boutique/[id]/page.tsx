@@ -78,7 +78,7 @@ export default function BoutiquePage() {
                   </div>
                   <div className={`flex items-center gap-1 text-xs text-night-400/60 ${isRTL ? "flex-row-reverse" : ""}`}>
                     <MapPin size={11} />
-                    {seller.location}
+                    {isRTL ? "نواكشوط، موريتانيا" : "Nouakchott, Mauritanie"}
                   </div>
                 </div>
               </div>

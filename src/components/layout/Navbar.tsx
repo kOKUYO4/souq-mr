@@ -53,6 +53,7 @@ export default function Navbar() {
     { href: "/carte", label: isRTL ? "🗺️ الخريطة" : "🗺️ Carte" },
     { href: "/souk-vocal", label: isRTL ? "🎙️ صوقي" : "🎙️ Souk Vocal" },
     { href: "/bazaar-live", label: isRTL ? "🔴 مباشر" : "🔴 Live" },
+    { href: "/ramadan", label: isRTL ? "🌙 رمضان" : "🌙 Ramadan" },
   ];
 
   return (

@@ -21,6 +21,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/carte`, priority: 0.6, changeFrequency: "weekly" as const },
     { url: `${BASE}/escrow`, priority: 0.6, changeFrequency: "monthly" as const },
     { url: `${BASE}/souk-vocal`, priority: 0.5, changeFrequency: "monthly" as const },
+    { url: `${BASE}/ramadan`, priority: 0.6, changeFrequency: "daily" as const },
+    { url: `${BASE}/portefeuille`, priority: 0.5, changeFrequency: "daily" as const },
+    { url: `${BASE}/alertes`, priority: 0.5, changeFrequency: "daily" as const },
+    { url: `${BASE}/parrainage`, priority: 0.6, changeFrequency: "monthly" as const },
+    { url: `${BASE}/tontine`, priority: 0.5, changeFrequency: "monthly" as const },
+    { url: `${BASE}/bazaar-live`, priority: 0.7, changeFrequency: "hourly" as const },
+    { url: `${BASE}/suivi`, priority: 0.5, changeFrequency: "daily" as const },
+    { url: `${BASE}/livraison`, priority: 0.6, changeFrequency: "monthly" as const },
+    { url: `${BASE}/paiement`, priority: 0.6, changeFrequency: "monthly" as const },
   ];
 
   const categoryPages = categories.map((cat) => ({
