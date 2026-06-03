@@ -34,6 +34,6 @@ export async function POST(req: NextRequest) {
 
   return ok({
     offer: { id: `o${Date.now()}`, listingId, amount, message, createdAt: new Date().toISOString() },
-    sellerResponse,
+    sellerResponse: { ...sellerResponse, floorPrice: Math.round(listing.price * floorPct) },
   });
 }

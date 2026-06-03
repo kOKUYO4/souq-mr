@@ -28,6 +28,10 @@ export default function HagglingModal({ listing, onClose }: HagglingModalProps) 
     e.preventDefault();
     const amount = parseInt(offer);
     if (!amount || amount <= 0) return;
+    if (!token) {
+      toastError(isRTL ? "يجب تسجيل الدخول لإرسال عرض" : "Connectez-vous pour faire une offre");
+      return;
+    }
     setStep("pending");
     try {
       const res = await fetch("/api/offers", {
@@ -37,7 +41,8 @@ export default function HagglingModal({ listing, onClose }: HagglingModalProps) 
       });
       const json = await res.json();
       if (json.success) {
-        const { status, counterOffer: co, floorPrice: fp } = json.data;
+        const sr = json.data?.sellerResponse ?? json.data ?? {};
+        const { status, counterOffer: co, floorPrice: fp } = sr;
         setServerCounter(co || 0);
         setFloorPrice(fp || 0);
         setStep(status === "accepted" ? "accepted" : status === "counter" ? "counter" : "declined");
