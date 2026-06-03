@@ -176,7 +176,7 @@ function AnnoncesContent() {
             <p className="text-night-400/60 text-sm mb-6">
               {isRTL ? "جرب تعديل الفلاتر" : "Essayez de modifier vos filtres"}
             </p>
-            <button onClick={() => { setSelectedCat("all"); setCondition("all"); setPriceMin(""); setPriceMax(""); }}
+            <button onClick={() => { setSelectedCat("all"); setCondition("all"); setPriceMin(""); setPriceMax(""); setNegotiable(false); setCod(false); setPage(1); }}
               className="btn-gold text-sm py-2.5 px-5">
               {isRTL ? "إعادة تعيين الفلاتر" : "Réinitialiser les filtres"}
             </button>
