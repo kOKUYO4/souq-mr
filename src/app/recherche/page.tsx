@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
-import { Search, SlidersHorizontal, X, TrendingUp } from "lucide-react";
+import { Search, SlidersHorizontal, X, TrendingUp, Mic } from "lucide-react";
 import ListingCard from "@/components/listings/ListingCard";
 import { ListingsGridSkeleton } from "@/components/ui/Skeleton";
 import { listings as allListings } from "@/data/mockData";
@@ -27,6 +27,7 @@ function SearchResults() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [sortBy, setSortBy] = useState("recent");
+  const [isListening, setIsListening] = useState(false);
   const [condition, setCondition] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
   const [priceMin, setPriceMin] = useState("");
@@ -93,10 +94,25 @@ function SearchResults() {
               />
               {q && (
                 <button onClick={() => { setQ(""); setResults(allListings); }}
-                  className={`p-2 ${isRTL ? "ml-2" : "mr-2"} text-sand-300 hover:text-night-400 transition-colors`}>
+                  className={`p-2 text-sand-300 hover:text-night-400 transition-colors`}>
                   <X size={16} />
                 </button>
               )}
+              <button
+                onClick={() => {
+                  if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) return;
+                  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+                  const recog = new SpeechRecognition();
+                  recog.lang = isRTL ? "ar-MR" : "fr-MR";
+                  recog.onstart = () => setIsListening(true);
+                  recog.onend = () => setIsListening(false);
+                  recog.onresult = (e: any) => { const text = e.results[0][0].transcript; setQ(text); runSearch(text); };
+                  recog.start();
+                }}
+                className={`p-2 ${isRTL ? "ml-3" : "mr-3"} transition-colors ${isListening ? "text-red-500 animate-pulse" : "text-sand-300 hover:text-night-400"}`}
+                title={isRTL ? "البحث بالصوت" : "Recherche vocale"}>
+                <Mic size={16} />
+              </button>
             </div>
             {showSuggestions && q.length >= 2 && suggestions.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-card-hover border border-sand-100 overflow-hidden z-50">
