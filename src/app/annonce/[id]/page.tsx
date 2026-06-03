@@ -6,7 +6,7 @@ import Link from "next/link";
 import {
   Heart, Share2, MapPin, Eye, Clock, CheckCircle2, Phone,
   MessageCircle, Star, ChevronLeft, ChevronRight, Shield, Truck,
-  Flag, ZoomIn, Tag,
+  Flag, ZoomIn,
 } from "lucide-react";
 import { listings, reviews, formatPrice, timeAgo } from "@/data/mockData";
 import Badge from "@/components/ui/Badge";

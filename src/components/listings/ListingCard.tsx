@@ -134,6 +134,11 @@ export default function ListingCard({ listing, featured = false, variant = "grid
                 ⭐ {isRTL ? "مميز" : "Vedette"}
               </span>
             )}
+            {listing.originalPrice && listing.originalPrice > listing.price && (
+              <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full self-start">
+                -{Math.round(((listing.originalPrice - listing.price) / listing.originalPrice) * 100)}%
+              </span>
+            )}
           </div>
 
           {/* Bouton favori */}
