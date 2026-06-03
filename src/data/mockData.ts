@@ -790,6 +790,7 @@ export const listings: Listing[] = [
     title: "Oud Premium — Bois de Calambac du Cambodge",
     titleAr: "عود فاخر — خشب العود الكمبودي",
     price: 48000,
+    originalPrice: 65000,
     category: "beauty",
     subcategory: "perfume",
     location: "Capitale, Nouakchott",

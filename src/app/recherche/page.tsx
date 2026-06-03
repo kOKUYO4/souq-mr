@@ -18,10 +18,12 @@ function SearchResults() {
   const router = useRouter();
   const { isRTL, locale } = useLanguage();
 
+  const PAGE_SIZE = 12;
   const [q, setQ] = useState(searchParams.get("q") || "");
   const [debouncedQ, setDebouncedQ] = useState(q);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(allListings);
+  const [page, setPage] = useState(1);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [sortBy, setSortBy] = useState("recent");
@@ -30,7 +32,7 @@ function SearchResults() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const runSearch = useCallback(async (query: string) => {
-    if (!query.trim()) { setResults(allListings); setSuggestions([]); return; }
+    if (!query.trim()) { setResults(allListings); setSuggestions([]); setPage(1); return; }
     setLoading(true);
     await new Promise((r) => setTimeout(r, 280));
     const q2 = query.toLowerCase();
@@ -42,6 +44,7 @@ function SearchResults() {
     if (sortBy === "price-asc") filtered = [...filtered].sort((a, b) => a.price - b.price);
     if (sortBy === "price-desc") filtered = [...filtered].sort((a, b) => b.price - a.price);
     setResults(filtered);
+    setPage(1);
     setSuggestions(filtered.slice(0, 5).map((l) => (isRTL ? l.titleAr : l.title)));
     setLoading(false);
   }, [condition, sortBy, isRTL]);
@@ -151,9 +154,19 @@ function SearchResults() {
         {loading ? (
           <ListingsGridSkeleton count={8} />
         ) : results.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {results.map((l) => <ListingCard key={l.id} listing={l} />)}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {results.slice(0, page * PAGE_SIZE).map((l) => <ListingCard key={l.id} listing={l} />)}
+            </div>
+            {page * PAGE_SIZE < results.length && (
+              <div className="text-center mt-8">
+                <button onClick={() => setPage((p) => p + 1)}
+                  className="btn-night px-8 py-3">
+                  {isRTL ? "عرض المزيد" : "Charger plus"}
+                </button>
+              </div>
+            )}
+          </>
         ) : debouncedQ ? (
           <div className="text-center py-24">
             <div className="text-6xl mb-4">🔍</div>
@@ -169,7 +182,7 @@ function SearchResults() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {allListings.map((l) => <ListingCard key={l.id} listing={l} />)}
+            {allListings.slice(0, PAGE_SIZE).map((l) => <ListingCard key={l.id} listing={l} />)}
           </div>
         )}
       </div>

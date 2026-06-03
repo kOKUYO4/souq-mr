@@ -202,9 +202,9 @@ export default function CategoryPage() {
                 <div className={
                   view === "grid"
                     ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
-                    : "flex flex-col gap-4"
+                    : "flex flex-col gap-3"
                 }>
-                  {paginated.map((l) => <ListingCard key={l.id} listing={l} />)}
+                  {paginated.map((l) => <ListingCard key={l.id} listing={l} variant={view} />)}
                 </div>
 
                 {/* Charger plus */}

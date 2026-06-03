@@ -9,8 +9,8 @@ import { useLanguage } from "@/context/LanguageContext";
 export default function FeaturedListings() {
   const { t, isRTL } = useLanguage();
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
-  const featured = listings.filter((l) => l.featured);
-  const recent = listings.filter((l) => !l.featured);
+  const featured = listings.filter((l) => l.featured).slice(0, 4);
+  const recent = listings.filter((l) => !l.featured).slice(0, 8);
 
   return (
     <section className="py-16 bg-white">

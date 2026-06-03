@@ -12,9 +12,10 @@ import { useToast } from "@/context/ToastContext";
 interface ListingCardProps {
   listing: Listing;
   featured?: boolean;
+  variant?: "grid" | "list";
 }
 
-export default function ListingCard({ listing, featured = false }: ListingCardProps) {
+export default function ListingCard({ listing, featured = false, variant = "grid" }: ListingCardProps) {
   const { t, locale, isRTL } = useLanguage();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { success } = useToast();
@@ -25,6 +26,88 @@ export default function ListingCard({ listing, featured = false }: ListingCardPr
     verified: t.trust.verified,
     regular: t.trust.regular,
   }[listing.seller.badge];
+
+  const toggleFav = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toggleFavorite(listing.id);
+    success(isFavorite(listing.id)
+      ? (isRTL ? "تمت الإزالة من المفضلة" : "Retiré des favoris")
+      : (isRTL ? "تمت الإضافة إلى المفضلة ❤️" : "Ajouté aux favoris ❤️"));
+  };
+
+  if (variant === "list") {
+    return (
+      <div className="listing-card group">
+        <Link href={`/annonce/${listing.id}`} className={`flex min-h-[120px] ${isRTL ? "flex-row-reverse" : ""}`}>
+          {/* Image */}
+          <div className="relative flex-shrink-0 w-40 sm:w-52 overflow-hidden bg-sand-100">
+            <img
+              src={listing.images[0]}
+              alt={isRTL ? listing.titleAr : listing.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            />
+            <div className={`absolute top-2 ${isRTL ? "right-2" : "left-2"} flex flex-col gap-1`}>
+              <Badge type={listing.condition === "new" ? "new" : "used"} />
+            </div>
+            <button onClick={toggleFav}
+              className={`absolute top-2 ${isRTL ? "left-2" : "right-2"} w-7 h-7 rounded-full bg-white/90 backdrop-blur flex items-center justify-center transition-all hover:scale-110`}>
+              <Heart size={14} className={liked ? "fill-red-500 text-red-500" : "text-night-400"} />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className={`flex-1 p-4 flex flex-col justify-between min-w-0 ${isRTL ? "text-right" : ""}`}>
+            <div>
+              <div className={`flex items-start justify-between gap-2 mb-1 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <h3 className={`text-sm font-semibold text-night-500 line-clamp-2 group-hover:text-sand-500 transition-colors ${isRTL ? "font-arabic" : ""}`}>
+                  {isRTL ? listing.titleAr : listing.title}
+                </h3>
+                <div className="flex-shrink-0 text-right">
+                  <p className="font-bold text-sand-500 text-base whitespace-nowrap">{formatPrice(listing.price)} <span className="text-xs font-normal text-night-400/60">MRU</span></p>
+                  {listing.originalPrice && (
+                    <p className="text-xs text-night-400/40 line-through">{formatPrice(listing.originalPrice)}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className={`flex flex-wrap gap-1 mb-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                {listing.negotiable && <Badge type="negotiate" />}
+                {listing.cod && <Badge type="cod" />}
+                {listing.featured && (
+                  <span className="badge text-[10px] text-white px-1.5 py-0.5 rounded-full font-semibold"
+                    style={{ background: "linear-gradient(135deg, #1B2A4A, #364E8F)" }}>
+                    ⭐ {isRTL ? "مميز" : "Vedette"}
+                  </span>
+                )}
+              </div>
+
+              <p className={`text-xs text-night-400/60 line-clamp-2 mb-2 ${isRTL ? "font-arabic" : ""}`}>
+                {isRTL ? listing.descriptionAr : listing.description}
+              </p>
+            </div>
+
+            <div className={`flex items-center justify-between flex-wrap gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+              <div className={`flex items-center gap-3 text-xs text-night-400/60 flex-wrap ${isRTL ? "flex-row-reverse" : ""}`}>
+                <span className={`flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <MapPin size={11} />{isRTL ? listing.locationAr : listing.location}
+                </span>
+                <span className={`flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <Eye size={11} />{listing.views}
+                </span>
+                <span>{timeAgo(listing.createdAt, locale)}</span>
+              </div>
+              <div className={`flex items-center gap-1.5 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <img src={listing.seller.avatar} alt="" className="w-6 h-6 rounded-full" />
+                <span className="text-xs font-medium text-night-500">{isRTL ? listing.seller.nameAr : listing.seller.name}</span>
+                {listing.seller.badge !== "regular" && <CheckCircle2 size={11} className="text-islamic-400" />}
+              </div>
+            </div>
+          </div>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="listing-card group">
@@ -51,7 +134,7 @@ export default function ListingCard({ listing, featured = false }: ListingCardPr
 
           {/* Bouton favori */}
           <button
-            onClick={(e) => { e.preventDefault(); toggleFavorite(listing.id); success(liked ? (isRTL ? "تمت الإزالة من المفضلة" : "Retiré des favoris") : (isRTL ? "تمت الإضافة إلى المفضلة ❤️" : "Ajouté aux favoris ❤️")); }}
+            onClick={toggleFav}
             className={`absolute top-3 ${isRTL ? "left-3" : "right-3"} w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center transition-all hover:scale-110`}
           >
             <Heart
