@@ -12,6 +12,7 @@ export default function Footer() {
   const links = {
     marketplace: [
       { href: "/", label: isRTL ? "الرئيسية" : "Accueil" },
+      { href: "/a-propos", label: isRTL ? "من نحن" : "À propos" },
       { href: "/categories", label: isRTL ? "الأقسام" : "Catégories" },
       { href: "/annonces", label: isRTL ? "الإعلانات" : "Annonces" },
       { href: "/vendre", label: isRTL ? "أبيع" : "Vendre" },
