@@ -61,6 +61,7 @@ export default function Footer() {
       { href: "/application", label: isRTL ? "📱 تحميل التطبيق" : "📱 Télécharger l'app" },
       { href: "/promotions", label: isRTL ? "🔥 التخفيضات" : "🔥 Promotions" },
       { href: "/offres", label: isRTL ? "🤝 عروضي" : "🤝 Mes offres" },
+      { href: "/recrutement", label: isRTL ? "وظائف" : "Recrutement" },
       { href: "/contact", label: t.footer.contact },
       { href: "/conditions", label: t.footer.terms },
       { href: "/confidentialite", label: t.footer.privacy },
