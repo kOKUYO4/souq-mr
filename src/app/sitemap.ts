@@ -30,6 +30,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/suivi`, priority: 0.5, changeFrequency: "daily" as const },
     { url: `${BASE}/livraison`, priority: 0.6, changeFrequency: "monthly" as const },
     { url: `${BASE}/paiement`, priority: 0.6, changeFrequency: "monthly" as const },
+    { url: `${BASE}/verification`, priority: 0.5, changeFrequency: "monthly" as const },
+    { url: `${BASE}/classement`, priority: 0.6, changeFrequency: "weekly" as const },
   ];
 
   const categoryPages = categories.map((cat) => ({

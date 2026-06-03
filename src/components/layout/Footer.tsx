@@ -53,6 +53,8 @@ export default function Footer() {
       { href: "/ramadan", label: isRTL ? "🌙 وضع رمضان" : "🌙 Mode Ramadan" },
       { href: "/alertes", label: isRTL ? "تنبيهات الأسعار" : "Alertes prix" },
       { href: "/portefeuille", label: isRTL ? "المحفظة" : "Portefeuille" },
+      { href: "/classement", label: isRTL ? "أفضل البائعين" : "Classement" },
+      { href: "/verification", label: isRTL ? "التحقق من الهوية" : "Vérification" },
       { href: "/contact", label: t.footer.contact },
       { href: "/conditions", label: t.footer.terms },
       { href: "/confidentialite", label: t.footer.privacy },
