@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Heart, MapPin, Eye, MessageCircle, CheckCircle2 } from "lucide-react";
+import { Heart, MapPin, Eye, MessageCircle, CheckCircle2, Share2 } from "lucide-react";
 import type { Listing } from "@/data/mockData";
 import { formatPrice, timeAgo } from "@/data/mockData";
 import Badge from "@/components/ui/Badge";
@@ -30,12 +30,21 @@ export default function ListingCard({ listing, featured = false, variant = "grid
     regular: t.trust.regular,
   }[listing.seller.badge];
 
+  const [shareCopied, setShareCopied] = useState(false);
+
   const toggleFav = (e: React.MouseEvent) => {
     e.preventDefault();
     toggleFavorite(listing.id);
     success(isFavorite(listing.id)
       ? (isRTL ? "تمت الإزالة من المفضلة" : "Retiré des favoris")
       : (isRTL ? "تمت الإضافة إلى المفضلة ❤️" : "Ajouté aux favoris ❤️"));
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const url = `${typeof window !== "undefined" ? window.location.origin : ""}/annonce/${listing.id}`;
+    if (navigator.share) { navigator.share({ title: isRTL ? listing.titleAr : listing.title, url }).catch(() => {}); }
+    else { navigator.clipboard.writeText(url).then(() => { setShareCopied(true); setTimeout(() => setShareCopied(false), 2000); }); }
   };
 
   if (variant === "list") {
@@ -153,16 +162,22 @@ export default function ListingCard({ listing, featured = false, variant = "grid
             )}
           </div>
 
-          {/* Bouton favori */}
-          <button
-            onClick={toggleFav}
-            className={`absolute top-3 ${isRTL ? "left-3" : "right-3"} w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center transition-all hover:scale-110`}
-          >
-            <Heart
-              size={16}
-              className={liked ? "fill-red-500 text-red-500" : "text-night-400"}
-            />
-          </button>
+          {/* Boutons favori + share */}
+          <div className={`absolute top-3 ${isRTL ? "left-3" : "right-3"} flex flex-col gap-1.5`}>
+            <button
+              onClick={toggleFav}
+              className="w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center transition-all hover:scale-110"
+            >
+              <Heart size={16} className={liked ? "fill-red-500 text-red-500" : "text-night-400"} />
+            </button>
+            <button
+              onClick={handleShare}
+              className="w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center transition-all hover:scale-110 opacity-0 group-hover:opacity-100"
+              title={isRTL ? "مشاركة" : "Partager"}
+            >
+              <Share2 size={14} className={shareCopied ? "text-islamic-400" : "text-night-400"} />
+            </button>
+          </div>
 
           {/* Prix — superposé en bas de l'image */}
           <div className={`absolute bottom-3 ${isRTL ? "right-3" : "left-3"}`}>

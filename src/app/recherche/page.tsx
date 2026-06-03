@@ -26,6 +26,10 @@ function SearchResults() {
   const [page, setPage] = useState(1);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(localStorage.getItem("souq-recent-searches") || "[]"); } catch { return []; }
+  });
   const [sortBy, setSortBy] = useState("recent");
   const [isListening, setIsListening] = useState(false);
   const [condition, setCondition] = useState("all");
@@ -68,8 +72,15 @@ function SearchResults() {
 
   useEffect(() => { runSearch(debouncedQ); }, [debouncedQ, runSearch]);
 
+  const saveSearch = (term: string) => {
+    if (!term.trim()) return;
+    const updated = [term, ...recentSearches.filter((s) => s !== term)].slice(0, 6);
+    setRecentSearches(updated);
+    localStorage.setItem("souq-recent-searches", JSON.stringify(updated));
+  };
+
   const handleKey = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") { setShowSuggestions(false); runSearch(q); }
+    if (e.key === "Enter") { setShowSuggestions(false); runSearch(q); saveSearch(q); }
     if (e.key === "Escape") { setShowSuggestions(false); inputRef.current?.blur(); }
   };
 
@@ -117,6 +128,23 @@ function SearchResults() {
             {showSuggestions && q.length >= 2 && suggestions.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-card-hover border border-sand-100 overflow-hidden z-50">
                 {suggestions.map((s, i) => (
+                  <button key={i} onMouseDown={() => { setQ(s); setShowSuggestions(false); runSearch(s); saveSearch(s); }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-sand-50 transition-colors text-sm text-night-500 ${isRTL ? "flex-row-reverse text-right" : ""}`}>
+                    <Search size={13} className="text-sand-300 flex-shrink-0" />
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
+            {showSuggestions && q.length === 0 && recentSearches.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-card-hover border border-sand-100 overflow-hidden z-50">
+                <div className={`flex items-center justify-between px-4 py-2 border-b border-sand-50 ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <span className="text-xs font-semibold text-night-400/50 uppercase tracking-wider">{isRTL ? "البحث الأخير" : "Récents"}</span>
+                  <button onMouseDown={() => { setRecentSearches([]); localStorage.removeItem("souq-recent-searches"); }} className="text-xs text-sand-400 hover:text-sand-500">
+                    {isRTL ? "مسح" : "Effacer"}
+                  </button>
+                </div>
+                {recentSearches.map((s, i) => (
                   <button key={i} onMouseDown={() => { setQ(s); setShowSuggestions(false); runSearch(s); }}
                     className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-sand-50 transition-colors text-sm text-night-500 ${isRTL ? "flex-row-reverse text-right" : ""}`}>
                     <Search size={13} className="text-sand-300 flex-shrink-0" />

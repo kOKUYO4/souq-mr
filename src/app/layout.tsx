@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import MobileNav from "@/components/layout/MobileNav";
 import RamadanBanner from "@/components/home/RamadanBanner";
 import ScrollToTop from "@/components/ui/ScrollToTop";
+import PWAInstallBanner from "@/components/ui/PWAInstallBanner";
 
 export const viewport: Viewport = {
   themeColor: "#C9A84C",
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Footer />
                 <MobileNav />
                 <ScrollToTop />
+                <PWAInstallBanner />
               </ToastProvider>
             </FavoritesProvider>
           </LanguageProvider>
