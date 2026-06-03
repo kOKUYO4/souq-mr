@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import RamadanBanner from "@/components/home/RamadanBanner";
 
 export const viewport: Viewport = {
   themeColor: "#C9A84C",
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <FavoritesProvider>
               <ToastProvider>
                 <Navbar />
+                <RamadanBanner />
                 <main className="pt-16">{children}</main>
                 <Footer />
               </ToastProvider>

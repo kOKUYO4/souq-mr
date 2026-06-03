@@ -16,6 +16,7 @@ import ReviewForm from "@/components/social/ReviewForm";
 import StarRating from "@/components/social/StarRating";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { useToast } from "@/context/ToastContext";
 
 export default function AnnonceDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +28,23 @@ export default function AnnonceDetailPage() {
   const [hagglingOpen, setHagglingOpen] = useState(false);
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [reported, setReported] = useState(false);
+  const { success, warning } = useToast();
+
+  const handleReport = async () => {
+    if (reported) return;
+    try {
+      await fetch("/api/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listingId: listing.id, reason: "other" }),
+      });
+      setReported(true);
+      warning(isRTL ? "تم الإبلاغ — سيراجع فريقنا خلال ساعة" : "Signalement envoyé — notre équipe examine sous 1h");
+    } catch {
+      warning(isRTL ? "تعذر الإرسال" : "Impossible d'envoyer le signalement");
+    }
+  };
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -102,7 +120,7 @@ export default function AnnonceDetailPage() {
                 {/* Actions overlay */}
                 <div className={`absolute top-4 ${isRTL ? "left-4" : "right-4"} flex gap-2`}>
                   <button
-                    onClick={(e) => { e.stopPropagation(); toggleFavorite(listing.id); }}
+                    onClick={(e) => { e.stopPropagation(); toggleFavorite(listing.id); success(isFavorite(listing.id) ? (isRTL ? "تمت الإزالة من المفضلة" : "Retiré des favoris") : (isRTL ? "تمت الإضافة إلى المفضلة ❤️" : "Ajouté aux favoris ❤️")); }}
                     className="w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow transition-all hover:scale-110"
                   >
                     <Heart size={16} className={liked ? "fill-red-500 text-red-500" : "text-night-400"} />
@@ -266,6 +284,8 @@ export default function AnnonceDetailPage() {
                     </p>
                   )}
                   <ReviewForm
+                    sellerId={listing.seller.id}
+                    listingId={listing.id}
                     sellerName={listing.seller.name}
                     sellerNameAr={listing.seller.nameAr}
                   />
@@ -295,9 +315,10 @@ export default function AnnonceDetailPage() {
 
             {/* Signalement */}
             <div className={`text-center ${isRTL ? "" : ""}`}>
-              <button className="inline-flex items-center gap-1.5 text-xs text-night-400/40 hover:text-red-400 transition-colors">
+              <button onClick={handleReport} disabled={reported}
+                className={`inline-flex items-center gap-1.5 text-xs transition-colors ${reported ? "text-red-400 cursor-default" : "text-night-400/40 hover:text-red-400"}`}>
                 <Flag size={11} />
-                {isRTL ? "الإبلاغ عن هذا الإعلان" : "Signaler cette annonce"}
+                {reported ? (isRTL ? "تم الإبلاغ ✓" : "Signalé ✓") : (isRTL ? "الإبلاغ عن هذا الإعلان" : "Signaler cette annonce")}
               </button>
             </div>
           </div>

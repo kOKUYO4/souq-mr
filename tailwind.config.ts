@@ -65,6 +65,7 @@ const config: Config = {
         "gold-lg": "0 8px 40px rgba(201, 168, 76, 0.35)",
         card: "0 2px 16px rgba(27, 42, 74, 0.10)",
         "card-hover": "0 8px 32px rgba(27, 42, 74, 0.18)",
+        night: "0 4px 32px rgba(11, 20, 38, 0.40)",
       },
       animation: {
         "fade-up": "fadeUp 0.6s ease-out forwards",
