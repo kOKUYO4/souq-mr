@@ -25,5 +25,5 @@ export async function POST(req: NextRequest) {
   const existing = reports.get(body.listingId) || [];
   reports.set(body.listingId, [...existing, report]);
 
-  return ok({ message: "Signalement enregistré. Notre équipe examinera ce contenu sous 1h.", reportId: report.id }, 201);
+  return ok({ message: "Signalement enregistré. Notre équipe examinera ce contenu sous 1h.", reportId: report.id });
 }

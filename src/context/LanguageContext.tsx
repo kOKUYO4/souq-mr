@@ -38,7 +38,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     <LanguageContext.Provider
       value={{
         locale,
-        t: translations[locale],
+        t: translations[locale] as typeof translations.fr,
         setLocale,
         isRTL: locale === "ar",
       }}

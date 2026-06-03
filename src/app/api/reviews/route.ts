@@ -41,5 +41,5 @@ export async function POST(req: NextRequest) {
     createdAt: new Date().toISOString(),
   };
 
-  return ok({ review: newReview }, 201);
+  return ok({ review: newReview });
 }

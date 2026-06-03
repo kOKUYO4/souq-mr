@@ -78,12 +78,12 @@ export default function AdminPage() {
   );
 
   const approve = (id: string) => {
-    setApprovedIds((prev) => new Set([...prev, id]));
-    setRejectedIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
+    setApprovedIds((prev) => { const n = new Set(Array.from(prev)); n.add(id); return n; });
+    setRejectedIds((prev) => { const n = new Set(Array.from(prev)); n.delete(id); return n; });
   };
   const reject = (id: string) => {
-    setRejectedIds((prev) => new Set([...prev, id]));
-    setApprovedIds((prev) => { const n = new Set(prev); n.delete(id); return n; });
+    setRejectedIds((prev) => { const n = new Set(Array.from(prev)); n.add(id); return n; });
+    setApprovedIds((prev) => { const n = new Set(Array.from(prev)); n.delete(id); return n; });
   };
 
   return (

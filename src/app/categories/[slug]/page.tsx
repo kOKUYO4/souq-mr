@@ -52,7 +52,7 @@ export default function CategoryPage() {
     if (filters.location) result = result.filter((l) => l.location.toLowerCase().includes(filters.location.toLowerCase()));
     if (filters.marque) result = result.filter((l) => l.attributes?.marque === filters.marque);
     if (filters.carburant) result = result.filter((l) => l.attributes?.carburant === filters.carburant);
-    if (filters.taille) result = result.filter((l) => l.attributes?.taille?.includes(filters.taille));
+    if (filters.taille) result = result.filter((l) => l.attributes?.taille?.includes(filters.taille as string));
 
     switch (sort) {
       case "price_asc": return [...result].sort((a, b) => a.price - b.price);

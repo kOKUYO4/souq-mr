@@ -492,7 +492,7 @@ export default function TableauDeBordPage() {
                   <button
                     key={plan.days}
                     onClick={() => {
-                      setBoostedIds((prev) => new Set([...prev, boostTarget]));
+                      setBoostedIds((prev) => { const n = new Set(Array.from(prev)); n.add(boostTarget!); return n; });
                       setBoostTarget(null);
                     }}
                     className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all hover:-translate-y-0.5 ${
