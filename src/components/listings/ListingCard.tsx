@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Heart, MapPin, Eye, MessageCircle, CheckCircle2 } from "lucide-react";
 import type { Listing } from "@/data/mockData";
 import { formatPrice, timeAgo } from "@/data/mockData";
 import Badge from "@/components/ui/Badge";
+import HagglingModal from "@/components/social/HagglingModal";
 import { useLanguage } from "@/context/LanguageContext";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useToast } from "@/context/ToastContext";
@@ -20,6 +22,7 @@ export default function ListingCard({ listing, featured = false, variant = "grid
   const { isFavorite, toggleFavorite } = useFavorites();
   const { success } = useToast();
   const liked = isFavorite(listing.id);
+  const [hagglingOpen, setHagglingOpen] = useState(false);
 
   const sellerBadgeLabel = {
     pro: t.trust.pro,
@@ -111,6 +114,7 @@ export default function ListingCard({ listing, featured = false, variant = "grid
 
   return (
     <div className="listing-card group">
+      {hagglingOpen && <HagglingModal listing={listing} onClose={() => setHagglingOpen(false)} />}
       <Link href={`/annonce/${listing.id}`}>
         {/* Image */}
         <div className="relative overflow-hidden h-48 bg-sand-100">
@@ -221,11 +225,21 @@ export default function ListingCard({ listing, featured = false, variant = "grid
           <MessageCircle size={13} />
           {t.listings.contactSeller}
         </Link>
-        <button
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 border-sand-300 text-sand-500 text-xs font-semibold hover:bg-sand-50 transition-colors"
-        >
-          💬 {t.listings.makeOffer}
-        </button>
+        {listing.negotiable ? (
+          <button
+            onClick={() => setHagglingOpen(true)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 border-sand-300 text-sand-500 text-xs font-semibold hover:bg-sand-50 transition-colors"
+          >
+            💬 {t.listings.makeOffer}
+          </button>
+        ) : (
+          <Link
+            href={`/annonce/${listing.id}`}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 border-sand-100 text-night-400/60 text-xs font-semibold hover:bg-sand-50 transition-colors"
+          >
+            {isRTL ? "التفاصيل" : "Détails"}
+          </Link>
+        )}
       </div>
     </div>
   );

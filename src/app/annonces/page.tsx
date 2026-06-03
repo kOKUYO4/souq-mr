@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import { SlidersHorizontal, Grid, List, ChevronLeft, ChevronRight } from "lucide-react";
 import ListingCard from "@/components/listings/ListingCard";
-import { ListingsGridSkeleton } from "@/components/ui/Skeleton";
 import { listings, categories } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -19,7 +18,6 @@ export default function AnnoncesPage() {
   const [condition, setCondition] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
   const [page, setPage] = useState(1);
-  const [initialLoad] = useState(false);
 
   const filtered = useMemo(() => {
     let items = listings.filter((l) => {
@@ -134,9 +132,7 @@ export default function AnnoncesPage() {
           </p>
         </div>
 
-        {initialLoad ? (
-          <ListingsGridSkeleton count={PAGE_SIZE} />
-        ) : paginated.length > 0 ? (
+        {paginated.length > 0 ? (
           <>
             <div className={view === "grid"
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"

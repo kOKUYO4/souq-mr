@@ -8,6 +8,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileNav from "@/components/layout/MobileNav";
 import RamadanBanner from "@/components/home/RamadanBanner";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 export const viewport: Viewport = {
   themeColor: "#C9A84C",
@@ -59,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <main className="pt-16 pb-16 sm:pb-0">{children}</main>
                 <Footer />
                 <MobileNav />
+                <ScrollToTop />
               </ToastProvider>
             </FavoritesProvider>
           </LanguageProvider>
