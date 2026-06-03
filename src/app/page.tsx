@@ -1,6 +1,7 @@
 import Hero from "@/components/home/Hero";
 import Categories from "@/components/home/Categories";
 import FeaturedListings from "@/components/home/FeaturedListings";
+import FlashSales from "@/components/home/FlashSales";
 import HagglingBanner from "@/components/home/HagglingBanner";
 import UniqueFeatures from "@/components/home/UniqueFeatures";
 import TrustedSellers from "@/components/home/TrustedSellers";
@@ -12,6 +13,7 @@ export default function HomePage() {
       <Hero />
       <Categories />
       <FeaturedListings />
+      <FlashSales />
       <HagglingBanner />
       <UniqueFeatures />
       <TrustedSellers />

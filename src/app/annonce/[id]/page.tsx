@@ -427,6 +427,71 @@ export default function AnnonceDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Annonces similaires */}
+        {(() => {
+          const related = listings
+            .filter((l) => l.id !== listing.id && l.category === listing.category)
+            .slice(0, 4);
+          if (!related.length) return null;
+          return (
+            <div className="mt-12">
+              <div className={`flex items-center justify-between mb-6 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <h2 className={`text-xl font-bold text-night-500 ${isRTL ? "font-arabic" : "font-display"}`}>
+                  {isRTL ? "إعلانات مشابهة" : "Annonces similaires"}
+                </h2>
+                <Link
+                  href={`/categories/${listing.category}`}
+                  className={`text-sm text-sand-500 font-semibold hover:underline flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}
+                >
+                  {isRTL ? "عرض الكل" : "Voir tout"}
+                  <ChevronRight size={14} className={isRTL ? "rotate-180" : ""} />
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {related.map((rel) => (
+                  <Link
+                    key={rel.id}
+                    href={`/annonce/${rel.id}`}
+                    className="group bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all overflow-hidden"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <img
+                        src={rel.images[0]}
+                        alt={rel.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      {rel.featured && (
+                        <span className="absolute top-2 left-2 text-[10px] font-bold text-night-500 px-2 py-0.5 rounded-full"
+                          style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
+                          {isRTL ? "مميز" : "Vedette"}
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className={`text-sm font-semibold text-night-500 line-clamp-2 mb-1 ${isRTL ? "font-arabic text-right" : ""}`}>
+                        {isRTL ? rel.titleAr : rel.title}
+                      </p>
+                      <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
+                        <span className="text-sm font-bold text-sand-500">{formatPrice(rel.price)} MRU</span>
+                        <div className={`flex items-center gap-1 text-xs text-night-400/50 ${isRTL ? "flex-row-reverse" : ""}`}>
+                          <Eye size={11} />
+                          {rel.views}
+                        </div>
+                      </div>
+                      <div className={`flex items-center gap-1 mt-1 ${isRTL ? "flex-row-reverse" : ""}`}>
+                        <MapPin size={10} className="text-sand-400 flex-shrink-0" />
+                        <span className="text-[11px] text-night-400/60 truncate">
+                          {isRTL ? rel.locationAr : rel.location}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
