@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Search, MapPin, Tag, ChevronDown, Shield, Truck } from "lucide-react";
 
 function useCountUp(target: number, duration = 1500) {
@@ -59,6 +60,7 @@ function StatItem({ icon: Icon, target, suffix, label }: { icon: React.ElementTy
 
 export default function Hero() {
   const { t, isRTL, locale } = useLanguage();
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [city, setCity] = useState(cities[locale][0]);
   const [cityOpen, setCityOpen] = useState(false);
@@ -157,12 +159,12 @@ export default function Hero() {
               placeholder={t.hero.searchPlaceholder}
               dir={isRTL ? "rtl" : "ltr"}
               className={`flex-1 px-4 py-3 text-night-500 placeholder-sand-300 outline-none text-sm ${isRTL ? "font-arabic" : ""}`}
-              onKeyDown={(e) => e.key === "Enter" && query && window.location.assign(`/recherche?q=${query}`)}
+              onKeyDown={(e) => e.key === "Enter" && query && router.push(`/recherche?q=${encodeURIComponent(query)}`)}
             />
 
             {/* Bouton rechercher */}
             <button
-              onClick={() => query && window.location.assign(`/recherche?q=${encodeURIComponent(query)}`)}
+              onClick={() => query && router.push(`/recherche?q=${encodeURIComponent(query)}`)}
               className="btn-gold rounded-xl px-6 py-3 text-sm font-semibold whitespace-nowrap"
             >
               <Search size={16} />
@@ -179,7 +181,7 @@ export default function Hero() {
           {searches.map((s) => (
             <button
               key={s}
-              onClick={() => window.location.assign(`/recherche?q=${encodeURIComponent(s)}`)}
+              onClick={() => router.push(`/recherche?q=${encodeURIComponent(s)}`)}
               className="px-3 py-1 rounded-full text-xs text-sand-300 border border-sand-400/20 hover:border-sand-400/60 hover:text-sand-400 transition-all bg-night-600/30 hover:bg-night-600/50"
             >
               {s}
