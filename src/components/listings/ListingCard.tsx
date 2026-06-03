@@ -41,6 +41,7 @@ export default function ListingCard({ listing, featured = false, variant = "grid
   if (variant === "list") {
     return (
       <div className="listing-card group">
+        {hagglingOpen && <HagglingModal listing={listing} onClose={() => setHagglingOpen(false)} />}
         <Link href={`/annonce/${listing.id}`} className={`flex min-h-[120px] ${isRTL ? "flex-row-reverse" : ""}`}>
           {/* Image */}
           <div className="relative flex-shrink-0 w-40 sm:w-52 overflow-hidden bg-sand-100">
@@ -100,10 +101,19 @@ export default function ListingCard({ listing, featured = false, variant = "grid
                 </span>
                 <span>{timeAgo(listing.createdAt, locale)}</span>
               </div>
-              <div className={`flex items-center gap-1.5 ${isRTL ? "flex-row-reverse" : ""}`}>
-                <img src={listing.seller.avatar} alt="" className="w-6 h-6 rounded-full" />
-                <span className="text-xs font-medium text-night-500">{isRTL ? listing.seller.nameAr : listing.seller.name}</span>
-                {listing.seller.badge !== "regular" && <CheckCircle2 size={11} className="text-islamic-400" />}
+              <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                <div className={`flex items-center gap-1.5 ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <img src={listing.seller.avatar} alt="" className="w-6 h-6 rounded-full" />
+                  <span className="text-xs font-medium text-night-500">{isRTL ? listing.seller.nameAr : listing.seller.name}</span>
+                  {listing.seller.badge !== "regular" && <CheckCircle2 size={11} className="text-islamic-400" />}
+                </div>
+                {listing.negotiable && (
+                  <button onClick={(e) => { e.preventDefault(); setHagglingOpen(true); }}
+                    className="px-2.5 py-1 rounded-lg text-[10px] font-bold text-white transition-all hover:opacity-90"
+                    style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
+                    {isRTL ? "أفضل سعر؟" : "Meilleur prix ?"}
+                  </button>
+                )}
               </div>
             </div>
           </div>
