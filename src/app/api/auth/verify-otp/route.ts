@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ok, err, signToken, type VerifyOtpBody } from "@/lib/api";
 import { verifyOtp as checkOtp } from "@/lib/sms";
-import { sellers } from "@/data/mockData";
+import { getProfileByPhone, upsertProfile } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   const { phone, otp }: VerifyOtpBody = await req.json();
@@ -20,13 +20,32 @@ export async function POST(req: NextRequest) {
     return err(messages[result.reason], 401);
   }
 
-  const user = sellers[0]; // TODO: lookup ou création réelle en base
-  const payload = { userId: user.id, phone: normalized, name: user.name, badge: user.badge };
+  // Récupérer ou créer le profil dans Supabase
+  let profile = await getProfileByPhone(normalized);
+
+  if (!profile) {
+    // Nouveau utilisateur — créer un UUID stable basé sur le téléphone
+    const crypto = await import("crypto");
+    const userId = crypto.createHash("sha256").update(normalized).digest("hex").slice(0, 36)
+      .replace(/^(.{8})(.{4})(.{4})(.{4})(.{12}).*/, "$1-$2-$3-$4-$5");
+
+    profile = await upsertProfile(userId, normalized, {
+      name: "Utilisateur SOUQ.MR",
+      name_ar: "مستخدم سوق.مر",
+      badge: "regular",
+    });
+  }
+
+  // Fallback si Supabase non configuré (dev sans .env.local)
+  const userId = profile?.id ?? normalized;
+  const userName = profile?.name ?? "Utilisateur";
+  const userBadge = profile?.badge ?? "regular";
+
+  const payload = { userId, phone: normalized, name: userName, badge: userBadge };
   const token = signToken(payload);
 
-  const res = ok({ user, token }) as NextResponse;
+  const res = ok({ user: profile ?? { id: userId, phone: normalized, name: userName, badge: userBadge }, token }) as NextResponse;
 
-  // Cookie HTTP-only — protège contre XSS
   res.headers.set(
     "Set-Cookie",
     `souq-token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 3600}; SameSite=Strict; ${process.env.NODE_ENV === "production" ? "Secure;" : ""}`
