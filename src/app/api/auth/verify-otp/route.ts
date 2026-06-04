@@ -2,9 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { ok, err, signToken, type VerifyOtpBody } from "@/lib/api";
 import { verifyOtp as checkOtp } from "@/lib/sms";
 import { getProfileByPhone, upsertProfile } from "@/lib/db";
+import { supabaseConfigured } from "@/lib/supabase";
+import crypto from "crypto";
+
+/* Génère un UUID v4 déterministe à partir d'un numéro de téléphone */
+function phoneToUuid(phone: string): string {
+  const hash = crypto.createHash("sha256").update(`souq:${phone}`).digest("hex");
+  // Format UUID v4 : xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+  return [
+    hash.slice(0, 8),
+    hash.slice(8, 12),
+    "4" + hash.slice(13, 16),          // version 4
+    ((parseInt(hash[16], 16) & 0x3) | 0x8).toString(16) + hash.slice(17, 20), // variant
+    hash.slice(20, 32),
+  ].join("-");
+}
 
 export async function POST(req: NextRequest) {
-  const { phone, otp }: VerifyOtpBody = await req.json();
+  const body: VerifyOtpBody = await req.json();
+  const { phone, otp } = body;
 
   if (!phone || !otp) return err("Téléphone et OTP requis");
 
@@ -20,35 +36,69 @@ export async function POST(req: NextRequest) {
     return err(messages[result.reason], 401);
   }
 
-  // Récupérer ou créer le profil dans Supabase
-  let profile = await getProfileByPhone(normalized);
+  // ── Créer ou récupérer le profil dans Supabase ──────────────────────────
+  let profile = null;
 
-  if (!profile) {
-    // Nouveau utilisateur — créer un UUID stable basé sur le téléphone
-    const crypto = await import("crypto");
-    const userId = crypto.createHash("sha256").update(normalized).digest("hex").slice(0, 36)
-      .replace(/^(.{8})(.{4})(.{4})(.{4})(.{12}).*/, "$1-$2-$3-$4-$5");
+  if (supabaseConfigured) {
+    try {
+      // 1. Chercher un profil existant par téléphone
+      profile = await getProfileByPhone(normalized);
 
-    profile = await upsertProfile(userId, normalized, {
-      name: "Utilisateur SOUQ.MR",
-      name_ar: "مستخدم سوق.مر",
-      badge: "regular",
-    });
+      if (!profile) {
+        // 2. Nouvel utilisateur — UUID déterministe basé sur le téléphone
+        const newId = phoneToUuid(normalized);
+        profile = await upsertProfile(newId, normalized, {
+          name:     "Utilisateur SOUQ.MR",
+          name_ar:  "مستخدم سوق.مر",
+          badge:    "regular",
+          is_active: true,
+        });
+
+        if (profile) {
+          console.log(`[auth] Nouveau profil créé — id: ${profile.id} phone: ${normalized}`);
+        } else {
+          console.error("[auth] Échec création profil Supabase pour", normalized);
+        }
+      }
+    } catch (e) {
+      // Ne pas bloquer la connexion si Supabase échoue — dégrader gracieusement
+      console.error("[auth] Erreur Supabase:", e instanceof Error ? e.message : e);
+    }
   }
 
-  // Fallback si Supabase non configuré (dev sans .env.local)
-  const userId = profile?.id ?? normalized;
-  const userName = profile?.name ?? "Utilisateur";
+  // ── Fallback si Supabase non configuré ou erreur ─────────────────────────
+  const userId   = profile?.id    ?? phoneToUuid(normalized);
+  const userName = profile?.name  ?? "Utilisateur";
   const userBadge = profile?.badge ?? "regular";
 
-  const payload = { userId, phone: normalized, name: userName, badge: userBadge };
-  const token = signToken(payload);
+  const jwtPayload = { userId, phone: normalized, name: userName, badge: userBadge };
+  const token = signToken(jwtPayload);
 
-  const res = ok({ user: profile ?? { id: userId, phone: normalized, name: userName, badge: userBadge }, token }) as NextResponse;
+  const userResponse = profile ?? {
+    id:          userId,
+    phone:       normalized,
+    name:        userName,
+    name_ar:     "مستخدم",
+    badge:       userBadge,
+    rating:      0,
+    reviews_count: 0,
+    listings_count: 0,
+    is_active:   true,
+    created_at:  new Date().toISOString(),
+  };
+
+  const res = ok({ user: userResponse, token }) as NextResponse;
 
   res.headers.set(
     "Set-Cookie",
-    `souq-token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 3600}; SameSite=Strict; ${process.env.NODE_ENV === "production" ? "Secure;" : ""}`
+    [
+      `souq-token=${token}`,
+      "HttpOnly",
+      "Path=/",
+      `Max-Age=${7 * 24 * 3600}`,
+      "SameSite=Strict",
+      ...(process.env.NODE_ENV === "production" ? ["Secure"] : []),
+    ].join("; ")
   );
 
   return res;

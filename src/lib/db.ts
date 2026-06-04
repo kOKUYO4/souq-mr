@@ -1,8 +1,12 @@
 /**
  * Helpers base de données — couche d'abstraction sur Supabase
  * Utilisé côté serveur (API routes)
+ *
+ * IMPORTANT : getProfileByPhone / upsertProfile utilisent le client admin
+ * (service_role) car le RLS bloque la clé anon sans auth.uid() Supabase.
+ * Notre auth est un JWT custom — Supabase ne le reconnaît pas pour le RLS.
  */
-import { supabaseServer } from "@/lib/supabase";
+import { supabaseServer, getSupabaseAdmin, supabaseConfigured } from "@/lib/supabase";
 import type { DbListing, DbProfile, DbConversation, DbMessage, DbFavorite } from "@/lib/supabase";
 
 /* ── LISTINGS ── */
@@ -44,12 +48,16 @@ export async function getProfileById(id: string): Promise<DbProfile | null> {
 }
 
 export async function getProfileByPhone(phone: string): Promise<DbProfile | null> {
-  const { data } = await supabaseServer
+  if (!supabaseConfigured) return null;
+  // Lecture via service_role pour contourner le RLS (notre JWT n'est pas Supabase Auth)
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
     .from("profiles")
     .select("*")
     .eq("phone", phone)
-    .single();
-  return data;
+    .maybeSingle();
+  if (error) console.error("[db] getProfileByPhone:", error.message);
+  return data ?? null;
 }
 
 export async function upsertProfile(
@@ -57,12 +65,19 @@ export async function upsertProfile(
   phone: string,
   extra: Partial<DbProfile> = {}
 ): Promise<DbProfile | null> {
-  const { data } = await supabaseServer
+  if (!supabaseConfigured) return null;
+  // Écriture via service_role — contourne le RLS qui nécessite auth.uid()
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
     .from("profiles")
-    .upsert({ id, phone, ...extra }, { onConflict: "id" })
+    .upsert(
+      { id, phone, ...extra, updated_at: new Date().toISOString() },
+      { onConflict: "id" }
+    )
     .select()
     .single();
-  return data;
+  if (error) console.error("[db] upsertProfile:", error.message);
+  return data ?? null;
 }
 
 /* ── CONVERSATIONS & MESSAGES ── */
