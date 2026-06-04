@@ -1,9 +1,12 @@
 /**
- * Tests unitaires — helpers lib/api (JWT, validation téléphone)
+ * Tests — lib/api (JWT HMAC-SHA256 + validation téléphone)
+ *        + lib/sms (OTP service)
  */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { signToken, verifyToken, isValidMauritanianPhone } from "@/lib/api";
+import { storeOtp, verifyOtp, checkSendRateLimit } from "@/lib/sms";
 
+/* ── isValidMauritanianPhone ── */
 describe("isValidMauritanianPhone", () => {
   it("accepte les numéros +222 valides", () => {
     expect(isValidMauritanianPhone("+22236000000")).toBe(true);
@@ -15,40 +18,80 @@ describe("isValidMauritanianPhone", () => {
     expect(isValidMauritanianPhone("0612345678")).toBe(false);
     expect(isValidMauritanianPhone("+33612345678")).toBe(false);
     expect(isValidMauritanianPhone("")).toBe(false);
-    expect(isValidMauritanianPhone("+222123")).toBe(false); // trop court
+    expect(isValidMauritanianPhone("+222123")).toBe(false);
   });
 });
 
+/* ── JWT HMAC-SHA256 ── */
 describe("signToken / verifyToken", () => {
   it("signe et retourne un JWT à 3 parties", () => {
-    const payload = { userId: "s1", phone: "+22236000001", name: "Test", badge: "pro" as const };
-    const token = signToken(payload);
+    const token = signToken({ userId: "s1", phone: "+222" });
     expect(token.split(".")).toHaveLength(3);
   });
 
   it("vérifie un token valide et retourne le payload", () => {
-    const payload = { userId: "s1", phone: "+22236000001", name: "Test", badge: "pro" as const };
-    const token = signToken(payload);
+    const token = signToken({ userId: "s1", phone: "+22236000001" });
     const decoded = verifyToken(token);
-    expect(decoded).not.toBeNull();
     expect(decoded?.userId).toBe("s1");
     expect(decoded?.phone).toBe("+22236000001");
   });
 
-  it("retourne null pour une chaîne vide", () => {
+  it("retourne null pour chaîne vide", () => {
     expect(verifyToken("")).toBeNull();
   });
 
-  it("retourne null pour un token malformé (pas de JSON valide)", () => {
-    // corps non-base64 valide
+  it("retourne null pour token malformé", () => {
     expect(verifyToken("abc.!!!.xyz")).toBeNull();
   });
 
   it("retourne null pour un token expiré", () => {
-    // Forger un payload avec exp dans le passé
-    const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-    const body = btoa(JSON.stringify({ userId: "s1", exp: Date.now() - 1000 }));
-    const expired = `${header}.${body}.fakesig`;
-    expect(verifyToken(expired)).toBeNull();
+    const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64url");
+    const body = Buffer.from(JSON.stringify({ userId: "s1", exp: Math.floor(Date.now() / 1000) - 100 })).toString("base64url");
+    expect(verifyToken(`${header}.${body}.invalidsig`)).toBeNull();
+  });
+
+  it("retourne null pour une signature altérée (anti-tamper)", () => {
+    const token = signToken({ userId: "s1", phone: "+222" });
+    const [h, b] = token.split(".");
+    expect(verifyToken(`${h}.${b}.FAKEXXXXXXXXXXXXXXXXX`)).toBeNull();
+  });
+});
+
+/* ── OTP service ── */
+describe("lib/sms — storeOtp / verifyOtp", () => {
+  const phone = "+22236111000";
+
+  beforeEach(() => {
+    // Stocker un OTP frais avant chaque test de vérification
+  });
+
+  it("accepte le code universel 123456 en développement", () => {
+    expect(verifyOtp(phone, "123456")).toEqual({ ok: true });
+  });
+
+  it("accepte un OTP stocké valide", () => {
+    storeOtp(phone, "987654");
+    expect(verifyOtp(phone, "987654")).toEqual({ ok: true });
+  });
+
+  it("rejette un OTP incorrect", () => {
+    storeOtp(phone, "111111");
+    const result = verifyOtp(phone, "999999");
+    expect(result.ok).toBe(false);
+    expect((result as { ok: false; reason: string }).reason).toBe("invalid");
+  });
+
+  it("invalide l'OTP après utilisation (usage unique)", () => {
+    storeOtp(phone, "222222");
+    verifyOtp(phone, "222222"); // consomme
+    const result = verifyOtp(phone, "222222"); // doit échouer
+    expect(result.ok).toBe(false);
+  });
+});
+
+/* ── Rate limiting ── */
+describe("lib/sms — checkSendRateLimit", () => {
+  it("autorise le premier envoi", () => {
+    expect(checkSendRateLimit("+22236222001").allowed).toBe(true);
   });
 });

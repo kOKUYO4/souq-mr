@@ -98,21 +98,37 @@ export function isValidMauritanianPhone(phone: string): boolean {
   return /^\+?222\s?\d{2}\s?\d{2}\s?\d{2}\s?\d{2}$/.test(phone.replace(/\s/g, ""));
 }
 
-/* ── JWT simulé (demo — en prod utiliser jose/jsonwebtoken) ── */
-const SECRET = process.env.JWT_SECRET ?? "souq-mr-secret-2026";
+/* ── JWT sécurisé HMAC-SHA256 (crypto natif Node.js) ── */
+import crypto from "crypto";
+
+const JWT_SECRET = process.env.JWT_SECRET ?? "souq-mr-dev-secret-change-in-production";
+const JWT_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 jours
+
+function base64url(data: string): string {
+  return Buffer.from(data).toString("base64url");
+}
+
+function fromBase64url(s: string): string {
+  return Buffer.from(s, "base64url").toString("utf8");
+}
 
 export function signToken(payload: Record<string, unknown>): string {
-  const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const body = btoa(JSON.stringify({ ...payload, iat: Date.now(), exp: Date.now() + 7 * 86400 * 1000 }));
-  const sig = btoa(`${SECRET}-${header}.${body}`).slice(0, 20);
+  const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const body = base64url(JSON.stringify({ ...payload, iat: Math.floor(Date.now() / 1000), exp: Math.floor((Date.now() + JWT_TTL_MS) / 1000) }));
+  const sig = crypto.createHmac("sha256", JWT_SECRET).update(`${header}.${body}`).digest("base64url");
   return `${header}.${body}.${sig}`;
 }
 
 export function verifyToken(token: string): Record<string, unknown> | null {
   try {
-    const [, body] = token.split(".");
-    const payload = JSON.parse(atob(body));
-    if (payload.exp && payload.exp < Date.now()) return null;
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const [header, body, sig] = parts;
+    // Vérifier signature en temps constant
+    const expected = crypto.createHmac("sha256", JWT_SECRET).update(`${header}.${body}`).digest("base64url");
+    if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
+    const payload = JSON.parse(fromBase64url(body));
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
     return payload;
   } catch {
     return null;

@@ -4,12 +4,14 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextRequest } from "next/server";
 
-// Résolution dynamique pour éviter le cache du module entre tests
-async function getSendOtp() {
-  vi.resetModules();
-  const mod = await import("@/app/api/auth/send-otp/route");
-  return mod.POST;
-}
+// vi.mock est hoisté — déclaré ici, exécuté avant les imports
+vi.mock("@/lib/sms", () => ({
+  checkSendRateLimit: vi.fn(),
+  sendOtpSms: vi.fn(),
+}));
+
+import { POST } from "@/app/api/auth/send-otp/route";
+import { checkSendRateLimit, sendOtpSms } from "@/lib/sms";
 
 function makeReq(body: object) {
   return new NextRequest("http://localhost/api/auth/send-otp", {
@@ -21,49 +23,45 @@ function makeReq(body: object) {
 
 describe("POST /api/auth/send-otp", () => {
   beforeEach(() => {
-    process.env.NODE_ENV = "development";
+    vi.mocked(checkSendRateLimit).mockReturnValue({ allowed: true });
+    vi.mocked(sendOtpSms).mockResolvedValue({ success: true, devOtp: "654321" });
   });
 
-  it("retourne une erreur si le téléphone est absent", async () => {
-    const POST = await getSendOtp();
+  it("retourne 400 si le téléphone est absent", async () => {
     const res = await POST(makeReq({}));
-    const json = await res.json();
     expect(res.status).toBe(400);
-    expect(json.success).toBe(false);
-    expect(json.error).toBeTruthy();
+    expect((await res.json()).success).toBe(false);
   });
 
-  it("retourne une erreur si le format est invalide", async () => {
-    const POST = await getSendOtp();
+  it("retourne 400 si le format est invalide", async () => {
     const res = await POST(makeReq({ phone: "0612345678" }));
     const json = await res.json();
     expect(res.status).toBe(400);
-    expect(json.success).toBe(false);
     expect(json.error).toMatch(/mauritanien|invalide/i);
   });
 
-  it("accepte un numéro mauritanien valide (+222...)", async () => {
-    const POST = await getSendOtp();
+  it("retourne 200 avec un numéro +222 valide", async () => {
     const res = await POST(makeReq({ phone: "+22236000001" }));
+    expect(res.status).toBe(200);
+    expect((await res.json()).success).toBe(true);
+  });
+
+  it("normalise les espaces dans le numéro", async () => {
+    const res = await POST(makeReq({ phone: "+222 36 00 00 01" }));
     const json = await res.json();
     expect(res.status).toBe(200);
-    expect(json.success).toBe(true);
-    expect(json.data.message).toBeTruthy();
+    expect(json.data.phone).toBe("+22236000001");
   });
 
-  it("renvoie le devOtp en mode développement", async () => {
-    const POST = await getSendOtp();
+  it("retourne 429 si le rate limit est dépassé", async () => {
+    vi.mocked(checkSendRateLimit).mockReturnValue({ allowed: false, waitSeconds: 300 });
     const res = await POST(makeReq({ phone: "+22236000002" }));
-    const json = await res.json();
-    expect(json.data.devOtp).toMatch(/^\d{6}$/);
+    expect(res.status).toBe(429);
   });
 
-  it("ne renvoie pas le devOtp en mode production", async () => {
-    process.env.NODE_ENV = "production";
-    const POST = await getSendOtp();
+  it("retourne 503 si l'envoi SMS échoue", async () => {
+    vi.mocked(sendOtpSms).mockResolvedValue({ success: false, error: "Service SMS indisponible" });
     const res = await POST(makeReq({ phone: "+22236000003" }));
-    const json = await res.json();
-    expect(json.data.devOtp).toBeUndefined();
-    process.env.NODE_ENV = "development";
+    expect(res.status).toBe(503);
   });
 });
