@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface LogoProps {
@@ -9,6 +10,7 @@ interface LogoProps {
 
 export default function Logo({ size = "md", variant = "full" }: LogoProps) {
   const { isRTL } = useLanguage();
+  const [hovered, setHovered] = useState(false);
 
   const sizes = {
     sm: { icon: 28, text: "text-lg" },
@@ -19,14 +21,32 @@ export default function Logo({ size = "md", variant = "full" }: LogoProps) {
   const s = sizes[size];
 
   return (
-    <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-      {/* Icône : porte de tente mauritanienne stylisée */}
+    <div
+      className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}
+      style={{
+        /* Pas de flou sur les enfants avec transform */
+        transform: "translateZ(0)",
+        willChange: "auto",
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Icône animée */}
       <svg
         width={s.icon}
         height={s.icon}
         viewBox="0 0 48 48"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        className={!hovered ? "animate-logo-pulse" : ""}
+        style={{
+          transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease",
+          transform: hovered ? "rotate(-8deg) scale(1.12)" : "rotate(0deg) scale(1)",
+          filter: hovered
+            ? "drop-shadow(0 0 10px rgba(201,168,76,0.8)) drop-shadow(0 0 20px rgba(201,168,76,0.35))"
+            : undefined,
+          animation: !hovered ? undefined : "none",
+        }}
       >
         {/* Fond cercle */}
         <circle cx="24" cy="24" r="24" fill="#1B2A4A" />
@@ -58,19 +78,37 @@ export default function Logo({ size = "md", variant = "full" }: LogoProps) {
       </svg>
 
       {variant === "full" && (
-        <div className={`flex flex-col ${isRTL ? "items-end" : "items-start"}`}>
+        <div
+          className={`flex flex-col ${isRTL ? "items-end" : "items-start"}`}
+          style={{
+            transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            transform: hovered ? "translateX(3px)" : "translateX(0)",
+          }}
+        >
           <span
             className={`${s.text} font-display font-bold leading-none`}
             style={{
-              background: "linear-gradient(135deg, #C9A84C 0%, #E8C96A 50%, #B8922E 100%)",
+              background: hovered
+                ? "linear-gradient(135deg, #E8C96A 0%, #F5D97A 50%, #C9A84C 100%)"
+                : "linear-gradient(135deg, #C9A84C 0%, #E8C96A 50%, #B8922E 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
+              transition: "background 0.3s ease",
+              /* Rendu net du gradient text */
+              WebkitFontSmoothing: "antialiased" as never,
             }}
           >
             {isRTL ? "سوق.مر" : "SOUQ.MR"}
           </span>
-          <span className="text-[10px] text-sand-300 font-body tracking-widest uppercase leading-none mt-0.5">
+          <span
+            className="text-[10px] font-body tracking-widest uppercase leading-none mt-0.5"
+            style={{
+              color: hovered ? "#C9A84C" : "rgba(201,168,76,0.5)",
+              transition: "color 0.3s ease, letter-spacing 0.3s ease",
+              letterSpacing: hovered ? "0.2em" : "0.15em",
+            }}
+          >
             {isRTL ? "السوق الرقمي" : "Marketplace"}
           </span>
         </div>

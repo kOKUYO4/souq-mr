@@ -29,7 +29,7 @@ export { isConfigured as supabaseConfigured };
 export function getSupabaseAdmin() {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY manquant");
-  return createClient(URL, serviceKey, {
+  return createClient(SUPABASE_URL || "https://placeholder.supabase.co", serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }

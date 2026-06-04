@@ -12,8 +12,45 @@
 }
 
 @layer base {
-  html { scroll-behavior: smooth; }
-  body { @apply bg-cream text-night-500 font-body antialiased; }
+  html {
+    scroll-behavior: smooth;
+    /* Rendu sub-pixel — élimine le flou sur les polices */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    /* Empêche le zoom iOS qui floute le texte */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-cream text-night-500 font-body;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Titres : rendu net, pas de halo GPU */
+  h1, h2, h3, h4, h5, h6 {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Correction flou causé par translateY/scale sur cartes et boutons */
+  .listing-card,
+  .btn-gold,
+  .btn-night,
+  .btn-outline {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* Gradient text : forcer le rendu net (WebkitTextFillColor peut flouter) */
+  [style*="-webkit-text-fill-color: transparent"] {
+    -webkit-font-smoothing: antialiased;
+  }
+
   [dir="rtl"] { font-family: 'Noto Sans Arabic', sans-serif; }
   [dir="rtl"] .rtl-flip { transform: scaleX(-1); }
 }

@@ -72,6 +72,9 @@ const config: Config = {
         "fade-in": "fadeIn 0.4s ease-out forwards",
         float: "float 6s ease-in-out infinite",
         shimmer: "shimmer 2s linear infinite",
+        /* Logo */
+        "logo-enter": "logoEnter 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards",
+        "logo-pulse": "logoPulse 3s ease-in-out infinite",
       },
       keyframes: {
         fadeUp: {
@@ -89,6 +92,15 @@ const config: Config = {
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
+        },
+        logoEnter: {
+          "0%":   { opacity: "0", transform: "scale(0.6) rotate(-15deg)" },
+          "60%":  { opacity: "1", transform: "scale(1.1) rotate(4deg)" },
+          "100%": { opacity: "1", transform: "scale(1) rotate(0deg)" },
+        },
+        logoPulse: {
+          "0%, 100%": { filter: "drop-shadow(0 2px 4px rgba(27,42,74,0.3))" },
+          "50%": { filter: "drop-shadow(0 0 8px rgba(201,168,76,0.5)) drop-shadow(0 2px 4px rgba(27,42,74,0.2))" },
         },
       },
     },
