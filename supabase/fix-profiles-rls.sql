@@ -62,16 +62,31 @@ CREATE TRIGGER trg_profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
--- 4. Vérifier que la table listings référence bien profiles (pas auth.users)
--- Si listings a été créée avant ce fix :
-ALTER TABLE IF EXISTS public.listings
-  DROP CONSTRAINT IF EXISTS listings_seller_id_fkey;
+-- 4. Corriger la FK de listings → profiles (seulement si la table ET la colonne existent)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name   = 'listings'
+      AND column_name  = 'seller_id'
+  ) THEN
+    -- Supprimer l'ancienne contrainte si elle existe
+    ALTER TABLE public.listings
+      DROP CONSTRAINT IF EXISTS listings_seller_id_fkey;
 
-ALTER TABLE IF EXISTS public.listings
-  ADD CONSTRAINT listings_seller_id_fkey
-  FOREIGN KEY (seller_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+    -- Recréer la FK vers public.profiles (et non auth.users)
+    ALTER TABLE public.listings
+      ADD CONSTRAINT listings_seller_id_fkey
+      FOREIGN KEY (seller_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
+
+    RAISE NOTICE 'FK listings.seller_id → profiles recréée';
+  ELSE
+    RAISE NOTICE 'Table listings ou colonne seller_id absente — FK ignorée';
+  END IF;
+END $$;
 
 -- ============================================================
--- Test de vérification (doit retourner des données) :
--- SELECT * FROM public.profiles LIMIT 5;
+-- Test de vérification (doit retourner 0 ou plusieurs lignes) :
+-- SELECT count(*) FROM public.profiles;
 -- ============================================================
