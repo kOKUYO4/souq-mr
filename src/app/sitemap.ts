@@ -47,6 +47,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/accessibilite`, priority: 0.3, changeFrequency: "yearly" as const },
     { url: `${BASE}/ramadan`, priority: 0.7, changeFrequency: "daily" as const },
     { url: `${BASE}/verification`, priority: 0.5, changeFrequency: "monthly" as const },
+    { url: `${BASE}/plan-du-site`, priority: 0.3, changeFrequency: "monthly" as const },
+    { url: `${BASE}/politique-cookies`, priority: 0.3, changeFrequency: "yearly" as const },
+    { url: `${BASE}/comparer`, priority: 0.6, changeFrequency: "weekly" as const },
+    { url: `${BASE}/connexion`, priority: 0.5, changeFrequency: "monthly" as const },
+    { url: `${BASE}/inscription`, priority: 0.5, changeFrequency: "monthly" as const },
+    { url: `${BASE}/messages`, priority: 0.7, changeFrequency: "daily" as const },
+    { url: `${BASE}/favoris`, priority: 0.5, changeFrequency: "daily" as const },
+    { url: `${BASE}/tableau-de-bord`, priority: 0.7, changeFrequency: "daily" as const },
   ];
 
   const categoryPages = categories.map((cat) => ({

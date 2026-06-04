@@ -64,6 +64,8 @@ export default function Footer() {
       { href: "/conditions", label: t.footer.terms },
       { href: "/confidentialite", label: t.footer.privacy },
       { href: "/accessibilite", label: isRTL ? "إمكانية الوصول" : "Accessibilité" },
+      { href: "/politique-cookies", label: isRTL ? "سياسة الكوكيز" : "Politique cookies" },
+      { href: "/plan-du-site", label: isRTL ? "خريطة الموقع" : "Plan du site" },
     ],
     categories: [
       { href: "/categories/vehicles", label: isRTL ? "السيارات" : "Véhicules" },
