@@ -36,6 +36,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/statistiques`, priority: 0.5, changeFrequency: "daily" as const },
     { url: `${BASE}/promotions`, priority: 0.8, changeFrequency: "daily" as const },
     { url: `${BASE}/application`, priority: 0.6, changeFrequency: "monthly" as const },
+    { url: `${BASE}/offres`, priority: 0.5, changeFrequency: "daily" as const },
+    { url: `${BASE}/vendeurs`, priority: 0.7, changeFrequency: "daily" as const },
+    { url: `${BASE}/coupons`, priority: 0.7, changeFrequency: "daily" as const },
+    { url: `${BASE}/faq`, priority: 0.6, changeFrequency: "monthly" as const },
+    { url: `${BASE}/partenaires`, priority: 0.5, changeFrequency: "monthly" as const },
+    { url: `${BASE}/presse`, priority: 0.5, changeFrequency: "monthly" as const },
+    { url: `${BASE}/investisseurs`, priority: 0.5, changeFrequency: "monthly" as const },
+    { url: `${BASE}/recrutement`, priority: 0.6, changeFrequency: "weekly" as const },
+    { url: `${BASE}/accessibilite`, priority: 0.3, changeFrequency: "yearly" as const },
+    { url: `${BASE}/ramadan`, priority: 0.7, changeFrequency: "daily" as const },
+    { url: `${BASE}/verification`, priority: 0.5, changeFrequency: "monthly" as const },
   ];
 
   const categoryPages = categories.map((cat) => ({

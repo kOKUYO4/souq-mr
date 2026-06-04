@@ -33,38 +33,37 @@ export default function Footer() {
   const links = {
     marketplace: [
       { href: "/", label: isRTL ? "الرئيسية" : "Accueil" },
-      { href: "/a-propos", label: isRTL ? "من نحن" : "À propos" },
-      { href: "/categories", label: isRTL ? "الأقسام" : "Catégories" },
       { href: "/annonces", label: isRTL ? "الإعلانات" : "Annonces" },
-      { href: "/promotions", label: isRTL ? "التخفيضات" : "Promotions" },
+      { href: "/promotions", label: isRTL ? "🔥 التخفيضات" : "🔥 Promotions" },
+      { href: "/coupons", label: isRTL ? "🎫 أكواد الخصم" : "🎫 Coupons" },
       { href: "/vendre", label: isRTL ? "أبيع" : "Vendre" },
       { href: "/pro", label: isRTL ? "للتجار" : "Espace Pro" },
+      { href: "/vendeurs", label: isRTL ? "البائعون" : "Vendeurs" },
       { href: "/carte", label: isRTL ? "خريطة الإعلانات" : "Carte des annonces" },
-      { href: "/notifications", label: isRTL ? "الإشعارات" : "Notifications" },
+      { href: "/classement", label: isRTL ? "🏆 الترتيب" : "🏆 Classement" },
+      { href: "/bazaar-live", label: isRTL ? "🔴 بازار مباشر" : "🔴 Bazaar Live" },
+      { href: "/ramadan", label: isRTL ? "🌙 رمضان" : "🌙 Ramadan" },
+      { href: "/application", label: isRTL ? "📱 تحميل التطبيق" : "📱 Télécharger l'app" },
     ],
     help: [
       { href: "/aide", label: t.footer.help },
+      { href: "/faq", label: isRTL ? "الأسئلة الشائعة" : "FAQ" },
       { href: "/securite", label: isRTL ? "نصائح الأمان" : "Guide anti-arnaque" },
       { href: "/escrow", label: isRTL ? "الضمان المالي" : "Service Escrow" },
       { href: "/paiement", label: isRTL ? "طرق الدفع" : "Modes de paiement" },
-      { href: "/tontine", label: isRTL ? "الادخار الجماعي" : "Tontine numérique" },
       { href: "/livraison", label: isRTL ? "التوصيل" : "Livraison" },
-      { href: "/parrainage", label: isRTL ? "برنامج الإحالة" : "Parrainage" },
-      { href: "/bazaar-live", label: isRTL ? "🔴 بازار مباشر" : "🔴 Bazaar Live" },
-      { href: "/ramadan", label: isRTL ? "🌙 وضع رمضان" : "🌙 Mode Ramadan" },
+      { href: "/suivi", label: isRTL ? "تتبع الطلب" : "Suivi commande" },
       { href: "/alertes", label: isRTL ? "تنبيهات الأسعار" : "Alertes prix" },
+      { href: "/parrainage", label: isRTL ? "برنامج الإحالة" : "Parrainage" },
+      { href: "/tontine", label: isRTL ? "الادخار الجماعي" : "Tontine" },
       { href: "/portefeuille", label: isRTL ? "المحفظة" : "Portefeuille" },
-      { href: "/classement", label: isRTL ? "أفضل البائعين" : "Classement" },
+      { href: "/offres", label: isRTL ? "عروضي" : "Mes offres" },
       { href: "/verification", label: isRTL ? "التحقق من الهوية" : "Vérification" },
-      { href: "/actualites", label: isRTL ? "الأخبار" : "Actualités" },
-      { href: "/statistiques", label: isRTL ? "الإحصائيات" : "Statistiques" },
-      { href: "/application", label: isRTL ? "📱 تحميل التطبيق" : "📱 Télécharger l'app" },
-      { href: "/promotions", label: isRTL ? "🔥 التخفيضات" : "🔥 Promotions" },
-      { href: "/offres", label: isRTL ? "🤝 عروضي" : "🤝 Mes offres" },
-      { href: "/recrutement", label: isRTL ? "وظائف" : "Recrutement" },
+      { href: "/notifications", label: isRTL ? "الإشعارات" : "Notifications" },
       { href: "/contact", label: t.footer.contact },
       { href: "/conditions", label: t.footer.terms },
       { href: "/confidentialite", label: t.footer.privacy },
+      { href: "/accessibilite", label: isRTL ? "إمكانية الوصول" : "Accessibilité" },
     ],
     categories: [
       { href: "/categories/vehicles", label: isRTL ? "السيارات" : "Véhicules" },
@@ -161,12 +160,12 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Catégories populaires */}
+          {/* Catégories + Compagnie */}
           <div>
             <h4 className="text-sand-400 font-semibold text-sm uppercase tracking-wider mb-4">
               {isRTL ? "أقسام شائعة" : "Catégories populaires"}
             </h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2.5 mb-6">
               {links.categories.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm text-sand-300/70 hover:text-sand-400 transition-colors">
@@ -176,22 +175,26 @@ export default function Footer() {
               ))}
             </ul>
 
-            {/* App badges */}
-            <div className="mt-6 space-y-2">
-              <p className="text-xs text-sand-400 mb-2">
-                {isRTL ? "حمّل التطبيق" : "Télécharger l'app"}
-              </p>
-              <div className="flex flex-col gap-2">
-                {["App Store", "Google Play"].map((store) => (
-                  <button
-                    key={store}
-                    className="px-3 py-2 text-xs border border-sand-400/20 rounded-lg text-sand-300 hover:border-sand-400/50 hover:text-sand-400 transition-all text-left"
-                  >
-                    📱 {store}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <h4 className="text-sand-400 font-semibold text-sm uppercase tracking-wider mb-4">
+              {isRTL ? "الشركة" : "Compagnie"}
+            </h4>
+            <ul className="space-y-2.5">
+              {[
+                { href: "/a-propos", label: isRTL ? "من نحن" : "À propos" },
+                { href: "/actualites", label: isRTL ? "الأخبار" : "Actualités" },
+                { href: "/statistiques", label: isRTL ? "الإحصائيات" : "Statistiques" },
+                { href: "/recrutement", label: isRTL ? "وظائف" : "Recrutement" },
+                { href: "/partenaires", label: isRTL ? "الشركاء" : "Partenaires" },
+                { href: "/investisseurs", label: isRTL ? "المستثمرون" : "Investisseurs" },
+                { href: "/presse", label: isRTL ? "الصحافة" : "Presse" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-sand-300/70 hover:text-sand-400 transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
