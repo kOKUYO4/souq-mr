@@ -1,16 +1,13 @@
 -- ============================================================
--- SOUQ.MR — Migration correctrice
+-- SOUQ.MR — Migration correctrice (profiles uniquement)
 -- À exécuter dans Supabase Dashboard > SQL Editor
 --
 -- Problème : la table profiles référence auth.users(id) mais
 -- notre auth OTP custom ne crée pas d'entrée dans auth.users.
--- Le trigger handle_new_user ne se déclenche jamais.
--- Solution : supprimer la FK vers auth.users + corriger les RLS
---            pour permettre l'upsert via service_role.
+-- Solution : recréer profiles SANS la FK vers auth.users.
 -- ============================================================
 
 -- 1. Recréer profiles SANS la FK vers auth.users
--- (si la table existe déjà avec la mauvaise contrainte)
 DROP TABLE IF EXISTS public.profiles CASCADE;
 
 CREATE TABLE public.profiles (
@@ -30,23 +27,18 @@ CREATE TABLE public.profiles (
   updated_at    timestamptz NOT NULL DEFAULT now()
 );
 
--- Index téléphone
 CREATE INDEX IF NOT EXISTS profiles_phone_idx ON public.profiles(phone);
 
--- 2. RLS — activer
+-- 2. RLS
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- Lecture : profils actifs visibles par tous (y compris anonyme)
 CREATE POLICY "Profils publics lisibles"
   ON public.profiles FOR SELECT
   USING (is_active = true);
 
--- Écriture : le service_role (backend) peut tout faire — pas de restriction
--- (le RLS ne s'applique pas au service_role par défaut dans Supabase)
--- Les lignes ci-dessous sont optionnelles mais explicites :
 CREATE POLICY "Service role peut insérer"
   ON public.profiles FOR INSERT
-  WITH CHECK (true);  -- service_role bypass RLS de toute façon
+  WITH CHECK (true);
 
 CREATE POLICY "Service role peut modifier"
   ON public.profiles FOR UPDATE
@@ -62,31 +54,7 @@ CREATE TRIGGER trg_profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
--- 4. Corriger la FK de listings → profiles (seulement si la table ET la colonne existent)
-DO $$
-BEGIN
-  IF EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'public'
-      AND table_name   = 'listings'
-      AND column_name  = 'seller_id'
-  ) THEN
-    -- Supprimer l'ancienne contrainte si elle existe
-    ALTER TABLE public.listings
-      DROP CONSTRAINT IF EXISTS listings_seller_id_fkey;
-
-    -- Recréer la FK vers public.profiles (et non auth.users)
-    ALTER TABLE public.listings
-      ADD CONSTRAINT listings_seller_id_fkey
-      FOREIGN KEY (seller_id) REFERENCES public.profiles(id) ON DELETE CASCADE;
-
-    RAISE NOTICE 'FK listings.seller_id → profiles recréée';
-  ELSE
-    RAISE NOTICE 'Table listings ou colonne seller_id absente — FK ignorée';
-  END IF;
-END $$;
-
 -- ============================================================
--- Test de vérification (doit retourner 0 ou plusieurs lignes) :
+-- Vérification :
 -- SELECT count(*) FROM public.profiles;
 -- ============================================================
