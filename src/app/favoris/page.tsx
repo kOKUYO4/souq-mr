@@ -1,21 +1,55 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Heart, ArrowRight, ArrowLeft } from "lucide-react";
-import { listings } from "@/data/mockData";
 import ListingCard from "@/components/listings/ListingCard";
-import { useFavorites } from "@/context/FavoritesContext";
 import { useLanguage } from "@/context/LanguageContext";
+type Listing = {
+  id: string;
+  title: string;
+  titleAr: string;
+  price: number;
+  originalPrice?: number;
+  category: string;
+  location: string;
+  locationAr: string;
+  images: string[];
+  condition: "new" | "used" | "tbh";
+  negotiable: boolean;
+  cod: boolean;
+  featured: boolean;
+  views: number;
+  createdAt: string;
+  seller: { id: string; name: string; nameAr: string; avatar: string; badge: "verified" | "pro" | "regular"; rating: number; reviews: number; listings: number; joinedAt: string; phone: string; responseTime?: string };
+  description: string;
+  descriptionAr: string;
+  attributes?: Record<string, string>;
+  subcategory: string;
+};
 
 export default function FavorisPage() {
-  const { favorites } = useFavorites();
   const { isRTL } = useLanguage();
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
+  const [favListings, setFavListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  /* Affiche tous les listings si aucun favori (démo) */
-  const favListings = favorites.length > 0
-    ? listings.filter((l) => favorites.includes(l.id))
-    : listings.slice(0, 4);
+  useEffect(() => {
+    const token = typeof window !== "undefined"
+      ? localStorage.getItem("souq-token") || ""
+      : "";
+    fetch("/api/favorites", {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        const items: { listing: Listing }[] = json.data ?? json ?? [];
+        setFavListings(items.map((item) => item.listing).filter(Boolean));
+      })
+      .catch(() => setFavListings([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="min-h-screen bg-sand-50">
@@ -42,24 +76,16 @@ export default function FavorisPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {favListings.length > 0 ? (
-          <>
-            {favorites.length === 0 && (
-              <div className="bg-sand-100 border border-sand-200 rounded-xl px-4 py-3 mb-6 flex items-center gap-2 text-sm text-night-400/70">
-                <Heart size={14} className="text-red-400 fill-red-400 flex-shrink-0" />
-                <span>
-                  {isRTL
-                    ? "هذه إعلانات مقترحة — اضغط ❤️ على أي إعلان لحفظه"
-                    : "Voici des suggestions — cliquez ❤️ sur une annonce pour la sauvegarder"}
-                </span>
-              </div>
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {favListings.map((l) => (
-                <ListingCard key={l.id} listing={l} />
-              ))}
-            </div>
-          </>
+        {loading ? (
+          <div className="text-center py-20 text-night-400/60 text-sm">
+            {isRTL ? "جاري التحميل..." : "Chargement..."}
+          </div>
+        ) : favListings.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {favListings.map((l) => (
+              <ListingCard key={l.id} listing={l} />
+            ))}
+          </div>
         ) : (
           <div className="text-center py-20">
             <div className="w-24 h-24 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-5">

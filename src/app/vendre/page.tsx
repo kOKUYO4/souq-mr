@@ -74,9 +74,14 @@ export default function VendrePage() {
         }),
       });
       const json = await res.json();
-      if (json.success) {
-        setSubmitted(true);
+      if (json.success || res.ok) {
         success(isRTL ? "تم نشر إعلانك! 🚀" : "Annonce publiée avec succès ! 🚀");
+        const id = json.data?.id;
+        if (id) {
+          router.push(`/annonce/${id}`);
+        } else {
+          setSubmitted(true);
+        }
       } else {
         toastError(json.error || (isRTL ? "خطأ في النشر" : "Erreur lors de la publication"));
       }

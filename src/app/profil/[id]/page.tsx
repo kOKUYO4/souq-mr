@@ -1,16 +1,82 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { MapPin, Calendar, MessageCircle, Share2, CheckCircle2, BarChart3, Star } from "lucide-react";
-import { sellers, listings, reviews, formatPrice } from "@/data/mockData";
 import ListingCard from "@/components/listings/ListingCard";
 import ReviewCard from "@/components/social/ReviewCard";
 import ReviewForm from "@/components/social/ReviewForm";
 import StarRating from "@/components/social/StarRating";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 import { useLanguage } from "@/context/LanguageContext";
+
+type Seller = {
+  id: string;
+  name: string;
+  nameAr: string;
+  avatar: string;
+  badge: "verified" | "pro" | "regular";
+  rating: number;
+  reviews: number;
+  listings: number;
+  joinedAt: string;
+  phone: string;
+  responseTime?: string;
+};
+
+type Listing = {
+  id: string;
+  title: string;
+  titleAr: string;
+  price: number;
+  originalPrice?: number;
+  category: string;
+  subcategory: string;
+  location: string;
+  locationAr: string;
+  images: string[];
+  condition: "new" | "used" | "tbh";
+  negotiable: boolean;
+  cod: boolean;
+  featured: boolean;
+  views: number;
+  createdAt: string;
+  description: string;
+  descriptionAr: string;
+  attributes?: Record<string, string>;
+  seller: Seller;
+};
+
+type Review = {
+  id: string;
+  author: string;
+  authorAr: string;
+  avatar: string;
+  rating: number;
+  date: string;
+  comment: string;
+  commentAr: string;
+  sellerId: string;
+  listingId?: string;
+  buyerName?: string;
+  createdAt?: string;
+};
+
+type ProfileData = {
+  id: string;
+  name: string;
+  nameAr: string;
+  avatar: string;
+  badge: "pro" | "verified" | "regular";
+  rating: number;
+  reviews: number;
+  listings: number;
+  joinedAt: string;
+  responseTime?: string;
+  sellerListings?: Listing[];
+  sellerReviews?: Review[];
+};
 
 const badgeStyle = {
   pro: { label: { fr: "Marchand Pro", ar: "تاجر محترف" }, bg: "linear-gradient(135deg, #C9A84C, #B8922E)", color: "#1B2A4A" },
@@ -32,17 +98,53 @@ export default function ProfilPage() {
   const [activeTab, setActiveTab] = useState<"listings" | "reviews" | "about">("listings");
   const [reviewFormOpen, setReviewFormOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const seller = sellers.find((s) => s.id === id) || sellers[0];
+  useEffect(() => {
+    setLoading(true);
+    setFetchError(null);
+    fetch(`/api/profile/${id}`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.error) { setFetchError(json.error); return; }
+        setProfileData(json.data ?? json);
+      })
+      .catch(() => setFetchError("Impossible de charger le profil"))
+      .finally(() => setLoading(false));
+  }, [id]);
 
   const handleShare = useCallback(() => {
+    if (!profileData) return;
     const url = typeof window !== "undefined" ? window.location.href : "";
-    if (navigator.share) { navigator.share({ title: seller.name, url }).catch(() => {}); }
+    if (navigator.share) { navigator.share({ title: profileData.name, url }).catch(() => {}); }
     else { navigator.clipboard.writeText(url).then(() => { setShareCopied(true); setTimeout(() => setShareCopied(false), 2000); }); }
-  }, [seller.name]);
-  const sellerListings = listings.filter((l) => l.seller.id === seller.id);
-  const sellerReviews = reviews.filter((r) => r.sellerId === seller.id);
-  const badge = badgeStyle[seller.badge];
+  }, [profileData]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-sand-50 flex items-center justify-center">
+        <div className="text-night-400/60 text-sm">{isRTL ? "جاري التحميل..." : "Chargement..."}</div>
+      </div>
+    );
+  }
+
+  if (fetchError || !profileData) {
+    return (
+      <div className="min-h-screen bg-sand-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{fetchError || (isRTL ? "الملف الشخصي غير موجود" : "Profil introuvable")}</p>
+          <Link href="/annonces" className="btn-gold px-6 py-2">{isRTL ? "العودة للإعلانات" : "Retour aux annonces"}</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const seller = profileData;
+  const sellerListings = profileData.sellerListings ?? [];
+  const sellerReviews = profileData.sellerReviews ?? [];
+  const badge = badgeStyle[seller.badge ?? "regular"];
 
   const tabs = [
     { id: "listings", fr: `Annonces (${sellerListings.length})`, ar: `الإعلانات (${sellerListings.length})` },
@@ -95,7 +197,7 @@ export default function ProfilPage() {
 
               <div className={`flex flex-wrap items-center gap-4 text-sm text-night-400/60 mb-3 ${isRTL ? "flex-row-reverse sm:justify-end" : ""}`}>
                 <span className={`flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <StarRating value={Math.floor(seller.rating)} size={14} showValue />
+                  <StarRating value={Math.floor(seller.rating ?? 0)} size={14} showValue />
                   <span className="text-xs">({seller.reviews} {isRTL ? "تقييم" : "avis"})</span>
                 </span>
                 <span className={`flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}>
@@ -176,7 +278,7 @@ export default function ProfilPage() {
                 {/* Note globale */}
                 <div className={`text-center flex-shrink-0 ${isRTL ? "" : ""}`}>
                   <p className="text-6xl font-display font-bold text-night-500">{seller.rating}</p>
-                  <StarRating value={Math.floor(seller.rating)} size={20} />
+                  <StarRating value={Math.floor(seller.rating ?? 0)} size={20} />
                   <p className="text-xs text-night-400/60 mt-1">
                     {seller.reviews} {isRTL ? "تقييم" : "avis"}
                   </p>
@@ -244,7 +346,7 @@ export default function ProfilPage() {
                 { icon: BarChart3, fr: "Annonces publiées", ar: "الإعلانات المنشورة", value: seller.listings },
                 { icon: Star, fr: "Note moyenne", ar: "متوسط التقييم", value: `${seller.rating}/5` },
                 { icon: MessageCircle, fr: "Temps de réponse", ar: "وقت الرد", value: seller.responseTime || "< 2h" },
-                { icon: Calendar, fr: "Membre depuis", ar: "عضو منذ", value: new Date(seller.joinedAt).toLocaleDateString(locale === "ar" ? "ar-SA" : "fr-FR", { year: "numeric", month: "long" }) },
+                { icon: Calendar, fr: "Membre depuis", ar: "عضو منذ", value: seller.joinedAt ? new Date(seller.joinedAt).toLocaleDateString(locale === "ar" ? "ar-SA" : "fr-FR", { year: "numeric", month: "long" }) : "—" },
               ].map(({ icon: Icon, fr, ar, value }, i) => (
                 <div key={i} className={`flex items-center gap-3 p-4 bg-sand-50 rounded-xl ${isRTL ? "flex-row-reverse" : ""}`}>
                   <div className="w-10 h-10 rounded-xl bg-sand-100 flex items-center justify-center flex-shrink-0">

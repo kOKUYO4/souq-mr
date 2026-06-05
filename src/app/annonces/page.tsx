@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { SlidersHorizontal, Grid, List, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ListingCard from "@/components/listings/ListingCard";
-import { listings, categories } from "@/data/mockData";
+import { categories } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 24;
 
 function AnnoncesContent() {
   const { isRTL, locale } = useLanguage();
@@ -25,31 +25,38 @@ function AnnoncesContent() {
   const [negotiable, setNegotiable] = useState(false);
   const [cod, setCod] = useState(false);
 
-  const filtered = useMemo(() => {
-    let items = listings.filter((l) => {
-      if (selectedCat !== "all" && l.category !== selectedCat) return false;
-      if (condition === "new" && l.condition !== "new") return false;
-      if (condition === "used" && l.condition !== "used") return false;
-      if (priceMin && l.price < parseInt(priceMin)) return false;
-      if (priceMax && l.price > parseInt(priceMax)) return false;
-      if (negotiable && !l.negotiable) return false;
-      if (cod && !l.cod) return false;
-      return true;
-    });
-    if (sortBy === "recent") items = [...items].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    if (sortBy === "price-asc") items = [...items].sort((a, b) => a.price - b.price);
-    if (sortBy === "price-desc") items = [...items].sort((a, b) => b.price - a.price);
-    if (sortBy === "popular") items = [...items].sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
-    return items;
-  }, [selectedCat, condition, priceMin, priceMax, sortBy, negotiable, cod]);
+  const [listings, setListings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
 
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const fetchListings = async () => {
+    setLoading(true);
+    const params = new URLSearchParams();
+    if (selectedCat && selectedCat !== "all") params.set("category", selectedCat);
+    if (condition && condition !== "all") params.set("condition", condition);
+    if (priceMin) params.set("min_price", priceMin);
+    if (priceMax) params.set("max_price", priceMax);
+    if (sortBy) params.set("sort", sortBy);
+    params.set("limit", String(PAGE_SIZE));
+    params.set("offset", String((page - 1) * PAGE_SIZE));
+
+    const res = await fetch(`/api/listings?${params}`);
+    const { data } = await res.json();
+    setListings(data?.listings ?? data ?? []);
+    setTotal(data?.total ?? 0);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchListings(); }, [selectedCat, condition, priceMin, priceMax, sortBy, page]);
+
+  const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
+  const paginated = listings;
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [page]);
 
   const handleCatChange = (cat: string) => { setSelectedCat(cat); setPage(1); };
   const activeFilterCount = [priceMin, priceMax].filter(Boolean).length + (condition !== "all" ? 1 : 0) + (negotiable ? 1 : 0) + (cod ? 1 : 0);
+  const displayTotal = total || listings.length;
 
   return (
     <div className="min-h-screen bg-sand-50">
@@ -159,7 +166,7 @@ function AnnoncesContent() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className={`flex items-center justify-between mb-6 ${isRTL ? "flex-row-reverse" : ""}`}>
           <p className="text-sm text-night-400">
-            <span className="font-semibold text-night-500">{filtered.length}</span>
+            <span className="font-semibold text-night-500">{displayTotal}</span>
             {" "}{isRTL ? "إعلان" : "annonces"}
             {selectedCat !== "all" && (() => {
               const cat = categories.find(c => c.id === selectedCat);
@@ -173,7 +180,11 @@ function AnnoncesContent() {
           </p>
         </div>
 
-        {paginated.length > 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="w-8 h-8 border-4 border-sand-200 border-t-sand-400 rounded-full animate-spin" />
+          </div>
+        ) : paginated.length > 0 ? (
           <>
             <div className={view === "grid"
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"

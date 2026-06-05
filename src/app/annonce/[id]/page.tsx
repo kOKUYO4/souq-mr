@@ -9,7 +9,6 @@ import {
   MessageCircle, Star, ChevronLeft, ChevronRight, Shield, Truck,
   Flag, ZoomIn,
 } from "lucide-react";
-import { listings, reviews, formatPrice, timeAgo } from "@/data/mockData";
 import Badge from "@/components/ui/Badge";
 import HagglingModal from "@/components/social/HagglingModal";
 import ReviewCard from "@/components/social/ReviewCard";
@@ -18,7 +17,49 @@ import StarRating from "@/components/social/StarRating";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/context/ToastContext";
-import type { Listing } from "@/data/mockData";
+type Listing = {
+  id: string;
+  title: string;
+  titleAr: string;
+  price: number;
+  originalPrice?: number;
+  category: string;
+  subcategory: string;
+  location: string;
+  locationAr: string;
+  images: string[];
+  condition: "new" | "used" | "tbh";
+  negotiable: boolean;
+  cod: boolean;
+  featured: boolean;
+  views: number;
+  createdAt: string;
+  description: string;
+  descriptionAr: string;
+  attributes?: Record<string, string>;
+  seller: {
+    id: string;
+    name: string;
+    nameAr: string;
+    avatar: string;
+    badge: "verified" | "pro" | "regular";
+    rating: number;
+    reviews: number;
+    listings: number;
+    joinedAt: string;
+    phone: string;
+    responseTime?: string;
+  };
+};
+
+const formatPrice = (p: number) => p.toLocaleString("fr-FR");
+const timeAgo = (date: string) => {
+  const diff = Date.now() - new Date(date).getTime();
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) return "Aujourd'hui";
+  if (days === 1) return "Hier";
+  return `Il y a ${days} jours`;
+};
 
 function PriceAlertCard({ listing, isRTL, onSuccess }: { listing: Listing; isRTL: boolean; onSuccess: (msg: string) => void }) {
   const [alertPrice, setAlertPrice] = useState("");
@@ -66,11 +107,15 @@ export default function AnnonceDetailPage() {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
   const [reported, setReported] = useState(false);
+  const [listing, setListing] = useState<Listing | null>(null);
+  const [sellerReviews, setSellerReviews] = useState<{ id: string; sellerId: string; rating: number; comment: string; buyerName: string; createdAt: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const touchStartX = useRef(0);
   const { success, warning } = useToast();
 
   const handleReport = async () => {
-    if (reported) return;
+    if (reported || !listing) return;
     try {
       await fetch("/api/report", {
         method: "POST",
@@ -85,6 +130,7 @@ export default function AnnonceDetailPage() {
   };
 
   const handleShare = async () => {
+    if (!listing) return;
     const url = window.location.href;
     const title = isRTL ? listing.titleAr : listing.title;
     if (navigator.share) {
@@ -96,16 +142,46 @@ export default function AnnonceDetailPage() {
     }
   };
 
-  const listing = listings.find((l) => l.id === id) || listings[0];
-  const liked = isFavorite(listing.id);
+  useEffect(() => {
+    setLoading(true);
+    setFetchError(null);
+    fetch(`/api/listings/${id}`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.error) { setFetchError(json.error); return; }
+        setListing(json.data ?? json);
+      })
+      .catch(() => setFetchError("Impossible de charger l'annonce"))
+      .finally(() => setLoading(false));
+  }, [id]);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => { recordView(listing.id); }, [listing.id]);
-  const sellerReviews = reviews.filter((r) => r.sellerId === listing.seller.id);
+  useEffect(() => {
+    if (listing?.id) { recordView(listing.id); }
+  }, [listing?.id]);
+
+  const liked = listing ? isFavorite(listing.id) : false;
 
   const prevImg = () => setImgIdx((i) => Math.max(0, i - 1));
-  const nextImg = () => setImgIdx((i) => Math.min(listing.images.length - 1, i + 1));
+  const nextImg = () => setImgIdx((i) => listing ? Math.min(listing.images.length - 1, i + 1) : i);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-sand-50 flex items-center justify-center">
+        <div className="text-night-400/60 text-sm">{isRTL ? "جاري التحميل..." : "Chargement..."}</div>
+      </div>
+    );
+  }
+
+  if (fetchError || !listing) {
+    return (
+      <div className="min-h-screen bg-sand-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{fetchError || (isRTL ? "الإعلان غير موجود" : "Annonce introuvable")}</p>
+          <Link href="/annonces" className="btn-gold px-6 py-2">{isRTL ? "العودة للإعلانات" : "Retour aux annonces"}</Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-sand-50">
@@ -202,7 +278,7 @@ export default function AnnonceDetailPage() {
                     style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.95), rgba(184,146,46,0.95))" }}>
                     {formatPrice(listing.price)} MRU
                     {listing.originalPrice && (
-                      <span className="ml-2 text-white/60 line-through text-sm">{formatPrice(listing.originalPrice)}</span>
+                      <span className="ml-2 text-white/60 line-through text-sm">{formatPrice(listing.originalPrice!)}</span>
                     )}
                   </div>
                 </div>
@@ -235,7 +311,7 @@ export default function AnnonceDetailPage() {
                   </h1>
                   <div className={`flex flex-wrap items-center gap-3 text-sm text-night-400/60 ${isRTL ? "flex-row-reverse" : ""}`}>
                     <span className="flex items-center gap-1"><MapPin size={13} />{isRTL ? listing.locationAr : listing.location}</span>
-                    <span className="flex items-center gap-1"><Clock size={13} />{timeAgo(listing.createdAt, locale)}</span>
+                    <span className="flex items-center gap-1"><Clock size={13} />{timeAgo(listing.createdAt)}</span>
                     <span className="flex items-center gap-1"><Eye size={13} />{listing.views} {t.listings.views}</span>
                   </div>
                 </div>
@@ -437,7 +513,7 @@ export default function AnnonceDetailPage() {
               <p className="text-3xl font-display font-bold price-tag">{formatPrice(listing.price)}</p>
               <p className="text-sm text-night-400/60 mt-0.5">MRU (Ouguiya mauritanien)</p>
               {listing.originalPrice && (
-                <p className="text-sm text-night-400/40 line-through mt-1">{formatPrice(listing.originalPrice)} MRU</p>
+                <p className="text-sm text-night-400/40 line-through mt-1">{formatPrice(listing.originalPrice!)} MRU</p>
               )}
             </div>
 
@@ -512,9 +588,8 @@ export default function AnnonceDetailPage() {
 
         {/* Annonces similaires */}
         {(() => {
-          const related = listings
-            .filter((l) => l.id !== listing.id && l.category === listing.category)
-            .slice(0, 4);
+          const related: Listing[] = [];
+          if (!related.length) return null;
           if (!related.length) return null;
           return (
             <div className="mt-12">
