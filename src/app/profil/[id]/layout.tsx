@@ -1,29 +1,30 @@
 import type { Metadata } from "next";
-import { sellers } from "@/data/mockData";
 
 export async function generateMetadata({
   params,
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const seller = sellers.find((s) => s.id === params.id);
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/profile/${params.id}`, { next: { revalidate: 60 } });
+    if (!res.ok) throw new Error("not found");
+    const seller = await res.json();
 
-  if (!seller) {
+    const desc = `Profil de ${seller.name} sur SOUQ.MR — Note ${seller.rating}/5, ${seller.reviews} avis, ${seller.listings} annonces actives.`;
+
+    return {
+      title: `${seller.name} — Vendeur`,
+      description: desc,
+      openGraph: {
+        title: `${seller.name} | SOUQ.MR`,
+        description: desc,
+        images: seller.avatar ? [{ url: seller.avatar, width: 400, height: 400 }] : [],
+        type: "profile",
+      },
+    };
+  } catch {
     return { title: "Profil introuvable" };
   }
-
-  const desc = `Profil de ${seller.name} sur SOUQ.MR — Note ${seller.rating}/5, ${seller.reviews} avis, ${seller.listings} annonces actives.`;
-
-  return {
-    title: `${seller.name} — Vendeur`,
-    description: desc,
-    openGraph: {
-      title: `${seller.name} | SOUQ.MR`,
-      description: desc,
-      images: [{ url: seller.avatar, width: 400, height: 400 }],
-      type: "profile",
-    },
-  };
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {

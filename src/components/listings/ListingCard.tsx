@@ -4,7 +4,27 @@ import { useState } from "react";
 import Link from "next/link";
 import { Heart, MapPin, Eye, MessageCircle, CheckCircle2, Share2, Scale } from "lucide-react";
 import type { Listing } from "@/data/mockData";
-import { formatPrice, timeAgo } from "@/data/mockData";
+
+const formatPrice = (price: number): string =>
+  new Intl.NumberFormat("fr-MR", { style: "decimal", maximumFractionDigits: 0 }).format(price);
+
+const timeAgo = (date: string, locale: "fr" | "ar"): string => {
+  const now = new Date();
+  const then = new Date(date);
+  const diff = Math.floor((now.getTime() - then.getTime()) / 1000);
+  const days = Math.floor(diff / 86400);
+  const hours = Math.floor(diff / 3600);
+  if (locale === "ar") {
+    if (days > 7) return `منذ ${Math.floor(days / 7)} أسابيع`;
+    if (days > 0) return `منذ ${days} أيام`;
+    if (hours > 0) return `منذ ${hours} ساعات`;
+    return "منذ قليل";
+  }
+  if (days > 7) return `il y a ${Math.floor(days / 7)} semaines`;
+  if (days > 0) return `il y a ${days} jours`;
+  if (hours > 0) return `il y a ${hours} heures`;
+  return "à l'instant";
+};
 import Badge from "@/components/ui/Badge";
 import HagglingModal from "@/components/social/HagglingModal";
 import { useLanguage } from "@/context/LanguageContext";

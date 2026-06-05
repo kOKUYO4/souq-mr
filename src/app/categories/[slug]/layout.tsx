@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { categories } from "@/data/mockData";
+import { categories } from "@/data/categories";
 
 export async function generateMetadata({
   params,

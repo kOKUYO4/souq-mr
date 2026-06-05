@@ -1,9 +1,21 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Star, ShieldCheck, Store, CheckCircle2, MessageCircle } from "lucide-react";
-import { sellers } from "@/data/mockData";
+import { Star, ShieldCheck, Store, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+
+interface SellerData {
+  id: string;
+  name: string;
+  nameAr: string;
+  avatar: string;
+  badge: "verified" | "pro" | "regular";
+  rating: number;
+  reviews: number;
+  listings: number;
+  responseTime?: string;
+}
 
 const badgeConfig = {
   pro: { label: { fr: "Marchand Pro", ar: "تاجر محترف" }, icon: <Star size={12} fill="currentColor" />, style: { background: "linear-gradient(135deg, #C9A84C, #B8922E)" }, textColor: "text-night-500" },
@@ -13,6 +25,14 @@ const badgeConfig = {
 
 export default function TrustedSellers() {
   const { t, isRTL, locale } = useLanguage();
+  const [sellers, setSellers] = useState<SellerData[]>([]);
+
+  useEffect(() => {
+    fetch("/api/sellers?limit=6&sort=rating")
+      .then((r) => r.ok ? r.json() : { sellers: [] })
+      .then((data) => setSellers(data.sellers ?? data ?? []))
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="py-16 bg-sand-50">

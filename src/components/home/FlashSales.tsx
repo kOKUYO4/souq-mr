@@ -3,8 +3,19 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Zap, Clock, ArrowRight, ArrowLeft, Eye } from "lucide-react";
-import { listings, formatPrice } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
+
+interface DealListing {
+  id: string;
+  title: string;
+  titleAr: string;
+  price: number;
+  originalPrice?: number;
+  images: string[];
+  views: number;
+}
+
+const formatPrice = (p: number) => new Intl.NumberFormat("fr-MR", { style: "decimal", maximumFractionDigits: 0 }).format(p);
 
 function useCountdown() {
   const [time, setTime] = useState({ h: 0, m: 0, s: 0 });
@@ -27,10 +38,20 @@ function useCountdown() {
 }
 
 export default function FlashSales() {
-  const { isRTL, locale } = useLanguage();
+  const { isRTL } = useLanguage();
   const { h, m, s } = useCountdown();
+  const [deals, setDeals] = useState<DealListing[]>([]);
 
-  const deals = listings.filter((l) => l.originalPrice && l.originalPrice > l.price).slice(0, 6);
+  useEffect(() => {
+    fetch("/api/listings?limit=6")
+      .then((r) => r.ok ? r.json() : { listings: [] })
+      .then((data) => {
+        const all: DealListing[] = data.listings ?? data ?? [];
+        setDeals(all.filter((l) => l.originalPrice && l.originalPrice > l.price));
+      })
+      .catch(() => {});
+  }, []);
+
   if (!deals.length) return null;
 
   const pad = (n: number) => String(n).padStart(2, "0");

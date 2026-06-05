@@ -1,10 +1,39 @@
 "use client";
 
 import { ThumbsUp } from "lucide-react";
-import type { Review } from "@/data/mockData";
-import { timeAgo } from "@/data/mockData";
 import StarRating from "./StarRating";
 import { useLanguage } from "@/context/LanguageContext";
+
+export interface Review {
+  id: string;
+  author: string;
+  authorAr: string;
+  avatar: string;
+  rating: number;
+  date: string;
+  comment: string;
+  commentAr: string;
+  sellerId: string;
+  listingId?: string;
+}
+
+const timeAgo = (date: string, locale: "fr" | "ar"): string => {
+  const now = new Date();
+  const then = new Date(date);
+  const diff = Math.floor((now.getTime() - then.getTime()) / 1000);
+  const days = Math.floor(diff / 86400);
+  const hours = Math.floor(diff / 3600);
+  if (locale === "ar") {
+    if (days > 7) return `منذ ${Math.floor(days / 7)} أسابيع`;
+    if (days > 0) return `منذ ${days} أيام`;
+    if (hours > 0) return `منذ ${hours} ساعات`;
+    return "منذ قليل";
+  }
+  if (days > 7) return `il y a ${Math.floor(days / 7)} semaines`;
+  if (days > 0) return `il y a ${days} jours`;
+  if (hours > 0) return `il y a ${hours} heures`;
+  return "à l'instant";
+};
 
 interface ReviewCardProps {
   review: Review;

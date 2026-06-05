@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Activity } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { listings, sellers } from "@/data/mockData";
 
 interface ActivityItem {
   id: string;
@@ -52,8 +51,6 @@ export default function LiveActivity() {
     return () => clearInterval(interval);
   }, []);
 
-  const listing0 = listings.find((l) => l.id === visible[0]?.listingId);
-
   return (
     <section className="py-10 bg-white border-t border-sand-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -68,14 +65,12 @@ export default function LiveActivity() {
         <div className="flex flex-wrap gap-3">
           {visible.map((item) => {
             const cfg = typeConfig[item.type];
-            const lk = listings.find((l) => l.id === item.listingId);
             return (
               <Link
                 key={item.id}
                 href={`/annonce/${item.listingId}`}
                 className={`flex items-center gap-3 bg-sand-50 hover:bg-sand-100 rounded-xl px-4 py-2.5 transition-all ${fadeIdx === item.id ? "opacity-0" : "opacity-100"} ${isRTL ? "flex-row-reverse" : ""}`}
               >
-                {lk && <img src={lk.images[0]} alt="" className="w-8 h-8 rounded-lg object-cover flex-shrink-0" />}
                 <div className={isRTL ? "text-right" : ""}>
                   <div className={`flex items-center gap-1.5 ${isRTL ? "flex-row-reverse" : ""}`}>
                     <div className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />

@@ -1,17 +1,32 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { TrendingUp, ArrowRight, ArrowLeft, Eye, Flame } from "lucide-react";
-import { listings, formatPrice } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
+
+interface TrendingListing {
+  id: string;
+  title: string;
+  titleAr: string;
+  price: number;
+  images: string[];
+  views: number;
+}
+
+const formatPrice = (p: number) => new Intl.NumberFormat("fr-MR", { style: "decimal", maximumFractionDigits: 0 }).format(p);
 
 export default function TrendingSection() {
   const { isRTL } = useLanguage();
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
+  const [trending, setTrending] = useState<TrendingListing[]>([]);
 
-  const trending = [...listings]
-    .sort((a, b) => (b.views ?? 0) - (a.views ?? 0))
-    .slice(0, 6);
+  useEffect(() => {
+    fetch("/api/listings?limit=8&sort=popular")
+      .then((r) => r.ok ? r.json() : { listings: [] })
+      .then((data) => setTrending(data.listings ?? data ?? []))
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="py-12 bg-night-500">

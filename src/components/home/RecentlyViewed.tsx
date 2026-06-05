@@ -3,10 +3,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Clock, X } from "lucide-react";
-import { listings, formatPrice } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface RecentItem { id: string; ts: number; }
+
+interface ViewedListing {
+  id: string;
+  title: string;
+  titleAr: string;
+  price: number;
+  images: string[];
+}
+
+const formatPrice = (p: number) => new Intl.NumberFormat("fr-MR", { style: "decimal", maximumFractionDigits: 0 }).format(p);
 
 export function recordView(id: string) {
   if (typeof window === "undefined") return;
@@ -18,25 +27,28 @@ export function recordView(id: string) {
 }
 
 export default function RecentlyViewed() {
-  const { isRTL, locale } = useLanguage();
+  const { isRTL } = useLanguage();
   const [items, setItems] = useState<RecentItem[]>([]);
+  const [viewed, setViewed] = useState<ViewedListing[]>([]);
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("souq-recently-viewed") || "[]") as RecentItem[];
     setItems(stored);
+    if (stored.length === 0) return;
+    const ids = stored.map((r) => r.id).join(",");
+    fetch(`/api/listings?ids=${ids}`)
+      .then((r) => r.ok ? r.json() : { listings: [] })
+      .then((data) => setViewed(data.listings ?? data ?? []))
+      .catch(() => {});
   }, []);
 
   const clear = () => {
     localStorage.removeItem("souq-recently-viewed");
     setItems([]);
+    setViewed([]);
   };
 
   if (items.length === 0) return null;
-
-  const viewed = items
-    .map((r) => listings.find((l) => l.id === r.id))
-    .filter(Boolean) as typeof listings;
-
   if (viewed.length === 0) return null;
 
   return (
