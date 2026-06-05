@@ -5,6 +5,7 @@ import { FavoritesProvider } from "@/context/FavoritesContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
 import Navbar from "@/components/layout/Navbar";
+import TopBar from "@/components/layout/TopBar";
 import Footer from "@/components/layout/Footer";
 import MobileNav from "@/components/layout/MobileNav";
 import RamadanBanner from "@/components/home/RamadanBanner";
@@ -59,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <FavoritesProvider>
               <ToastProvider>
                 <CompareProvider>
+                  <TopBar />
                   <Navbar />
                   <RamadanBanner />
                   <main className="pt-16 pb-16 sm:pb-0">{children}</main>
