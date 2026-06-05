@@ -1,24 +1,29 @@
 import { NextRequest } from "next/server";
 import { ok, err, getTokenFromRequest, verifyToken } from "@/lib/api";
-import { listings, sellerStats } from "@/data/mockData";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 /* GET /api/stats — statistiques dashboard vendeur */
 export async function GET(req: NextRequest) {
-  const token = getTokenFromRequest(req);
-  if (!token || !verifyToken(token)) return err("Non authentifié", 401);
+  const token = req.cookies.get("souq-token")?.value || req.headers.get("authorization")?.replace("Bearer ", "") || getTokenFromRequest(req);
+  if (!token) return err("Non authentifié", 401);
+  const payload = verifyToken(token);
+  if (!payload) return err("Token invalide", 401);
 
-  const myListings = listings.slice(0, 6);
+  const admin = getSupabaseAdmin();
+  const userId = payload.userId as string;
+
+  const [{ count: listingsCount }, { count: activeCount }, { data: listings }] = await Promise.all([
+    admin.from("listings").select("*", { count: "exact", head: true }).eq("seller_id", userId).neq("status", "deleted"),
+    admin.from("listings").select("*", { count: "exact", head: true }).eq("seller_id", userId).eq("status", "active"),
+    admin.from("listings").select("views, title").eq("seller_id", userId).neq("status", "deleted").order("views", { ascending: false }).limit(5),
+  ]);
+
+  const totalViews = (listings ?? []).reduce((acc: number, l: any) => acc + (l.views ?? 0), 0);
 
   return ok({
-    ...sellerStats,
-    listingBreakdown: myListings.map((l) => ({
-      id: l.id,
-      title: l.title,
-      views: l.views,
-      price: l.price,
-      category: l.category,
-    })),
-    conversionRate: ((sellerStats.totalSales / sellerStats.totalListings) * 100).toFixed(1),
-    avgPrice: Math.round(myListings.reduce((s, l) => s + l.price, 0) / myListings.length),
+    listings_count: listingsCount ?? 0,
+    active_count: activeCount ?? 0,
+    total_views: totalViews,
+    top_listings: listings ?? [],
   });
 }

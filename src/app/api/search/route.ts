@@ -1,29 +1,34 @@
 import { NextRequest } from "next/server";
-import { ok, err, filterListings } from "@/lib/api";
-import { categories } from "@/data/mockData";
+import { ok } from "@/lib/api";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
-/* GET /api/search?q=...&category=...&... */
 export async function GET(req: NextRequest) {
-  const s = req.nextUrl.searchParams;
-  const q = s.get("q");
+  const { searchParams } = new URL(req.url);
+  const q = searchParams.get("q") ?? "";
+  const category = searchParams.get("category");
+  const minPrice = searchParams.get("min_price");
+  const maxPrice = searchParams.get("max_price");
+  const location = searchParams.get("location");
+  const condition = searchParams.get("condition");
+  const limit = Math.min(parseInt(searchParams.get("limit") ?? "20"), 50);
+  const offset = parseInt(searchParams.get("offset") ?? "0");
 
-  if (!q || q.length < 2) return err("Recherche trop courte (min 2 caractères)");
+  const admin = getSupabaseAdmin();
+  let query = admin
+    .from("listings")
+    .select("*, profiles!seller_id(id,name,name_ar,avatar,badge,rating)", { count: "exact" })
+    .eq("status", "active")
+    .order("featured", { ascending: false })
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
 
-  const { items, total } = filterListings({
-    q,
-    category: s.get("category") ?? undefined,
-    condition: s.get("condition") ?? undefined,
-    priceMin: s.get("priceMin") ? Number(s.get("priceMin")) : undefined,
-    priceMax: s.get("priceMax") ? Number(s.get("priceMax")) : undefined,
-    sort: (s.get("sort") as any) ?? "popular",
-    page: 1,
-    limit: 20,
-  });
+  if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%,title_ar.ilike.%${q}%`);
+  if (category) query = query.eq("category", category);
+  if (minPrice) query = query.gte("price", parseFloat(minPrice));
+  if (maxPrice) query = query.lte("price", parseFloat(maxPrice));
+  if (location) query = query.ilike("location", `%${location}%`);
+  if (condition) query = query.eq("condition", condition);
 
-  /* Suggestions de catégories correspondantes */
-  const catSuggestions = categories.filter(
-    (c) => c.name.toLowerCase().includes(q.toLowerCase()) || c.nameAr.includes(q)
-  ).slice(0, 3);
-
-  return ok({ listings: items, total, categories: catSuggestions, query: q });
+  const { data, count } = await query;
+  return ok({ listings: data ?? [], total: count ?? 0 });
 }

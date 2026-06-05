@@ -1,18 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Eye, MessageCircle, Tag, TrendingUp, Star, Edit3, Pause, Play,
   Trash2, Zap, Plus, BarChart3, CheckCircle2, Clock, XCircle,
   ChevronUp, ChevronDown, ArrowRight, Lock, Loader2,
 } from "lucide-react";
-import { listings, sellerStats, formatPrice, sellers } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 
-const currentSeller = sellers[0];
+const formatPrice = (p: number) => p.toLocaleString("fr-FR");
 
 type ListingStatus = "active" | "paused" | "sold";
 const statuses: ListingStatus[] = ["active", "paused", "sold"];
@@ -24,6 +23,22 @@ export default function TableauDeBordPage() {
   const [listingFilter, setListingFilter] = useState<"all" | ListingStatus>("all");
   const [boostTarget, setBoostTarget] = useState<string | null>(null);
   const [boostedIds, setBoostedIds] = useState<Set<string>>(new Set(["l1"]));
+  const [sellerListings, setSellerListings] = useState<any[]>([]);
+  const [stats, setStats] = useState({ listings_count: 0, active_count: 0, total_views: 0 });
+
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+    const token = localStorage.getItem("souq-token");
+    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+
+    fetch("/api/listings?limit=50", { headers })
+      .then(r => r.json())
+      .then(d => { if (d.data) setSellerListings(d.data.filter((l: any) => l.seller_id === user.id)); });
+
+    fetch("/api/stats", { headers })
+      .then(r => r.json())
+      .then(d => { if (d.data) setStats(d.data); });
+  }, [isAuthenticated, user]);
 
   if (authLoading) {
     return (
@@ -54,12 +69,18 @@ export default function TableauDeBordPage() {
     );
   }
 
-  const myListings = listings.slice(0, 6).map((l, i) => ({
+  const myListings = sellerListings.map((l, i) => ({
     ...l,
-    status: (["active", "active", "active", "paused", "sold", "active"][i]) as ListingStatus,
+    images: l.images ?? [l.image_url ?? "/placeholder.jpg"],
+    title: l.title ?? "",
+    titleAr: l.title_ar ?? l.title ?? "",
+    location: l.location ?? "",
+    price: l.price ?? 0,
+    views: l.views ?? 0,
+    status: (l.status ?? "active") as ListingStatus,
     boosted: boostedIds.has(l.id),
-    offers: [3, 0, 1, 0, 2, 0][i],
-    messages: [7, 2, 4, 1, 0, 3][i],
+    offers: l.offers ?? 0,
+    messages: l.messages ?? 0,
   }));
 
   const filtered = listingFilter === "all" ? myListings : myListings.filter((l) => l.status === listingFilter);
@@ -67,28 +88,28 @@ export default function TableauDeBordPage() {
   const kpis = [
     {
       icon: Eye,
-      value: sellerStats.totalViews.toLocaleString(),
+      value: stats.total_views.toLocaleString(),
       labelFr: "Vues totales", labelAr: "إجمالي المشاهدات",
       change: +18,
       color: "#C9A84C",
     },
     {
       icon: Tag,
-      value: `${sellerStats.activeListings}/${sellerStats.totalListings}`,
+      value: `${stats.active_count}/${stats.listings_count}`,
       labelFr: "Annonces actives", labelAr: "الإعلانات النشطة",
       change: +2,
       color: "#2D6A4F",
     },
     {
       icon: MessageCircle,
-      value: sellerStats.totalMessages,
+      value: 0,
       labelFr: "Messages reçus", labelAr: "الرسائل المستلمة",
       change: +5,
       color: "#1B2A4A",
     },
     {
       icon: TrendingUp,
-      value: `${formatPrice(sellerStats.revenue)} MRU`,
+      value: `${formatPrice(0)} MRU`,
       labelFr: "Revenus estimés", labelAr: "الإيرادات المقدّرة",
       change: +24,
       color: "#B8922E",
@@ -112,13 +133,13 @@ export default function TableauDeBordPage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
           <div className={`flex items-center justify-between ${isRTL ? "flex-row-reverse" : ""}`}>
             <div className={`flex items-center gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-              <img src={currentSeller.avatar} alt="" className="w-14 h-14 rounded-full bg-sand-100 border-2 border-sand-400/30" />
+              <img src={(user as any)?.avatar_url ?? (user as any)?.avatar ?? "/placeholder-avatar.jpg"} alt="" className="w-14 h-14 rounded-full bg-sand-100 border-2 border-sand-400/30" />
               <div className={isRTL ? "text-right" : ""}>
                 <p className="text-sand-400/70 text-xs uppercase tracking-widest mb-0.5">
                   {isRTL ? "لوحة التحكم" : "Tableau de bord"}
                 </p>
                 <h1 className="text-white text-xl font-display font-bold">
-                  {isRTL ? currentSeller.nameAr : currentSeller.name}
+                  {(user as any)?.name ?? (user as any)?.phone ?? ""}
                 </h1>
                 <div className={`flex items-center gap-1.5 mt-0.5 ${isRTL ? "flex-row-reverse" : ""}`}>
                   <CheckCircle2 size={12} className="text-islamic-300" />
@@ -127,7 +148,7 @@ export default function TableauDeBordPage() {
                   </span>
                   <span className="text-sand-400/40">·</span>
                   <Star size={12} className="text-sand-400 fill-sand-400" />
-                  <span className="text-sand-300 text-xs">{currentSeller.rating}</span>
+                  <span className="text-sand-300 text-xs">{(user as any)?.rating ?? ""}</span>
                 </div>
               </div>
             </div>
@@ -368,35 +389,22 @@ export default function TableauDeBordPage() {
         {activeTab === "stats" && (
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-card p-6">
-              <h3 className={`font-bold text-night-500 mb-6 ${isRTL ? "text-right" : ""}`}>
-                {isRTL ? "المشاهدات الشهرية" : "Vues mensuelles"}
+              <h3 className={`font-bold text-night-500 mb-4 ${isRTL ? "text-right" : ""}`}>
+                {isRTL ? "إحصائيات عامة" : "Statistiques générales"}
               </h3>
-              {/* Mini graphique à barres */}
-              <div className={`flex items-end gap-1.5 h-32 ${isRTL ? "flex-row-reverse" : ""}`}>
-                {sellerStats.viewsChart.map((val, i) => {
-                  const max = Math.max(...sellerStats.viewsChart);
-                  const height = (val / max) * 100;
-                  const isCurrentMonth = i === new Date().getMonth();
-                  return (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                      <div className="relative group w-full">
-                        <div
-                          className="w-full rounded-t-lg transition-all"
-                          style={{
-                            height: `${height * 1.2}px`,
-                            background: isCurrentMonth
-                              ? "linear-gradient(180deg, #C9A84C, #B8922E)"
-                              : "#EBD9B0",
-                          }}
-                        />
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-night-500 text-white text-[10px] px-2 py-1 rounded-lg whitespace-nowrap pointer-events-none">
-                          {val.toLocaleString()}
-                        </div>
-                      </div>
-                      <span className="text-[9px] text-night-400/50">{sellerStats.months[i].slice(0, 3)}</span>
-                    </div>
-                  );
-                })}
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="text-2xl font-bold text-sand-500">{stats.listings_count}</p>
+                  <p className="text-xs text-night-400/60 mt-1">{isRTL ? "إجمالي الإعلانات" : "Total annonces"}</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-islamic-400">{stats.active_count}</p>
+                  <p className="text-xs text-night-400/60 mt-1">{isRTL ? "نشطة" : "Actives"}</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-night-500">{stats.total_views.toLocaleString()}</p>
+                  <p className="text-xs text-night-400/60 mt-1">{isRTL ? "إجمالي المشاهدات" : "Vues totales"}</p>
+                </div>
               </div>
             </div>
 
@@ -441,39 +449,12 @@ export default function TableauDeBordPage() {
         {/* === MESSAGES === */}
         {activeTab === "messages" && (
           <div className="space-y-3">
-            {sellers.slice(0, 4).map((s, i) => {
-              const convListings = [listings[0], listings[1], listings[2], listings[3]];
-              const unread = [2, 0, 1, 0][i];
-              const lastMsgs = {
-                fr: ["Bonjour, est-ce encore disponible ?", "Quel est le dernier prix ?", "Je vous rappelle ce soir", "Merci pour votre offre"],
-                ar: ["مرحبا، هل لا يزال متوفراً؟", "ما هو آخر سعر؟", "سأتصل بك الليلة", "شكراً على عرضك"],
-              };
-              const times = ["14:32", "12:10", "Hier", "Lun"];
-              return (
-                <Link key={s.id} href={`/messages`}
-                  className={`flex items-center gap-3 bg-white rounded-2xl p-4 shadow-card hover:shadow-card-hover transition-all ${unread ? "border-l-4 border-sand-400" : ""} ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <div className="relative flex-shrink-0">
-                    <img src={s.avatar} alt="" className="w-12 h-12 rounded-full bg-sand-100" />
-                    {unread > 0 && (
-                      <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-[10px] font-bold text-night-500 flex items-center justify-center"
-                        style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
-                        {unread}
-                      </span>
-                    )}
-                  </div>
-                  <div className={`flex-1 min-w-0 ${isRTL ? "text-right" : ""}`}>
-                    <div className={`flex items-center justify-between mb-0.5 ${isRTL ? "flex-row-reverse" : ""}`}>
-                      <p className={`text-sm font-semibold ${unread ? "text-night-500" : "text-night-400"}`}>{isRTL ? s.nameAr : s.name}</p>
-                      <span className="text-xs text-night-400/50">{times[i]}</span>
-                    </div>
-                    <p className={`text-xs truncate ${unread ? "text-night-500 font-medium" : "text-night-400/60"}`}>
-                      {isRTL ? lastMsgs.ar[i] : lastMsgs.fr[i]}
-                    </p>
-                    <p className="text-[10px] text-sand-400/70 truncate mt-0.5">{isRTL ? convListings[i].titleAr : convListings[i].title}</p>
-                  </div>
-                </Link>
-              );
-            })}
+            <div className="bg-white rounded-2xl p-8 text-center shadow-card">
+              <MessageCircle size={32} className="text-sand-300 mx-auto mb-3" />
+              <p className="text-sm text-night-400/60">
+                {isRTL ? "افتح المراسلة لعرض محادثاتك" : "Ouvrez la messagerie pour voir vos conversations"}
+              </p>
+            </div>
             <div className="text-center pt-2">
               <Link href="/messages" className="btn-gold inline-flex px-8 py-2.5 text-sm">
                 {isRTL ? "فتح المحادثات" : "Ouvrir la messagerie"}

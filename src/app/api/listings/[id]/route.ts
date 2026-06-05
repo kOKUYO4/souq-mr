@@ -1,34 +1,55 @@
 import { NextRequest } from "next/server";
-import { ok, err, getTokenFromRequest, verifyToken } from "@/lib/api";
-import { listings } from "@/data/mockData";
+import { ok, err, verifyToken } from "@/lib/api";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
-/* GET /api/listings/[id] */
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const listing = listings.find((l) => l.id === params.id);
-  if (!listing) return err("Annonce introuvable", 404);
-  return ok({ ...listing, views: listing.views + 1 });
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
+    .from("listings")
+    .select("*, profiles!seller_id(*)")
+    .eq("id", params.id)
+    .single();
+  if (error || !data) return err("Annonce introuvable", 404);
+
+  // Increment views
+  await admin.rpc("increment_listing_views", { listing_uuid: params.id }).catch(() => {});
+
+  return ok(data);
 }
 
-/* PATCH /api/listings/[id] — modifier */
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const token = getTokenFromRequest(req);
-  if (!token || !verifyToken(token)) return err("Non authentifié", 401);
-
-  const listing = listings.find((l) => l.id === params.id);
-  if (!listing) return err("Annonce introuvable", 404);
+  const token = req.cookies.get("souq-token")?.value || req.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token) return err("Non authentifié", 401);
+  const payload = verifyToken(token);
+  if (!payload) return err("Token invalide", 401);
 
   const body = await req.json();
-  const updated = { ...listing, ...body, id: params.id };
-  return ok(updated);
+  const admin = getSupabaseAdmin();
+
+  // Verify ownership
+  const { data: listing } = await admin.from("listings").select("seller_id").eq("id", params.id).single();
+  if (!listing || listing.seller_id !== payload.userId) return err("Non autorisé", 403);
+
+  const { data, error } = await admin
+    .from("listings")
+    .update({ ...body, updated_at: new Date().toISOString() })
+    .eq("id", params.id)
+    .select()
+    .single();
+  if (error) return err(error.message);
+  return ok(data);
 }
 
-/* DELETE /api/listings/[id] — supprimer */
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const token = getTokenFromRequest(req);
-  if (!token || !verifyToken(token)) return err("Non authentifié", 401);
+  const token = req.cookies.get("souq-token")?.value || req.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token) return err("Non authentifié", 401);
+  const payload = verifyToken(token);
+  if (!payload) return err("Token invalide", 401);
 
-  const listing = listings.find((l) => l.id === params.id);
-  if (!listing) return err("Annonce introuvable", 404);
+  const admin = getSupabaseAdmin();
+  const { data: listing } = await admin.from("listings").select("seller_id").eq("id", params.id).single();
+  if (!listing || listing.seller_id !== payload.userId) return err("Non autorisé", 403);
 
-  return ok({ deleted: true, id: params.id });
+  await admin.from("listings").update({ status: "deleted" }).eq("id", params.id);
+  return ok({ deleted: true });
 }
