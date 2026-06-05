@@ -21,34 +21,35 @@ export default function RamadanBanner() {
   if (!visible) return null;
 
   return (
-    <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #1B2A4A 0%, #0C1426 100%)" }}>
-      {/* Crescent + stars decoration */}
+    <div className="relative overflow-hidden border-b border-sand-400/20"
+      style={{ background: "linear-gradient(135deg, #C9A84C 0%, #B8922E 50%, #A07820 100%)" }}>
+      {/* Stars decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(12)].map((_, i) => (
-          <div key={i} className="absolute w-0.5 h-0.5 bg-sand-300 rounded-full opacity-60 animate-pulse"
-            style={{ left: `${8 + i * 8}%`, top: `${20 + (i % 3) * 25}%`, animationDelay: `${i * 0.3}s` }} />
+        {[...Array(10)].map((_, i) => (
+          <div key={i} className="absolute w-1 h-1 bg-white rounded-full opacity-20 animate-pulse"
+            style={{ left: `${5 + i * 10}%`, top: `${15 + (i % 3) * 30}%`, animationDelay: `${i * 0.4}s` }} />
         ))}
       </div>
 
-      <div className={`relative max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
-        <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-          <span className="text-2xl">🌙</span>
+      <div className={`relative max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
+        <div className={`flex items-center gap-2.5 ${isRTL ? "flex-row-reverse" : ""}`}>
+          <span className="text-xl leading-none">🌙</span>
           <div className={isRTL ? "text-right" : ""}>
-            <p className={`text-sm font-bold text-sand-300 ${isRTL ? "font-arabic" : ""}`}>
+            <p className={`text-sm font-bold text-night-500 leading-tight ${isRTL ? "font-arabic" : ""}`}>
               {isRTL ? "رمضان كريم! — عروض خاصة على سوق.مر" : "Ramadan Kareem ! — Offres spéciales sur SOUQ.MR"}
             </p>
-            <p className={`text-xs text-sand-400/70 ${isRTL ? "font-arabic" : ""}`}>
+            <p className={`text-xs font-medium text-night-500/75 leading-tight mt-0.5 ${isRTL ? "font-arabic" : ""}`}>
               {isRTL ? "تخفيضات حتى 40% على الملابس والإلكترونيات طوال رمضان" : "Jusqu'à -40% sur la mode et l'électronique tout le mois de Ramadan"}
             </p>
           </div>
         </div>
-        <div className={`flex items-center gap-3 flex-shrink-0 ${isRTL ? "flex-row-reverse" : ""}`}>
+        <div className={`flex items-center gap-2 flex-shrink-0 ${isRTL ? "flex-row-reverse" : ""}`}>
           <a href="/annonces?ramadan=1"
-            className="px-4 py-1.5 rounded-xl text-xs font-bold text-night-500 whitespace-nowrap"
-            style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
+            className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-sand-300 whitespace-nowrap border border-night-500/20 transition-opacity hover:opacity-80"
+            style={{ background: "rgba(27,42,74,0.85)" }}>
             {isRTL ? "تسوق الآن" : "Voir les offres"}
           </a>
-          <button onClick={dismiss} className="p-1.5 text-sand-400/60 hover:text-sand-400 transition-colors">
+          <button onClick={dismiss} className="p-1 text-night-500/60 hover:text-night-500 transition-colors">
             <X size={15} />
           </button>
         </div>
