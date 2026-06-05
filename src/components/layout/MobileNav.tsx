@@ -5,11 +5,16 @@ import { usePathname } from "next/navigation";
 import { Home, Search, Plus, MessageCircle, User } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export default function MobileNav() {
   const pathname = usePathname();
   const { isRTL } = useLanguage();
   const { isAuthenticated } = useAuth();
+  const { notifications } = useNotifications();
+  const unreadMessages = isAuthenticated
+    ? notifications.filter((n) => n.type === "message" && !n.read).length
+    : 0;
 
   const items = [
     { href: "/", icon: Home, labelFr: "Accueil", labelAr: "الرئيسية" },
@@ -45,17 +50,25 @@ export default function MobileNav() {
             );
           }
 
+          const isMessages = item.href === "/messages";
           return (
             <Link
               key={item.href}
               href={item.href}
               className="flex flex-col items-center gap-1 py-1 px-2 min-w-[48px]"
             >
-              <Icon
-                size={20}
-                className={`transition-colors ${isActive ? "text-sand-500" : "text-night-400/50"}`}
-                strokeWidth={isActive ? 2.5 : 1.5}
-              />
+              <div className="relative">
+                <Icon
+                  size={20}
+                  className={`transition-colors ${isActive ? "text-sand-500" : "text-night-400/50"}`}
+                  strokeWidth={isActive ? 2.5 : 1.5}
+                />
+                {isMessages && unreadMessages > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[14px] h-[14px] rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center px-0.5 leading-none">
+                    {unreadMessages > 99 ? "99+" : unreadMessages}
+                  </span>
+                )}
+              </div>
               <span className={`text-[10px] font-medium transition-colors ${isActive ? "text-sand-500" : "text-night-400/50"} ${isRTL ? "font-arabic" : ""}`}>
                 {isRTL ? item.labelAr : item.labelFr}
               </span>

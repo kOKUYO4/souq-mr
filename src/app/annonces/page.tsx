@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import ListingCard from "@/components/listings/ListingCard";
 import { categories } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
+import PullToRefreshIndicator from "@/components/ui/PullToRefreshIndicator";
 
 const PAGE_SIZE = 24;
 
@@ -47,6 +49,8 @@ function AnnoncesContent() {
     setLoading(false);
   };
 
+  const { pulling, refreshing } = usePullToRefresh(fetchListings);
+
   useEffect(() => { fetchListings(); }, [selectedCat, condition, priceMin, priceMax, sortBy, page]);
 
   const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
@@ -60,6 +64,7 @@ function AnnoncesContent() {
 
   return (
     <div className="min-h-screen bg-sand-50">
+      <PullToRefreshIndicator pulling={pulling} refreshing={refreshing} />
       {/* Mini hero */}
       <div className="relative py-8 overflow-hidden" style={{ background: "linear-gradient(135deg, #1B2A4A, #0C1426)" }}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
