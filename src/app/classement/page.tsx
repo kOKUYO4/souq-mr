@@ -1,9 +1,10 @@
 "use client";
+const formatPrice = (p: number) => p.toLocaleString("fr-FR");
 
 import { useState, useEffect } from "react";
 import { Trophy, Star, TrendingUp, Crown } from "lucide-react";
 import Link from "next/link";
-import { formatPrice } from "@/data/mockData";
+
 import type { Seller } from "@/data/mockData";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 import { useLanguage } from "@/context/LanguageContext";

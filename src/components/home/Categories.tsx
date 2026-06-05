@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, ArrowLeft, Car, Smartphone, Shirt, Sparkles, Home, Briefcase, PawPrint, Grid3X3 } from "lucide-react";
-import { categories } from "@/data/mockData";
+import { categories } from "@/data/categories";
 import { useLanguage } from "@/context/LanguageContext";
 
 const iconMap: Record<string, React.ReactNode> = {

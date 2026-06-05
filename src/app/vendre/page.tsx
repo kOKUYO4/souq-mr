@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Mic, CheckCircle2, Lock, Loader2, ArrowRight, ArrowLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { categories } from "@/data/mockData";
+import { categories } from "@/data/categories";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";

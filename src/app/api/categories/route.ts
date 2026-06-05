@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { ok } from "@/lib/api";
-import { categories } from "@/data/mockData";
+import { categories } from "@/data/categories";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function GET(req: NextRequest) {

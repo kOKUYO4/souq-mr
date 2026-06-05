@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { TrendingUp, TrendingDown, BarChart3, Users, Tag, MapPin, Eye } from "lucide-react";
 import IslamicPattern from "@/components/ui/IslamicPattern";
-import { categories } from "@/data/mockData";
+import { categories } from "@/data/categories";
 import { useLanguage } from "@/context/LanguageContext";
 
 function formatPrice(n: number) { return n?.toLocaleString() ?? "0"; }

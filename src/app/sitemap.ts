@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { listings, categories } from "@/data/mockData";
+import { categories } from "@/data/categories";
 
 const BASE = "https://souq.mr";
 
@@ -63,12 +63,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "daily" as const,
   }));
 
-  const listingPages = listings.map((l) => ({
-    url: `${BASE}/annonce/${l.id}`,
-    priority: 0.6,
-    changeFrequency: "weekly" as const,
-    lastModified: new Date(l.createdAt),
-  }));
-
-  return [...staticPages, ...categoryPages, ...listingPages];
+  return [...staticPages, ...categoryPages];
 }

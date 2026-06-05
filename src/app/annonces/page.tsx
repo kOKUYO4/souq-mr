@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { SlidersHorizontal, Grid, List, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ListingCard from "@/components/listings/ListingCard";
-import { categories } from "@/data/mockData";
+import { categories } from "@/data/categories";
 import { useLanguage } from "@/context/LanguageContext";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import PullToRefreshIndicator from "@/components/ui/PullToRefreshIndicator";

@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { ok } from "@/lib/api";
-import { sellers } from "@/data/mockData";
+
 
 let supabaseAdmin: ReturnType<typeof import("@/lib/supabase").getSupabaseAdmin> | null = null;
 function getAdmin() {

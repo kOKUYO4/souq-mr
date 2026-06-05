@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Search, MapPin, Star, CheckCircle2, MessageCircle, Heart, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { formatPrice } from "@/data/mockData";
+
 import type { Seller } from "@/data/mockData";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 import { useLanguage } from "@/context/LanguageContext";

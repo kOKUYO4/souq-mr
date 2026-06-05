@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Bell, BellOff, Plus, Trash2, TrendingDown, Search, ChevronDown, CheckCircle2, X } from "lucide-react";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 import { useLanguage } from "@/context/LanguageContext";
-import { categories } from "@/data/mockData";
+import { categories } from "@/data/categories";
 
 type AlertFreq = "instant" | "daily" | "weekly";
 

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Grid, List, ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
-import { categories } from "@/data/mockData";
+import { categories } from "@/data/categories";
 import type { Listing } from "@/data/mockData";
 import ListingCard from "@/components/listings/ListingCard";
 import FilterSidebar, { FilterState, defaultFilters } from "@/components/listings/FilterSidebar";

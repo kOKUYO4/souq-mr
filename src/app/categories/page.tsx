@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Car, Smartphone, Shirt, Sparkles, Home, Briefcase, PawPrint, Grid3X3, ArrowRight, ArrowLeft } from "lucide-react";
-import { categories as mockCategories } from "@/data/mockData";
+import { categories as mockCategories } from "@/data/categories";
 import { useLanguage } from "@/context/LanguageContext";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 
