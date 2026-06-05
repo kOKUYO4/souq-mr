@@ -4,11 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Search, Menu, X, Heart, MessageCircle,
+  Menu, X, Heart, MessageCircle,
   ChevronDown, Plus, User, LayoutDashboard, LogOut, Settings,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import NotificationBell from "@/components/ui/NotificationBell";
+import SearchAutocomplete from "@/components/ui/SearchAutocomplete";
 import { useLanguage } from "@/context/LanguageContext";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useAuth } from "@/context/AuthContext";
@@ -67,19 +68,7 @@ export default function Navbar() {
 
           {/* Recherche desktop */}
           <div className="hidden md:flex flex-1 max-w-xl">
-            <div className="relative w-full">
-              <input
-                type="text"
-                placeholder={t.nav.search}
-                dir={isRTL ? "rtl" : "ltr"}
-                className="w-full bg-night-600/60 border border-night-400/40 text-white placeholder-sand-400/60 rounded-xl px-4 py-2.5 pr-10 text-sm outline-none focus:border-sand-400/60 transition-all"
-                onKeyDown={(e) => {
-                  const val = (e.target as HTMLInputElement).value;
-                  if (e.key === "Enter" && val) router.push(`/recherche?q=${encodeURIComponent(val)}`);
-                }}
-              />
-              <Search size={16} className={`absolute top-1/2 -translate-y-1/2 text-sand-400/60 ${isRTL ? "left-3" : "right-3"}`} />
-            </div>
+            <SearchAutocomplete className="w-full" placeholder={t.nav.search} />
           </div>
 
           {/* Liens nav desktop */}
@@ -190,15 +179,8 @@ export default function Navbar() {
         {/* Menu mobile */}
         {menuOpen && (
           <div className="md:hidden mt-3 pb-4 border-t border-night-400/30 pt-4 space-y-1 animate-fade-in">
-            <div className="relative mb-3">
-              <input type="text" placeholder={t.nav.search} dir={isRTL ? "rtl" : "ltr"}
-                className="w-full bg-night-600/60 border border-night-400/40 text-white placeholder-sand-400/60 rounded-xl px-4 py-2.5 pr-10 text-sm outline-none"
-                onKeyDown={(e) => {
-                  const val = (e.target as HTMLInputElement).value;
-                  if (e.key === "Enter" && val) { router.push(`/recherche?q=${encodeURIComponent(val)}`); setMenuOpen(false); }
-                }}
-              />
-              <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-sand-400/60" />
+            <div className="mb-3">
+              <SearchAutocomplete className="w-full" placeholder={t.nav.search} />
             </div>
 
             {isAuthenticated && user && (

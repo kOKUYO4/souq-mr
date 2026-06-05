@@ -1,16 +1,29 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowLeft, Flame } from "lucide-react";
 import ListingCard from "@/components/listings/ListingCard";
-import { listings } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function FeaturedListings() {
   const { t, isRTL } = useLanguage();
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
-  const featured = listings.filter((l) => l.featured).slice(0, 4);
-  const recent = listings.filter((l) => !l.featured).slice(0, 8);
+
+  const [featured, setFeatured] = useState<any[]>([]);
+  const [recent, setRecent] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/listings?limit=4&featured=true")
+      .then((r) => r.json())
+      .then(({ data }) => setFeatured(data?.listings ?? data ?? []))
+      .catch(() => {});
+
+    fetch("/api/listings?limit=8&sort=newest")
+      .then((r) => r.json())
+      .then(({ data }) => setRecent(data?.listings ?? data ?? []))
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="py-16 bg-white">
