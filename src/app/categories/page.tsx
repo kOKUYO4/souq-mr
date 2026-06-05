@@ -1,10 +1,13 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Car, Smartphone, Shirt, Sparkles, Home, Briefcase, PawPrint, Grid3X3, ArrowRight, ArrowLeft } from "lucide-react";
-import { categories } from "@/data/mockData";
+import { categories as mockCategories } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 import IslamicPattern from "@/components/ui/IslamicPattern";
+
+type Category = (typeof mockCategories)[number];
 
 const iconMap: Record<string, React.ReactNode> = {
   vehicles: <Car size={32} strokeWidth={1.5} />,
@@ -20,6 +23,19 @@ const iconMap: Record<string, React.ReactNode> = {
 export default function CategoriesPage() {
   const { isRTL, locale } = useLanguage();
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
+
+  const [categories, setCategories] = useState<Category[]>(mockCategories);
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((json) => {
+        if (Array.isArray(json.data) && json.data.length > 0) {
+          setCategories(json.data as Category[]);
+        }
+      })
+      .catch(() => {/* keep mockData */});
+  }, []);
 
   return (
     <div className="min-h-screen bg-sand-gradient">

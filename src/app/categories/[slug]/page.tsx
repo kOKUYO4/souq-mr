@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Grid, List, ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
-import { categories, listings } from "@/data/mockData";
+import { categories } from "@/data/mockData";
+import type { Listing } from "@/data/mockData";
 import ListingCard from "@/components/listings/ListingCard";
 import FilterSidebar, { FilterState, defaultFilters } from "@/components/listings/FilterSidebar";
 import IslamicPattern from "@/components/ui/IslamicPattern";
@@ -25,7 +26,59 @@ const SORT_OPTIONS = {
   ],
 };
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 12;
+
+function normalizeListing(l: any): Listing {
+  if (l.title_ar !== undefined) {
+    return {
+      id: l.id,
+      title: l.title,
+      titleAr: l.title_ar ?? "",
+      price: l.price,
+      originalPrice: l.original_price ?? undefined,
+      category: l.category,
+      subcategory: l.subcategory ?? "",
+      location: l.location ?? "",
+      locationAr: l.location_ar ?? "",
+      images: l.images ?? [],
+      condition: l.condition ?? "used",
+      negotiable: l.negotiable ?? false,
+      cod: l.cod ?? false,
+      featured: l.featured ?? false,
+      views: l.views ?? 0,
+      createdAt: l.created_at ?? "",
+      seller: l.profiles
+        ? {
+            id: l.profiles.id,
+            name: l.profiles.name,
+            nameAr: l.profiles.name_ar ?? "",
+            avatar: l.profiles.avatar ?? `https://api.dicebear.com/7.x/avataaars/svg?seed=${l.profiles.id}`,
+            badge: l.profiles.badge ?? "regular",
+            rating: l.profiles.rating ?? 0,
+            reviews: l.profiles.reviews_count ?? 0,
+            listings: l.profiles.listings_count ?? 0,
+            joinedAt: l.profiles.created_at ?? "",
+            phone: l.profiles.phone ?? "",
+          }
+        : {
+            id: l.seller_id ?? "",
+            name: "",
+            nameAr: "",
+            avatar: "",
+            badge: "regular" as const,
+            rating: 0,
+            reviews: 0,
+            listings: 0,
+            joinedAt: "",
+            phone: "",
+          },
+      description: l.description ?? "",
+      descriptionAr: l.description_ar ?? "",
+      attributes: l.attributes ?? {},
+    };
+  }
+  return l as Listing;
+}
 
 export default function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -37,33 +90,67 @@ export default function CategoryPage() {
   const [page, setPage] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
   const category = categories.find((c) => c.id === slug) || categories[0];
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
-  /* Filtrage + tri */
-  const filtered = useMemo(() => {
-    let result = listings.filter((l) => l.category === category.id);
-    if (subcat !== "all") result = result.filter((l) => l.subcategory === subcat);
-    if (filters.condition !== "all") result = result.filter((l) => l.condition === filters.condition);
-    if (filters.priceMin) result = result.filter((l) => l.price >= parseInt(filters.priceMin));
-    if (filters.priceMax) result = result.filter((l) => l.price <= parseInt(filters.priceMax));
-    if (filters.negotiable) result = result.filter((l) => l.negotiable);
-    if (filters.cod) result = result.filter((l) => l.cod);
-    if (filters.location) result = result.filter((l) => l.location.toLowerCase().includes(filters.location.toLowerCase()));
-    if (filters.marque) result = result.filter((l) => l.attributes?.marque === filters.marque);
-    if (filters.carburant) result = result.filter((l) => l.attributes?.carburant === filters.carburant);
-    if (filters.taille) result = result.filter((l) => l.attributes?.taille?.includes(filters.taille as string));
+  const fetchListings = useCallback(() => {
+    setLoading(true);
+    const params = new URLSearchParams({
+      category: slug,
+      sort,
+      page: String(page),
+      limit: String(PAGE_SIZE),
+    });
+    if (subcat !== "all") params.set("subcategory", subcat);
+    if (filters.condition !== "all") params.set("condition", filters.condition);
+    if (filters.priceMin) params.set("priceMin", filters.priceMin);
+    if (filters.priceMax) params.set("priceMax", filters.priceMax);
+    if (filters.negotiable) params.set("negotiable", "true");
+    if (filters.cod) params.set("cod", "true");
+    if (filters.location) params.set("location", filters.location);
 
-    switch (sort) {
-      case "price_asc": return [...result].sort((a, b) => a.price - b.price);
-      case "price_desc": return [...result].sort((a, b) => b.price - a.price);
-      case "popular": return [...result].sort((a, b) => b.views - a.views);
-      default: return [...result].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    fetch(`/api/listings?${params}`)
+      .then((r) => r.json())
+      .then((json) => {
+        const raw: any[] = json.data ?? [];
+        setListings(raw.map(normalizeListing));
+        setTotal(json.meta?.total ?? raw.length);
+      })
+      .catch(() => setListings([]))
+      .finally(() => setLoading(false));
+  }, [slug, sort, page, subcat, filters]);
+
+  useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
+
+  const hasMore = listings.length < total || (page * PAGE_SIZE < total);
+
+  const handleLoadMore = () => setPage((p) => p + 1);
+
+  // When page > 1, accumulate results
+  const [accumulated, setAccumulated] = useState<Listing[]>([]);
+
+  useEffect(() => {
+    if (page === 1) {
+      setAccumulated(listings);
+    } else {
+      setAccumulated((prev) => {
+        const ids = new Set(prev.map((l) => l.id));
+        return [...prev, ...listings.filter((l) => !ids.has(l.id))];
+      });
     }
-  }, [category.id, subcat, filters, sort]);
+  }, [listings, page]);
 
-  const paginated = filtered.slice(0, page * PAGE_SIZE);
-  const hasMore = paginated.length < filtered.length;
+  // Reset page when filters/sort/subcat change
+  useEffect(() => {
+    setPage(1);
+    setAccumulated([]);
+  }, [slug, sort, subcat, filters]);
 
   return (
     <div className="min-h-screen bg-sand-50">
@@ -103,7 +190,7 @@ export default function CategoryPage() {
           {/* Sous-catégories */}
           <div className={`flex flex-wrap gap-2 mt-6 ${isRTL ? "flex-row-reverse" : ""}`}>
             <button
-              onClick={() => { setSubcat("all"); setPage(1); }}
+              onClick={() => { setSubcat("all"); }}
               className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
                 subcat === "all" ? "bg-white text-night-500" : "bg-white/20 text-white hover:bg-white/30"
               }`}
@@ -113,7 +200,7 @@ export default function CategoryPage() {
             {category.subcategories?.map((sc) => (
               <button
                 key={sc.id}
-                onClick={() => { setSubcat(sc.id); setPage(1); }}
+                onClick={() => { setSubcat(sc.id); }}
                 className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
                   subcat === sc.id ? "bg-white text-night-500" : "bg-white/20 text-white hover:bg-white/30"
                 }`}
@@ -133,10 +220,10 @@ export default function CategoryPage() {
           <div className="hidden lg:block w-64 flex-shrink-0">
             <FilterSidebar
               filters={filters}
-              onChange={(f) => { setFilters(f); setPage(1); }}
+              onChange={(f) => { setFilters(f); }}
               categoryFilters={category.filters || []}
-              onReset={() => { setFilters(defaultFilters); setPage(1); }}
-              resultCount={filtered.length}
+              onReset={() => { setFilters(defaultFilters); }}
+              resultCount={total}
             />
           </div>
 
@@ -145,7 +232,7 @@ export default function CategoryPage() {
             {/* Barre tri + vue */}
             <div className={`flex items-center justify-between mb-5 flex-wrap gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
               <p className="text-sm text-night-400/60">
-                <strong className="text-night-500">{filtered.length}</strong>{" "}
+                <strong className="text-night-500">{total}</strong>{" "}
                 {isRTL ? "نتيجة" : "annonces trouvées"}
                 {subcat !== "all" && (
                   <button onClick={() => setSubcat("all")} className="ml-2 text-sand-500 hover:underline">
@@ -169,7 +256,7 @@ export default function CategoryPage() {
                 {/* Tri */}
                 <select
                   value={sort}
-                  onChange={(e) => { setSort(e.target.value); setPage(1); }}
+                  onChange={(e) => { setSort(e.target.value); }}
                   className="input-field py-2 text-sm w-auto"
                   dir={isRTL ? "rtl" : "ltr"}
                 >
@@ -196,44 +283,71 @@ export default function CategoryPage() {
               </div>
             </div>
 
-            {/* Grille */}
-            {filtered.length > 0 ? (
-              <>
-                <div className={
-                  view === "grid"
-                    ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
-                    : "flex flex-col gap-3"
-                }>
-                  {paginated.map((l) => <ListingCard key={l.id} listing={l} variant={view} />)}
-                </div>
-
-                {/* Charger plus */}
-                {hasMore && (
-                  <div className="text-center mt-8">
-                    <button
-                      onClick={() => setPage((p) => p + 1)}
-                      className="btn-night px-8 py-3"
-                    >
-                      {isRTL ? "عرض المزيد" : "Charger plus"}
-                      <Arrow size={16} />
-                    </button>
+            {/* Loading state */}
+            {loading && page === 1 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
+                    <div className="h-48 bg-sand-100" />
+                    <div className="p-4 space-y-2">
+                      <div className="h-4 bg-sand-100 rounded w-3/4" />
+                      <div className="h-3 bg-sand-100 rounded w-1/2" />
+                    </div>
                   </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-16">
-                <div className="text-5xl mb-4">🔍</div>
-                <h3 className={`text-lg font-semibold text-night-500 mb-2 ${isRTL ? "font-arabic" : ""}`}>
-                  {isRTL ? "لا توجد نتائج" : "Aucune annonce trouvée"}
-                </h3>
-                <p className="text-night-400/60 text-sm">
-                  {isRTL ? "عدّل الفلاتر للحصول على نتائج" : "Modifiez vos filtres pour voir des annonces"}
-                </p>
-                <button onClick={() => setFilters(defaultFilters)} className="btn-gold mt-4 text-sm px-6 py-2.5">
-                  {isRTL ? "إعادة تعيين الفلاتر" : "Réinitialiser les filtres"}
-                </button>
+                ))}
               </div>
             )}
+
+            {/* Grille */}
+            {!loading || page > 1 ? (
+              accumulated.length > 0 ? (
+                <>
+                  <div className={
+                    view === "grid"
+                      ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
+                      : "flex flex-col gap-3"
+                  }>
+                    {accumulated.map((l) => <ListingCard key={l.id} listing={l} variant={view} />)}
+                  </div>
+
+                  {/* Charger plus */}
+                  {(page * PAGE_SIZE < total) && (
+                    <div className="text-center mt-8">
+                      <button
+                        onClick={handleLoadMore}
+                        disabled={loading}
+                        className="btn-night px-8 py-3 disabled:opacity-50"
+                      >
+                        {loading ? (
+                          <span className="flex items-center gap-2">
+                            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            {isRTL ? "جاري التحميل..." : "Chargement..."}
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-2">
+                            {isRTL ? "عرض المزيد" : "Charger plus"}
+                            <Arrow size={16} />
+                          </span>
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : !loading ? (
+                <div className="text-center py-16">
+                  <div className="text-5xl mb-4">🔍</div>
+                  <h3 className={`text-lg font-semibold text-night-500 mb-2 ${isRTL ? "font-arabic" : ""}`}>
+                    {isRTL ? "لا توجد نتائج" : "Aucune annonce trouvée"}
+                  </h3>
+                  <p className="text-night-400/60 text-sm">
+                    {isRTL ? "عدّل الفلاتر للحصول على نتائج" : "Modifiez vos filtres pour voir des annonces"}
+                  </p>
+                  <button onClick={() => setFilters(defaultFilters)} className="btn-gold mt-4 text-sm px-6 py-2.5">
+                    {isRTL ? "إعادة تعيين الفلاتر" : "Réinitialiser les filtres"}
+                  </button>
+                </div>
+              ) : null
+            ) : null}
           </div>
         </div>
       </div>
@@ -252,10 +366,10 @@ export default function CategoryPage() {
             <div className="p-4">
               <FilterSidebar
                 filters={filters}
-                onChange={(f) => { setFilters(f); setPage(1); }}
+                onChange={(f) => { setFilters(f); setSidebarOpen(false); }}
                 categoryFilters={category.filters || []}
-                onReset={() => { setFilters(defaultFilters); setPage(1); }}
-                resultCount={filtered.length}
+                onReset={() => { setFilters(defaultFilters); }}
+                resultCount={total}
               />
             </div>
           </div>

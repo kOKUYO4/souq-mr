@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { Star, MapPin, CheckCircle2, MessageCircle, Share2, ShieldCheck, Store, ArrowRight, ArrowLeft, Phone, Tag } from "lucide-react";
-import { sellers, listings, formatPrice } from "@/data/mockData";
+import { Star, MapPin, CheckCircle2, MessageCircle, Share2, ShieldCheck, ArrowRight, ArrowLeft, Phone, Tag } from "lucide-react";
+import type { Listing, Seller } from "@/data/mockData";
 import ListingCard from "@/components/listings/ListingCard";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 import { useLanguage } from "@/context/LanguageContext";
@@ -17,6 +17,53 @@ const bannerColors = [
   "linear-gradient(135deg, #9B4B8A, #6B2060)",
 ];
 
+function normalizeProfile(profile: any): Seller {
+  if (profile.name_ar !== undefined) {
+    return {
+      id: profile.id,
+      name: profile.name,
+      nameAr: profile.name_ar,
+      avatar: profile.avatar ?? `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`,
+      badge: profile.badge ?? "regular",
+      rating: profile.rating ?? 0,
+      reviews: profile.reviews_count ?? 0,
+      listings: profile.listings_count ?? 0,
+      joinedAt: profile.created_at ?? "",
+      phone: profile.phone ?? "",
+      responseTime: profile.response_time,
+    };
+  }
+  return profile as Seller;
+}
+
+function normalizeListing(l: any): Listing {
+  if (l.title_ar !== undefined) {
+    return {
+      id: l.id,
+      title: l.title,
+      titleAr: l.title_ar ?? "",
+      price: l.price,
+      originalPrice: l.original_price ?? undefined,
+      category: l.category,
+      subcategory: l.subcategory ?? "",
+      location: l.location ?? "",
+      locationAr: l.location_ar ?? "",
+      images: l.images ?? [],
+      condition: l.condition ?? "used",
+      negotiable: l.negotiable ?? false,
+      cod: l.cod ?? false,
+      featured: l.featured ?? false,
+      views: l.views ?? 0,
+      createdAt: l.created_at ?? "",
+      seller: l.profiles ? normalizeProfile(l.profiles) : { id: l.seller_id, name: "", nameAr: "", avatar: "", badge: "regular", rating: 0, reviews: 0, listings: 0, joinedAt: "", phone: "" },
+      description: l.description ?? "",
+      descriptionAr: l.description_ar ?? "",
+      attributes: l.attributes ?? {},
+    };
+  }
+  return l as Listing;
+}
+
 export default function BoutiquePage() {
   const { id } = useParams<{ id: string }>();
   const { isRTL, locale } = useLanguage();
@@ -24,19 +71,55 @@ export default function BoutiquePage() {
   const [tab, setTab] = useState<"all" | "promo" | "new">("all");
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
-  const seller = sellers.find((s) => s.id === id) || sellers.find((s) => s.badge === "pro") || sellers[0];
-  const shopListings = listings.filter((l) => l.seller.id === seller.id);
+  const [seller, setSeller] = useState<Seller | null>(null);
+  const [shopListings, setShopListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/profile/${id}`)
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.data?.profile) {
+          setSeller(normalizeProfile(json.data.profile));
+          setShopListings((json.data.listings ?? []).map(normalizeListing));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [id]);
+
   const promoListings = shopListings.filter((l) => l.originalPrice && l.originalPrice > l.price);
   const newListings = shopListings.filter((l) => l.condition === "new");
-
-  const banner = bannerColors[sellers.indexOf(seller) % bannerColors.length];
-
   const displayed = tab === "promo" ? promoListings : tab === "new" ? newListings : shopListings;
+
+  const banner = bannerColors[Math.abs(id?.charCodeAt(0) ?? 0) % bannerColors.length];
 
   const handleShare = () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
     navigator.clipboard.writeText(url).then(() => success(isRTL ? "تم نسخ الرابط ✓" : "Lien copié ✓")).catch(() => {});
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-sand-50 flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-sand-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!seller) {
+    return (
+      <div className="min-h-screen bg-sand-50 flex items-center justify-center">
+        <div className={`text-center ${isRTL ? "font-arabic" : ""}`}>
+          <p className="text-night-400/60">{isRTL ? "البائع غير موجود" : "Vendeur introuvable"}</p>
+          <Link href="/vendeurs" className="btn-gold mt-4 inline-block text-sm">
+            {isRTL ? "تصفح البائعين" : "Voir tous les vendeurs"}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-sand-50">
@@ -90,10 +173,12 @@ export default function BoutiquePage() {
                 className="p-2.5 border border-sand-200 rounded-xl text-night-400 hover:border-sand-400 hover:text-sand-500 transition-all">
                 <Share2 size={16} />
               </button>
-              <a href={`tel:${seller.phone}`}
-                className="p-2.5 border border-sand-200 rounded-xl text-night-400 hover:border-sand-400 hover:text-sand-500 transition-all">
-                <Phone size={16} />
-              </a>
+              {seller.phone && (
+                <a href={`tel:${seller.phone}`}
+                  className="p-2.5 border border-sand-200 rounded-xl text-night-400 hover:border-sand-400 hover:text-sand-500 transition-all">
+                  <Phone size={16} />
+                </a>
+              )}
               <Link href={`/messages?seller=${seller.id}`}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-night-500 transition-all"
                 style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
