@@ -1,15 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Filter, MapPin, Star, CheckCircle2, MessageCircle, Heart, ArrowRight, ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, MapPin, Star, CheckCircle2, MessageCircle, Heart, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { sellers, listings, formatPrice } from "@/data/mockData";
+import { formatPrice } from "@/data/mockData";
+import type { Seller } from "@/data/mockData";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 import { useLanguage } from "@/context/LanguageContext";
 import { useFavorites } from "@/context/FavoritesContext";
 
 type SortBy = "rating" | "listings" | "recent";
 type FilterBadge = "all" | "pro" | "verified";
+
+// Shape returned from /api/sellers (DbProfile fields)
+interface SellerRow {
+  id: string;
+  name: string;
+  name_ar: string;
+  avatar: string | null;
+  badge: "regular" | "verified" | "pro";
+  rating: number;
+  reviews_count: number;
+  listings_count: number;
+  is_active: boolean;
+  created_at: string;
+  phone: string;
+  response_time?: string;
+}
+
+function toSeller(r: SellerRow): Seller {
+  return {
+    id: r.id,
+    name: r.name,
+    nameAr: r.name_ar,
+    avatar: r.avatar ?? `https://api.dicebear.com/7.x/avataaars/svg?seed=${r.id}`,
+    badge: r.badge,
+    rating: r.rating,
+    reviews: r.reviews_count,
+    listings: r.listings_count,
+    joinedAt: r.created_at,
+    phone: r.phone ?? "",
+    responseTime: r.response_time,
+  };
+}
 
 export default function VendeursPage() {
   const { isRTL, locale } = useLanguage();
@@ -18,17 +51,33 @@ export default function VendeursPage() {
   const [badge, setBadge] = useState<FilterBadge>("all");
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
+  const [sellers, setSellers] = useState<Seller[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const apiSort = sort === "recent" ? "newest" : sort;
+    fetch(`/api/sellers?sort=${apiSort}&limit=50`)
+      .then((r) => r.json())
+      .then((json) => {
+        const raw: SellerRow[] = json.data ?? [];
+        // If response has camelCase fields (mockData fallback), handle both
+        const normalized = raw.map((r: any) => {
+          if (r.name_ar !== undefined) return toSeller(r as SellerRow);
+          // Already a Seller shape (mockData fallback)
+          return r as Seller;
+        });
+        setSellers(normalized);
+      })
+      .catch(() => setSellers([]))
+      .finally(() => setLoading(false));
+  }, [sort]);
+
   const filtered = sellers
     .filter((s) => {
       const q = search.toLowerCase();
       const matchSearch = !q || s.name.toLowerCase().includes(q) || s.nameAr.includes(search);
       const matchBadge = badge === "all" || s.badge === badge;
       return matchSearch && matchBadge;
-    })
-    .sort((a, b) => {
-      if (sort === "rating") return b.rating - a.rating;
-      if (sort === "listings") return b.listings - a.listings;
-      return new Date(b.joinedAt).getTime() - new Date(a.joinedAt).getTime();
     });
 
   const sortLabels: Record<SortBy, { fr: string; ar: string }> = {
@@ -48,10 +97,6 @@ export default function VendeursPage() {
     verified: { bg: "#E8F4EE", color: "#2D6A4F", label: { fr: "Vérifié", ar: "موثق" } },
     regular: { bg: "#F5F0E8", color: "#9A7822", label: { fr: "Habitué", ar: "زبون دائم" } },
   };
-
-  // Get listing count per seller
-  const sellerListingCount = (sellerId: string) =>
-    listings.filter((l) => l.seller.id === sellerId).length;
 
   return (
     <div className="min-h-screen bg-sand-gradient">
@@ -116,77 +161,86 @@ export default function VendeursPage() {
           </select>
         </div>
 
-        {/* Sellers grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((seller) => {
-            const style = badgeStyle[seller.badge];
-            const sellerListings = listings.filter((l) => l.seller.id === seller.id).slice(0, 2);
-            return (
-              <div key={seller.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-card transition-all">
-                {/* Mini listing preview strip */}
-                {sellerListings.length > 0 && (
-                  <div className="grid grid-cols-2 h-24">
-                    {sellerListings.map((l) => (
-                      <div key={l.id} className="relative overflow-hidden">
-                        <img src={l.images[0]} alt="" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-night-500/40 to-transparent" />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="p-4">
-                  {/* Avatar + name */}
-                  <div className={`flex items-start gap-3 mb-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-                    <img src={seller.avatar} alt="" className="w-12 h-12 rounded-xl object-cover flex-shrink-0 border-2 border-white shadow-sm -mt-8 relative z-10" />
-                    <div className={`flex-1 ${isRTL ? "text-right" : ""}`}>
-                      <div className={`flex items-center gap-1.5 ${isRTL ? "flex-row-reverse justify-end" : ""}`}>
-                        <p className={`font-bold text-night-500 text-sm ${isRTL ? "font-arabic" : ""}`}>
-                          {isRTL ? seller.nameAr : seller.name}
-                        </p>
-                        <span className="px-1.5 py-0.5 rounded-lg text-xs font-bold flex-shrink-0"
-                          style={{ background: style.bg, color: style.color }}>
-                          {style.label[locale]}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Stats */}
-                  <div className={`flex items-center gap-3 text-xs text-night-400/60 mb-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-                    <span className={`flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}>
-                      <Star size={11} className="text-sand-400 fill-sand-400" />{seller.rating}
-                    </span>
-                    <span>({seller.reviews})</span>
-                    <span>•</span>
-                    <span>{sellerListingCount(seller.id)} {isRTL ? "إعلان" : "annonces"}</span>
-                    {seller.responseTime && (
-                      <>
-                        <span>•</span>
-                        <span>⚡ {seller.responseTime}</span>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                    <Link href={seller.badge === "pro" ? `/boutique/${seller.id}` : `/profil/${seller.id}`}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold text-night-500 border border-sand-200 hover:border-sand-400 transition-all ${isRTL ? "flex-row-reverse font-arabic" : ""}`}>
-                      {isRTL ? "عرض الملف" : "Voir profil"}
-                      <Arrow size={12} />
-                    </Link>
-                    <Link href={`/messages?seller=${seller.id}`}
-                      className="p-2 border border-sand-200 rounded-xl text-night-400 hover:border-sand-400 hover:text-sand-500 transition-all">
-                      <MessageCircle size={15} />
-                    </Link>
-                  </div>
+        {/* Loading */}
+        {loading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
+                <div className="h-24 bg-sand-100" />
+                <div className="p-4 space-y-2">
+                  <div className="h-4 bg-sand-100 rounded w-3/4" />
+                  <div className="h-3 bg-sand-100 rounded w-1/2" />
+                  <div className="h-8 bg-sand-100 rounded" />
                 </div>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
 
-        {filtered.length === 0 && (
+        {/* Sellers grid */}
+        {!loading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map((seller) => {
+              const style = badgeStyle[seller.badge] ?? badgeStyle.regular;
+              return (
+                <div key={seller.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-card transition-all">
+                  {/* Avatar banner placeholder */}
+                  <div className="h-24 bg-gradient-to-br from-sand-100 to-sand-200 relative">
+                    <img
+                      src={seller.avatar}
+                      alt=""
+                      className="absolute bottom-0 left-4 translate-y-1/2 w-12 h-12 rounded-xl object-cover border-2 border-white shadow-sm"
+                    />
+                  </div>
+
+                  <div className="p-4 pt-8">
+                    {/* Name + badge */}
+                    <div className={`flex items-center gap-1.5 mb-2 ${isRTL ? "flex-row-reverse justify-end" : ""}`}>
+                      <p className={`font-bold text-night-500 text-sm ${isRTL ? "font-arabic" : ""}`}>
+                        {isRTL ? seller.nameAr : seller.name}
+                      </p>
+                      <span className="px-1.5 py-0.5 rounded-lg text-xs font-bold flex-shrink-0"
+                        style={{ background: style.bg, color: style.color }}>
+                        {style.label[locale]}
+                      </span>
+                    </div>
+
+                    {/* Stats */}
+                    <div className={`flex items-center gap-3 text-xs text-night-400/60 mb-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+                      <span className={`flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}>
+                        <Star size={11} className="text-sand-400 fill-sand-400" />{seller.rating}
+                      </span>
+                      <span>({seller.reviews})</span>
+                      <span>•</span>
+                      <span>{seller.listings} {isRTL ? "إعلان" : "annonces"}</span>
+                      {seller.responseTime && (
+                        <>
+                          <span>•</span>
+                          <span>⚡ {seller.responseTime}</span>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                      <Link href={seller.badge === "pro" ? `/boutique/${seller.id}` : `/profil/${seller.id}`}
+                        className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold text-night-500 border border-sand-200 hover:border-sand-400 transition-all ${isRTL ? "flex-row-reverse font-arabic" : ""}`}>
+                        {isRTL ? "عرض الملف" : "Voir profil"}
+                        <Arrow size={12} />
+                      </Link>
+                      <Link href={`/messages?seller=${seller.id}`}
+                        className="p-2 border border-sand-200 rounded-xl text-night-400 hover:border-sand-400 hover:text-sand-500 transition-all">
+                        <MessageCircle size={15} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {!loading && filtered.length === 0 && (
           <div className="bg-white rounded-2xl p-12 text-center shadow-card">
             <Search size={32} className="text-sand-300 mx-auto mb-3" />
             <p className={`text-night-400/60 ${isRTL ? "font-arabic" : ""}`}>
