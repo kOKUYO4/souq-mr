@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { ok, err, getTokenFromRequest, verifyToken } from "@/lib/api";
 import { supabaseServer } from "@/lib/supabase";
+import { createNotification } from "@/lib/notify";
 
 /* GET /api/offers?type=received|sent — offres reçues ou envoyées */
 export async function GET(req: NextRequest) {
@@ -70,5 +71,16 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return err(error.message, 500);
+
+  await createNotification(
+    sellerId,
+    "offer",
+    "Nouvelle offre reçue",
+    "عرض سعر جديد",
+    `Vous avez reçu une offre de ${amount} MRU`,
+    `لديك عرض سعر بقيمة ${amount} أوقية`,
+    `/offres`
+  );
+
   return ok(data);
 }

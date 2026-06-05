@@ -1,66 +1,172 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Search, Phone, MoreVertical, CheckCheck, Smile, ArrowLeft } from "lucide-react";
-import { sellers, listings } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/context/ToastContext";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
+import type { DbConversation, DbMessage } from "@/lib/supabase";
 import HagglingModal from "@/components/social/HagglingModal";
 
-const mockConversations = sellers.slice(0, 4).map((s, i) => ({
-  seller: s,
-  listing: listings[i] || listings[0],
-  lastMessage: {
-    fr: ["Bonjour, est-ce encore disponible ?", "Quel est le dernier prix ?", "Je vous rappelle ce soir", "Merci pour votre offre"][i],
-    ar: ["مرحبا، هل لا يزال متوفراً؟", "ما هو آخر سعر؟", "سأتصل بك الليلة", "شكراً على عرضك"][i],
-  },
-  time: ["14:32", "12:10", "Hier", "Lun"][i],
-  unread: [2, 0, 1, 0][i],
-}));
-
-const initMessages = [
-  { id: 1, from: "buyer", text: "Bonjour, est-ce encore disponible ?", textAr: "مرحبا، هل لا يزال متوفراً؟", time: "14:28" },
-  { id: 2, from: "seller", text: "Oui, tout à fait !", textAr: "نعم، بالطبع!", time: "14:29" },
-  { id: 3, from: "buyer", text: "Quel est le dernier prix ?", textAr: "ما هو آخر سعر؟", time: "14:30" },
-  { id: 4, from: "seller", text: "Pour vous, je peux faire 185 000 MRU, dernier prix 🤝", textAr: "لك أجعله 185,000 أوقية، آخر سعر 🤝", time: "14:32" },
-];
-
 export default function MessagesPage() {
-  const { isRTL, locale } = useLanguage();
+  const { isRTL } = useLanguage();
   const { success } = useToast();
-  const [activeConv, setActiveConv] = useState(0);
+  const { token, isAuthenticated, isLoading: authLoading } = useAuth();
+
+  const [conversations, setConversations] = useState<DbConversation[]>([]);
+  const [activeConv, setActiveConv] = useState<DbConversation | null>(null);
+  const [messages, setMessages] = useState<DbMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [messages, setMessages] = useState(initMessages);
   const [hagglingOpen, setHagglingOpen] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [loadingConvs, setLoadingConvs] = useState(false);
+  const [loadingMsgs, setLoadingMsgs] = useState(false);
+  const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const realtimeRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
-  const current = mockConversations[activeConv];
-
+  /* Scroll to bottom */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = () => {
-    if (!newMessage.trim()) return;
-    const now = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
-    setMessages((prev) => [...prev, { id: prev.length + 1, from: "buyer", text: newMessage, textAr: newMessage, time: now }]);
+  /* Load conversations */
+  const loadConversations = useCallback(async () => {
+    if (!token) return;
+    setLoadingConvs(true);
+    try {
+      const res = await fetch("/api/messages", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const { data } = await res.json();
+        setConversations(data ?? []);
+        if (data?.length > 0 && !activeConv) {
+          setActiveConv(data[0]);
+        }
+      }
+    } finally {
+      setLoadingConvs(false);
+    }
+  }, [token, activeConv]);
+
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      loadConversations();
+    }
+  }, [isAuthenticated, token]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* Load messages when active conversation changes */
+  const loadMessages = useCallback(async (convId: string) => {
+    if (!token) return;
+    setLoadingMsgs(true);
+    try {
+      const res = await fetch(`/api/messages?conversationId=${convId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const { data } = await res.json();
+        setMessages(data ?? []);
+      }
+    } finally {
+      setLoadingMsgs(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (!activeConv) return;
+
+    loadMessages(activeConv.id);
+
+    /* Cleanup previous subscription */
+    if (realtimeRef.current) {
+      supabase.removeChannel(realtimeRef.current);
+    }
+
+    /* Supabase Realtime subscription */
+    const channel = supabase
+      .channel(`messages-${activeConv.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${activeConv.id}`,
+        },
+        (payload) => {
+          setMessages((prev) => {
+            // avoid duplicates
+            if (prev.some((m) => m.id === (payload.new as DbMessage).id)) return prev;
+            return [...prev, payload.new as DbMessage];
+          });
+        }
+      )
+      .subscribe();
+
+    realtimeRef.current = channel;
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [activeConv?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const sendMessage = async () => {
+    if (!newMessage.trim() || !activeConv || sending) return;
+    setSending(true);
+    const text = newMessage.trim();
     setNewMessage("");
-    // Simulated seller reply after 1.2s
-    setTimeout(() => {
-      const replies = {
-        fr: ["Je comprends, merci pour votre message.", "D'accord, je vous recontacte.", "Bien reçu !"],
-        ar: ["حسناً، شكراً على رسالتك.", "موافق، سأتواصل معك.", "تم الاستلام!"],
-      };
-      const reply = replies[locale][Math.floor(Math.random() * 3)];
-      const replyAr = replies.ar[Math.floor(Math.random() * 3)];
-      setMessages((prev) => [...prev, { id: prev.length + 1, from: "seller", text: reply, textAr: replyAr, time: new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) }]);
-    }, 1200);
+
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ conversation_id: activeConv.id, text }),
+      });
+      if (res.ok) {
+        const { data } = await res.json();
+        // Realtime will add it; but add optimistically if not already present
+        setMessages((prev) => {
+          if (prev.some((m) => m.id === data.id)) return prev;
+          return [...prev, data];
+        });
+        success(isRTL ? "تم الإرسال" : "Message envoyé");
+      }
+    } finally {
+      setSending(false);
+    }
   };
+
+  /* Helpers to get display name/avatar for other party in a conversation */
+  const getOtherParty = (conv: DbConversation) => {
+    // We don't know which side is "us" here without userId; default to seller info
+    return {
+      name: conv.seller?.name ?? "…",
+      nameAr: conv.seller?.name_ar ?? "…",
+      avatar: conv.seller?.avatar ?? `https://api.dicebear.com/7.x/avataaars/svg?seed=${conv.seller_id}`,
+    };
+  };
+
+  const formatTime = (iso: string) => {
+    const d = new Date(iso);
+    const now = new Date();
+    const diffDays = Math.floor((now.getTime() - d.getTime()) / 86400000);
+    if (diffDays === 0) return d.toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+    if (diffDays === 1) return isRTL ? "أمس" : "Hier";
+    return d.toLocaleDateString("fr", { day: "numeric", month: "short" });
+  };
+
+  if (authLoading) return null;
 
   return (
     <div className="min-h-screen bg-sand-50">
-      {hagglingOpen && <HagglingModal listing={current.listing} onClose={() => setHagglingOpen(false)} />}
+      {hagglingOpen && activeConv?.listing && (
+        <HagglingModal listing={activeConv.listing as any} onClose={() => setHagglingOpen(false)} />
+      )}
       <div className="max-w-7xl mx-auto px-0 sm:px-6 py-0 sm:py-6">
         <div className="flex h-[calc(100vh-80px)] bg-white sm:rounded-2xl overflow-hidden shadow-card">
 
@@ -76,96 +182,154 @@ export default function MessagesPage() {
               </div>
             </div>
             <div className="overflow-y-auto flex-1">
-              {mockConversations.map((conv, i) => (
-                <button key={i} onClick={() => { setActiveConv(i); setShowChat(true); }}
-                  className={`w-full flex items-center gap-3 p-4 border-b border-sand-50 hover:bg-sand-50 transition-colors ${activeConv === i ? "bg-sand-50" : ""} ${isRTL ? "flex-row-reverse" : ""}`}>
-                  <div className="relative flex-shrink-0">
-                    <img src={conv.seller.avatar} alt="" className="w-12 h-12 rounded-full bg-sand-100" />
-                    {conv.unread > 0 && (
-                      <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center"
-                        style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
-                        {conv.unread}
-                      </span>
-                    )}
-                  </div>
-                  <div className={`flex-1 min-w-0 ${isRTL ? "text-right" : ""}`}>
-                    <div className={`flex items-center justify-between mb-0.5 ${isRTL ? "flex-row-reverse" : ""}`}>
-                      <p className="text-sm font-semibold text-night-500 truncate">{isRTL ? conv.seller.nameAr : conv.seller.name}</p>
-                      <span className="text-xs text-night-400/50 flex-shrink-0 ml-2">{conv.time}</span>
+              {loadingConvs && (
+                <div className="p-6 text-center text-sand-400 text-sm">
+                  {isRTL ? "جارٍ التحميل…" : "Chargement…"}
+                </div>
+              )}
+              {!loadingConvs && conversations.length === 0 && (
+                <div className="p-6 text-center text-sand-400 text-sm">
+                  {isRTL ? "لا توجد محادثات" : "Aucune conversation"}
+                </div>
+              )}
+              {conversations.map((conv) => {
+                const other = getOtherParty(conv);
+                return (
+                  <button
+                    key={conv.id}
+                    onClick={() => { setActiveConv(conv); setShowChat(true); }}
+                    className={`w-full flex items-center gap-3 p-4 border-b border-sand-50 hover:bg-sand-50 transition-colors ${activeConv?.id === conv.id ? "bg-sand-50" : ""} ${isRTL ? "flex-row-reverse" : ""}`}
+                  >
+                    <div className="relative flex-shrink-0">
+                      <img src={other.avatar} alt="" className="w-12 h-12 rounded-full bg-sand-100" />
                     </div>
-                    <p className="text-xs text-night-400/60 truncate">{isRTL ? conv.lastMessage.ar : conv.lastMessage.fr}</p>
-                    <p className="text-[10px] text-sand-400/70 truncate mt-0.5">{isRTL ? conv.listing.titleAr : conv.listing.title}</p>
-                  </div>
-                </button>
-              ))}
+                    <div className={`flex-1 min-w-0 ${isRTL ? "text-right" : ""}`}>
+                      <div className={`flex items-center justify-between mb-0.5 ${isRTL ? "flex-row-reverse" : ""}`}>
+                        <p className="text-sm font-semibold text-night-500 truncate">{isRTL ? other.nameAr : other.name}</p>
+                        <span className="text-xs text-night-400/50 flex-shrink-0 ml-2">
+                          {conv.last_at ? formatTime(conv.last_at) : ""}
+                        </span>
+                      </div>
+                      <p className="text-xs text-night-400/60 truncate">{conv.last_message ?? ""}</p>
+                      {conv.listing && (
+                        <p className="text-[10px] text-sand-400/70 truncate mt-0.5">
+                          {isRTL ? (conv.listing as any).title_ar : (conv.listing as any).title}
+                        </p>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Zone de chat */}
+          {/* Chat zone */}
           <div className={`${showChat ? "flex" : "hidden sm:flex"} flex-1 flex-col min-w-0`}>
-            {/* Header */}
-            <div className={`flex items-center gap-3 px-5 py-4 border-b border-sand-100 ${isRTL ? "flex-row-reverse" : ""}`}>
-              <button onClick={() => setShowChat(false)} className="sm:hidden p-1.5 text-night-400 hover:text-sand-500 mr-1">
-                <ArrowLeft size={18} />
-              </button>
-              <img src={current.seller.avatar} alt="" className="w-10 h-10 rounded-full bg-sand-100" />
-              <div className={`flex-1 ${isRTL ? "text-right" : ""}`}>
-                <p className="font-semibold text-night-500 text-sm">{isRTL ? current.seller.nameAr : current.seller.name}</p>
-                <p className="text-xs text-islamic-400">● {isRTL ? "متصل" : "En ligne"}</p>
+            {!activeConv ? (
+              <div className="flex-1 flex items-center justify-center text-sand-400 text-sm">
+                {isRTL ? "اختر محادثة" : "Sélectionnez une conversation"}
               </div>
-              <div className={`flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}>
-                <a href={`tel:+222`} className="p-2 text-night-400 hover:text-sand-500 transition-colors rounded-lg hover:bg-sand-50"><Phone size={16} /></a>
-                <button className="p-2 text-night-400 hover:text-sand-500 transition-colors rounded-lg hover:bg-sand-50"><MoreVertical size={16} /></button>
-              </div>
-            </div>
-
-            {/* Annonce référencée */}
-            <div className={`flex items-center gap-3 px-5 py-3 bg-sand-50 border-b border-sand-100 ${isRTL ? "flex-row-reverse" : ""}`}>
-              <img src={current.listing.images[0]} alt="" className="w-10 h-10 rounded-lg object-cover" />
-              <div className={`flex-1 min-w-0 ${isRTL ? "text-right" : ""}`}>
-                <p className="text-xs font-semibold text-night-500 truncate">{isRTL ? current.listing.titleAr : current.listing.title}</p>
-                <p className="text-xs text-sand-500 font-bold">{current.listing.price.toLocaleString()} MRU</p>
-              </div>
-              {current.listing.negotiable && (
-                <button onClick={() => setHagglingOpen(true)}
-                  className="flex-shrink-0 px-3 py-1.5 text-xs font-bold text-night-500 rounded-xl"
-                  style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
-                  🤝 {isRTL ? "فاوض" : "Négocier"}
-                </button>
-              )}
-            </div>
-
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-3 bg-sand-50/30">
-              {messages.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.from === "buyer" ? (isRTL ? "justify-start" : "justify-end") : (isRTL ? "justify-end" : "justify-start")}`}>
-                  <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${msg.from === "buyer" ? "text-white rounded-br-md" : "bg-white text-night-500 shadow-sm rounded-bl-md"}`}
-                    style={msg.from === "buyer" ? { background: "linear-gradient(135deg, #1B2A4A, #2D3E6A)" } : undefined}>
-                    <p className={isRTL ? "font-arabic" : ""}>{isRTL ? msg.textAr : msg.text}</p>
-                    <div className={`flex items-center gap-1 mt-1 ${msg.from === "buyer" ? "justify-end" : "justify-start"}`}>
-                      <span className={`text-[10px] ${msg.from === "buyer" ? "text-white/50" : "text-night-400/40"}`}>{msg.time}</span>
-                      {msg.from === "buyer" && <CheckCheck size={12} className="text-sand-400/70" />}
+            ) : (
+              <>
+                {/* Header */}
+                {(() => {
+                  const other = getOtherParty(activeConv);
+                  return (
+                    <div className={`flex items-center gap-3 px-5 py-4 border-b border-sand-100 ${isRTL ? "flex-row-reverse" : ""}`}>
+                      <button onClick={() => setShowChat(false)} className="sm:hidden p-1.5 text-night-400 hover:text-sand-500 mr-1">
+                        <ArrowLeft size={18} />
+                      </button>
+                      <img src={other.avatar} alt="" className="w-10 h-10 rounded-full bg-sand-100" />
+                      <div className={`flex-1 ${isRTL ? "text-right" : ""}`}>
+                        <p className="font-semibold text-night-500 text-sm">{isRTL ? other.nameAr : other.name}</p>
+                      </div>
+                      <div className={`flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}>
+                        <a href={`tel:+222`} className="p-2 text-night-400 hover:text-sand-500 transition-colors rounded-lg hover:bg-sand-50"><Phone size={16} /></a>
+                        <button className="p-2 text-night-400 hover:text-sand-500 transition-colors rounded-lg hover:bg-sand-50"><MoreVertical size={16} /></button>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
+                  );
+                })()}
 
-            {/* Input */}
-            <div className={`flex items-center gap-3 px-4 py-3 border-t border-sand-100 bg-white ${isRTL ? "flex-row-reverse" : ""}`}>
-              <button className="p-2 text-night-400 hover:text-sand-500 transition-colors"><Smile size={20} /></button>
-              <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                placeholder={isRTL ? "اكتب رسالتك..." : "Écrivez votre message..."}
-                dir={isRTL ? "rtl" : "ltr"}
-                className="flex-1 bg-sand-50 rounded-xl px-4 py-2.5 text-sm text-night-500 placeholder-sand-300 outline-none focus:ring-2 focus:ring-sand-300" />
-              <button onClick={sendMessage}
-                className="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105"
-                style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}>
-                <Send size={16} className="text-night-500" />
-              </button>
-            </div>
+                {/* Listing reference */}
+                {activeConv.listing && (
+                  <div className={`flex items-center gap-3 px-5 py-3 bg-sand-50 border-b border-sand-100 ${isRTL ? "flex-row-reverse" : ""}`}>
+                    {(activeConv.listing as any).images?.[0] && (
+                      <img src={(activeConv.listing as any).images[0]} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                    )}
+                    <div className={`flex-1 min-w-0 ${isRTL ? "text-right" : ""}`}>
+                      <p className="text-xs font-semibold text-night-500 truncate">
+                        {isRTL ? (activeConv.listing as any).title_ar : (activeConv.listing as any).title}
+                      </p>
+                      <p className="text-xs text-sand-500 font-bold">
+                        {(activeConv.listing as any).price?.toLocaleString()} MRU
+                      </p>
+                    </div>
+                    {(activeConv.listing as any).negotiable && (
+                      <button
+                        onClick={() => setHagglingOpen(true)}
+                        className="flex-shrink-0 px-3 py-1.5 text-xs font-bold text-night-500 rounded-xl"
+                        style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}
+                      >
+                        🤝 {isRTL ? "فاوض" : "Négocier"}
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto p-5 space-y-3 bg-sand-50/30">
+                  {loadingMsgs && (
+                    <div className="text-center text-sand-400 text-sm py-4">
+                      {isRTL ? "جارٍ التحميل…" : "Chargement…"}
+                    </div>
+                  )}
+                  {messages.map((msg) => {
+                    const isMine = msg.sender_id === activeConv.buyer_id;
+                    return (
+                      <div key={msg.id} className={`flex ${isMine ? (isRTL ? "justify-start" : "justify-end") : (isRTL ? "justify-end" : "justify-start")}`}>
+                        <div
+                          className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${isMine ? "text-white rounded-br-md" : "bg-white text-night-500 shadow-sm rounded-bl-md"}`}
+                          style={isMine ? { background: "linear-gradient(135deg, #1B2A4A, #2D3E6A)" } : undefined}
+                        >
+                          <p>{msg.text}</p>
+                          <div className={`flex items-center gap-1 mt-1 ${isMine ? "justify-end" : "justify-start"}`}>
+                            <span className={`text-[10px] ${isMine ? "text-white/50" : "text-night-400/40"}`}>
+                              {new Date(msg.created_at).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" })}
+                            </span>
+                            {isMine && <CheckCheck size={12} className="text-sand-400/70" />}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <div ref={messagesEndRef} />
+                </div>
+
+                {/* Input */}
+                <div className={`flex items-center gap-3 px-4 py-3 border-t border-sand-100 bg-white ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <button className="p-2 text-night-400 hover:text-sand-500 transition-colors"><Smile size={20} /></button>
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                    placeholder={isRTL ? "اكتب رسالتك..." : "Écrivez votre message..."}
+                    dir={isRTL ? "rtl" : "ltr"}
+                    className="flex-1 bg-sand-50 rounded-xl px-4 py-2.5 text-sm text-night-500 placeholder-sand-300 outline-none focus:ring-2 focus:ring-sand-300"
+                    disabled={sending}
+                  />
+                  <button
+                    onClick={sendMessage}
+                    disabled={sending}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105 disabled:opacity-50"
+                    style={{ background: "linear-gradient(135deg, #C9A84C, #B8922E)" }}
+                  >
+                    <Send size={16} className="text-night-500" />
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

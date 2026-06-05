@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { ok, err, getTokenFromRequest, verifyToken } from "@/lib/api";
 import { supabaseServer } from "@/lib/supabase";
+import { createNotification } from "@/lib/notify";
 
 /* PATCH /api/offers/[id] — mettre à jour le statut d'une offre */
 export async function PATCH(
@@ -56,5 +57,28 @@ export async function PATCH(
     .single();
 
   if (error) return err(error.message, 500);
+
+  if (status === "accepted") {
+    await createNotification(
+      offer.buyer_id,
+      "offer",
+      "Offre acceptée !",
+      "تم قبول عرضك!",
+      "Le vendeur a accepté votre offre.",
+      "قبل البائع عرضك.",
+      `/offres`
+    );
+  } else if (status === "declined") {
+    await createNotification(
+      offer.buyer_id,
+      "offer",
+      "Offre refusée",
+      "تم رفض عرضك",
+      "Le vendeur a refusé votre offre.",
+      "رفض البائع عرضك.",
+      `/offres`
+    );
+  }
+
   return ok(data);
 }
