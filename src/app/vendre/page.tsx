@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Mic, Camera, Plus, X, CheckCircle2, Lock, Loader2, ArrowRight, ArrowLeft, ChevronRight } from "lucide-react";
+import { Mic, CheckCircle2, Lock, Loader2, ArrowRight, ArrowLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { categories } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 import IslamicPattern from "@/components/ui/IslamicPattern";
+import ImageUploader from "@/components/ui/ImageUploader";
 
 const STEP_LABELS = {
   fr: ["Photos & Catégorie", "Détails & Prix", "Contact & Publication"],
@@ -209,54 +210,9 @@ export default function VendrePage() {
             {/* Photos */}
             <div className="bg-white rounded-2xl p-5 shadow-card">
               <h3 className={`font-semibold text-night-500 mb-4 ${isRTL ? "text-right" : ""}`}>
-                📸 {isRTL ? "الصور (حتى 8)" : "Photos (max 8)"}
+                📸 {isRTL ? "الصور (حتى 6)" : "Photos (max 6)"}
               </h3>
-              <div className="grid grid-cols-4 gap-3">
-                {images.map((img, i) => (
-                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden">
-                    <img src={img} alt="" className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => setImages((prev) => prev.filter((_, j) => j !== i))}
-                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-night-500/70 flex items-center justify-center"
-                    >
-                      <X size={10} className="text-white" />
-                    </button>
-                  </div>
-                ))}
-                {images.length < 8 && (
-                  <>
-                    <label className="aspect-square rounded-xl border-2 border-dashed border-sand-300 flex flex-col items-center justify-center cursor-pointer hover:border-sand-400 hover:bg-sand-50 transition-all">
-                      <Plus size={24} className="text-sand-400" />
-                      <span className="text-xs text-sand-400 mt-1">{isRTL ? "إضافة" : "Ajouter"}</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        className="hidden"
-                        onChange={(e) => {
-                          const urls = Array.from(e.target.files || []).map((f) => URL.createObjectURL(f));
-                          setImages((prev) => [...prev, ...urls].slice(0, 8));
-                        }}
-                      />
-                    </label>
-                    <label className="aspect-square rounded-xl border-2 border-dashed border-sand-200 flex flex-col items-center justify-center cursor-pointer hover:border-sand-300 hover:bg-sand-50 transition-all">
-                      <Camera size={20} className="text-sand-300" />
-                      <span className="text-xs text-sand-300 mt-1">{isRTL ? "كاميرا" : "Caméra"}</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        capture="environment"
-                        className="hidden"
-                        onChange={(e) => {
-                          const f = e.target.files?.[0];
-                          if (f) setImages((prev) => [...prev, URL.createObjectURL(f)].slice(0, 8));
-                        }}
-                      />
-                    </label>
-                  </>
-                )}
-              </div>
+              <ImageUploader value={images} onChange={setImages} max={6} />
             </div>
 
             {/* Catégorie + Titre */}

@@ -8,7 +8,7 @@ import {
   ChevronDown, Plus, User, LayoutDashboard, LogOut, Settings,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
-import NotificationPanel from "@/components/social/NotificationPanel";
+import NotificationBell from "@/components/ui/NotificationBell";
 import { useLanguage } from "@/context/LanguageContext";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useAuth } from "@/context/AuthContext";
@@ -103,7 +103,7 @@ export default function Navbar() {
             </button>
 
             {/* Notifications */}
-            <NotificationPanel />
+            <NotificationBell />
 
             {/* Favoris */}
             <Link href="/favoris" className="hidden sm:flex relative p-2 text-sand-300 hover:text-sand-400 transition-colors rounded-lg hover:bg-night-600/50">
