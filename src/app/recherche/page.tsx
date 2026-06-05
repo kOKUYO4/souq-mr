@@ -5,7 +5,6 @@ import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { Search, SlidersHorizontal, X, TrendingUp, Mic } from "lucide-react";
 import ListingCard from "@/components/listings/ListingCard";
 import { ListingsGridSkeleton } from "@/components/ui/Skeleton";
-import { listings as allListings } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 
 const TRENDING = {
@@ -22,7 +21,7 @@ function SearchResults() {
   const [q, setQ] = useState(searchParams.get("q") || "");
   const [debouncedQ, setDebouncedQ] = useState(q);
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState(allListings);
+  const [results, setResults] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -42,22 +41,25 @@ function SearchResults() {
   const activeFilterCount = [priceMin, priceMax].filter(Boolean).length;
 
   const runSearch = useCallback(async (query: string) => {
-    if (!query.trim()) { setResults(allListings); setSuggestions([]); setPage(1); return; }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 280));
-    const q2 = query.toLowerCase();
-    let filtered = allListings.filter(
-      (l) => l.title.toLowerCase().includes(q2) || l.titleAr.includes(query) ||
-        l.description.toLowerCase().includes(q2) || l.category.toLowerCase().includes(q2)
-    );
-    if (condition !== "all") filtered = filtered.filter((l) => l.condition === condition);
-    if (priceMin) filtered = filtered.filter((l) => l.price >= parseInt(priceMin));
-    if (priceMax) filtered = filtered.filter((l) => l.price <= parseInt(priceMax));
-    if (sortBy === "price-asc") filtered = [...filtered].sort((a, b) => a.price - b.price);
-    if (sortBy === "price-desc") filtered = [...filtered].sort((a, b) => b.price - a.price);
-    setResults(filtered);
+    const params = new URLSearchParams();
+    if (query.trim()) params.set("q", query.trim());
+    if (condition !== "all") params.set("condition", condition);
+    if (priceMin) params.set("min_price", priceMin);
+    if (priceMax) params.set("max_price", priceMax);
+    if (sortBy === "price-asc") params.set("sort", "price-asc");
+    if (sortBy === "price-desc") params.set("sort", "price-desc");
+    params.set("limit", "50");
+    try {
+      const res = await fetch(`/api/search?${params}`);
+      const json = await res.json();
+      const listings = json.data?.listings ?? json.listings ?? [];
+      setResults(listings);
+      setSuggestions(listings.slice(0, 5).map((l: any) => (isRTL ? l.title_ar : l.title)));
+    } catch {
+      setResults([]);
+    }
     setPage(1);
-    setSuggestions(filtered.slice(0, 5).map((l) => (isRTL ? l.titleAr : l.title)));
     setLoading(false);
   }, [condition, sortBy, priceMin, priceMax, isRTL]);
 
@@ -104,7 +106,7 @@ function SearchResults() {
                 className="flex-1 py-3 bg-transparent text-night-500 placeholder-sand-300 outline-none text-base"
               />
               {q && (
-                <button onClick={() => { setQ(""); setResults(allListings); }}
+                <button onClick={() => { setQ(""); runSearch(""); }}
                   className={`p-2 text-sand-300 hover:text-night-400 transition-colors`}>
                   <X size={16} />
                 </button>
@@ -263,7 +265,7 @@ function SearchResults() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {allListings.slice(0, PAGE_SIZE).map((l) => <ListingCard key={l.id} listing={l} />)}
+            {results.slice(0, PAGE_SIZE).map((l) => <ListingCard key={l.id} listing={l} />)}
           </div>
         )}
       </div>

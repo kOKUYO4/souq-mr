@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { MapPin, List, Search, ArrowRight, ArrowLeft } from "lucide-react";
-import { listings } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 import IslamicPattern from "@/components/ui/IslamicPattern";
 
@@ -42,26 +41,34 @@ export default function CartePage() {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [listings, setListings] = useState<any[]>([]);
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
+  useEffect(() => {
+    fetch("/api/listings?limit=100")
+      .then((r) => r.json())
+      .then((json) => setListings(json.data?.listings ?? json.listings ?? []))
+      .catch(() => {});
+  }, []);
+
   const cityGroups = useMemo(() => {
-    const groups: Record<string, typeof listings> = {};
+    const groups: Record<string, any[]> = {};
     listings.forEach((l) => {
       const city = getCity(l.location);
       if (!groups[city]) groups[city] = [];
       groups[city].push(l);
     });
     return groups;
-  }, []);
+  }, [listings]);
 
   const filteredListings = useMemo(() => {
     const base = selectedCity ? (cityGroups[selectedCity] || []) : listings;
     if (!search.trim()) return base;
     return base.filter((l) =>
-      l.title.toLowerCase().includes(search.toLowerCase()) ||
-      l.titleAr.includes(search)
+      l.title?.toLowerCase().includes(search.toLowerCase()) ||
+      l.title_ar?.includes(search)
     );
-  }, [selectedCity, cityGroups, search]);
+  }, [selectedCity, cityGroups, search, listings]);
 
   return (
     <div className="min-h-screen bg-sand-50">
@@ -214,16 +221,16 @@ export default function CartePage() {
                   filteredListings.slice(0, 20).map((l) => (
                     <Link key={l.id} href={`/annonce/${l.id}`}
                       className={`flex items-center gap-3 p-4 border-b border-sand-50 hover:bg-sand-50 transition-colors ${isRTL ? "flex-row-reverse" : ""}`}>
-                      <img src={l.images[0]} alt="" className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
+                      <img src={l.images?.[0]} alt="" className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
                       <div className={`flex-1 min-w-0 ${isRTL ? "text-right" : ""}`}>
                         <p className={`text-sm font-semibold text-night-500 truncate ${isRTL ? "font-arabic" : ""}`}>
-                          {isRTL ? l.titleAr : l.title}
+                          {isRTL ? (l.title_ar || l.titleAr) : l.title}
                         </p>
                         <div className={`flex items-center gap-1 mt-0.5 ${isRTL ? "flex-row-reverse" : ""}`}>
                           <MapPin size={10} className="text-sand-400 flex-shrink-0" />
                           <p className="text-xs text-night-400/60 truncate">{l.location}</p>
                         </div>
-                        <p className="text-xs font-bold text-sand-500 mt-0.5">{l.price.toLocaleString()} MRU</p>
+                        <p className="text-xs font-bold text-sand-500 mt-0.5">{l.price?.toLocaleString()} MRU</p>
                       </div>
                       <Arrow size={14} className="text-sand-300 flex-shrink-0" />
                     </Link>

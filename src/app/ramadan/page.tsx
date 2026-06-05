@@ -1,9 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import IslamicPattern from "@/components/ui/IslamicPattern";
-import { formatPrice, listings } from "@/data/mockData";
 import Image from "next/image";
+
+function formatPrice(n: number) { return n?.toLocaleString() ?? "0"; }
 
 /* ── Static Ramadan data ──────────────────────────────────────────────── */
 
@@ -26,13 +28,19 @@ const PRAYER_TIMES = [
   { key: "Isha",    fr: "Isha (Nuit)",    ar: "العشاء",   time: "20:52" },
 ];
 
-const PROMO_LISTINGS = listings.slice(0, 4);
-
 /* ── Component ───────────────────────────────────────────────────────── */
 
 export default function RamadanPage() {
   const { locale, isRTL } = useLanguage();
   const ar = locale === "ar";
+  const [promoListings, setPromoListings] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/listings?limit=4")
+      .then((r) => r.json())
+      .then((json) => setPromoListings(json.data?.listings ?? json.listings ?? []))
+      .catch(() => {});
+  }, []);
 
   return (
     <main dir={isRTL ? "rtl" : "ltr"} className="min-h-screen bg-sand-100">
@@ -157,7 +165,7 @@ export default function RamadanPage() {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {PROMO_LISTINGS.map((listing) => {
+          {promoListings.map((listing) => {
             const discountedPrice = Math.round(listing.price * 0.8);
             return (
               <div
@@ -166,10 +174,10 @@ export default function RamadanPage() {
               >
                 {/* Image with badge */}
                 <div className="relative h-44 bg-sand-200">
-                  {listing.images[0] && (
+                  {listing.images?.[0] && (
                     <Image
                       src={listing.images[0]}
-                      alt={ar ? listing.titleAr : listing.title}
+                      alt={ar ? (listing.title_ar || listing.titleAr || "") : listing.title}
                       fill
                       className="object-cover"
                       sizes="(max-width: 640px) 100vw, 25vw"
@@ -186,7 +194,7 @@ export default function RamadanPage() {
 
                 <div className="p-3">
                   <p className={`text-sm font-medium text-night-600 line-clamp-2 mb-2 ${ar ? "font-arabic text-right" : ""}`}>
-                    {ar ? listing.titleAr : listing.title}
+                    {ar ? (listing.title_ar || listing.titleAr) : listing.title}
                   </p>
                   <div className={`flex items-center gap-2 ${ar ? "flex-row-reverse" : ""}`}>
                     <span className="text-base font-bold" style={{ color: "#B8922E" }}>
@@ -197,7 +205,7 @@ export default function RamadanPage() {
                     </span>
                   </div>
                   <p className={`text-xs text-sand-400 mt-1 ${ar ? "text-right font-arabic" : ""}`}>
-                    📍 {ar ? listing.locationAr : listing.location}
+                    📍 {listing.location}
                   </p>
                 </div>
               </div>
