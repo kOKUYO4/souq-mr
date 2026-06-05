@@ -1,15 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   BarChart3, Users, Tag, AlertTriangle, CheckCircle2, XCircle, Eye,
   TrendingUp, Settings, Bell, Search, Shield, Lock, Loader2,
   UserCheck, UserX, Star, MapPin, Calendar, ChevronUp,
 } from "lucide-react";
-import { listings, sellers } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
+
+interface Seller {
+  id: string;
+  name: string;
+  nameAr: string;
+  avatar: string;
+  badge: "verified" | "pro" | "regular";
+  rating: number;
+  reviews: number;
+  listings: number;
+  joinedAt: string;
+  phone: string;
+}
+
+interface Listing {
+  id: string;
+  title: string;
+  titleAr: string;
+  price: number;
+  category: string;
+  location: string;
+  images: string[];
+  seller: { name: string; avatar: string };
+}
+
+interface AdminUser extends Seller {
+  status: string;
+  totalSales: number;
+  joinedStr: string;
+}
 
 const stats = [
   { icon: Tag, value: "24,841", labelFr: "Annonces actives", labelAr: "إعلان نشط", change: "+12%", positive: true, color: "#C9A84C" },
@@ -17,13 +46,6 @@ const stats = [
   { icon: BarChart3, value: "142K", labelFr: "Vues ce mois", labelAr: "مشاهدة هذا الشهر", change: "+24%", positive: true, color: "#1B2A4A" },
   { icon: AlertTriangle, value: "23", labelFr: "Signalements", labelAr: "بلاغ", change: "-5%", positive: false, color: "#E53E3E" },
 ];
-
-const mockUsers = sellers.map((s, i) => ({
-  ...s,
-  status: i === 2 ? "suspended" : "active",
-  totalSales: [142, 88, 34, 201, 67, 15][i] ?? 0,
-  joinedStr: new Date(s.joinedAt).toLocaleDateString("fr-FR", { year: "numeric", month: "short" }),
-}));
 
 export default function AdminPage() {
   const { isRTL } = useLanguage();
@@ -33,6 +55,41 @@ export default function AdminPage() {
   const [userSearch, setUserSearch] = useState("");
   const [approvedIds, setApprovedIds] = useState<Set<string>>(new Set());
   const [rejectedIds, setRejectedIds] = useState<Set<string>>(new Set());
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const loadData = async () => {
+      setDataLoading(true);
+      try {
+        const [listingsRes, sellersRes] = await Promise.all([
+          fetch("/api/listings?limit=20"),
+          fetch("/api/sellers?limit=10"),
+        ]);
+        const listingsJson = await listingsRes.json();
+        const sellersJson = await sellersRes.json();
+        if (listingsJson.success) setListings(listingsJson.data?.listings ?? listingsJson.data ?? []);
+        if (sellersJson.success) {
+          const sellers: Seller[] = sellersJson.data?.sellers ?? sellersJson.data ?? [];
+          setAdminUsers(
+            sellers.map((s, i) => ({
+              ...s,
+              status: i === 2 ? "suspended" : "active",
+              totalSales: [142, 88, 34, 201, 67, 15][i] ?? 0,
+              joinedStr: new Date(s.joinedAt).toLocaleDateString("fr-FR", { year: "numeric", month: "short" }),
+            }))
+          );
+        }
+      } catch {
+        // silently fail — UI shows empty state
+      } finally {
+        setDataLoading(false);
+      }
+    };
+    loadData();
+  }, [isAuthenticated]);
 
   if (authLoading) {
     return (
@@ -71,7 +128,7 @@ export default function AdminPage() {
     l.category.toLowerCase().includes(listingSearch.toLowerCase())
   );
 
-  const filteredUsers = mockUsers.filter((u) =>
+  const filteredUsers = adminUsers.filter((u) =>
     !userSearch ||
     u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
     u.phone.includes(userSearch)
@@ -181,7 +238,11 @@ export default function AdminPage() {
                   </button>
                 </div>
                 <div className="divide-y divide-night-600/50">
-                  {listings.slice(0, 5).map((l) => (
+                  {dataLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 size={20} className="animate-spin text-sand-400" />
+                    </div>
+                  ) : listings.slice(0, 5).map((l) => (
                     <div key={l.id} className={`flex items-center gap-3 px-4 py-3 hover:bg-night-600/30 transition-colors ${isRTL ? "flex-row-reverse" : ""}`}>
                       <img src={l.images[0]} alt="" className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
                       <div className={`flex-1 min-w-0 ${isRTL ? "text-right" : ""}`}>
@@ -203,7 +264,11 @@ export default function AdminPage() {
                   </button>
                 </div>
                 <div className="divide-y divide-night-600/50">
-                  {mockUsers.slice(0, 5).map((u, i) => (
+                  {dataLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 size={20} className="animate-spin text-sand-400" />
+                    </div>
+                  ) : adminUsers.slice(0, 5).map((u, i) => (
                     <div key={u.id} className={`flex items-center gap-3 px-4 py-3 hover:bg-night-600/30 transition-colors ${isRTL ? "flex-row-reverse" : ""}`}>
                       <span className="text-sand-400/40 text-sm font-bold w-5 text-center flex-shrink-0">{i + 1}</span>
                       <img src={u.avatar} alt="" className="w-8 h-8 rounded-full flex-shrink-0" />
@@ -242,79 +307,85 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-night-600">
-                    {(isRTL
-                      ? ["الإجراءات", "القسم", "السعر", "البائع", "الإعلان"]
-                      : ["Annonce", "Vendeur", "Prix", "Catégorie", "Actions"]
-                    ).map((h) => (
-                      <th key={h} className={`px-5 py-3 text-xs text-sand-400/60 font-semibold uppercase tracking-wider ${isRTL ? "text-right" : "text-left"}`}>
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredListings.map((l) => {
-                    const approved = approvedIds.has(l.id);
-                    const rejected = rejectedIds.has(l.id);
-                    return (
-                      <tr key={l.id} className={`border-b border-night-600/50 transition-colors ${approved ? "bg-islamic-400/5" : rejected ? "bg-red-400/5" : "hover:bg-night-600/30"}`}>
-                        <td className="px-5 py-3">
-                          <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-                            <img src={l.images[0]} alt="" className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
-                            <div className={isRTL ? "text-right" : ""}>
-                              <p className="text-white text-xs font-medium line-clamp-1 max-w-[150px]">{l.title}</p>
-                              <p className="text-sand-400/50 text-[10px]">{l.location}</p>
+            {dataLoading ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 size={24} className="animate-spin text-sand-400" />
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-night-600">
+                      {(isRTL
+                        ? ["الإجراءات", "القسم", "السعر", "البائع", "الإعلان"]
+                        : ["Annonce", "Vendeur", "Prix", "Catégorie", "Actions"]
+                      ).map((h) => (
+                        <th key={h} className={`px-5 py-3 text-xs text-sand-400/60 font-semibold uppercase tracking-wider ${isRTL ? "text-right" : "text-left"}`}>
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredListings.map((l) => {
+                      const approved = approvedIds.has(l.id);
+                      const rejected = rejectedIds.has(l.id);
+                      return (
+                        <tr key={l.id} className={`border-b border-night-600/50 transition-colors ${approved ? "bg-islamic-400/5" : rejected ? "bg-red-400/5" : "hover:bg-night-600/30"}`}>
+                          <td className="px-5 py-3">
+                            <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+                              <img src={l.images[0]} alt="" className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+                              <div className={isRTL ? "text-right" : ""}>
+                                <p className="text-white text-xs font-medium line-clamp-1 max-w-[150px]">{l.title}</p>
+                                <p className="text-sand-400/50 text-[10px]">{l.location}</p>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3">
-                          <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
-                            <img src={l.seller.avatar} alt="" className="w-7 h-7 rounded-full" />
-                            <span className="text-sand-300 text-xs">{l.seller.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3">
-                          <span className="text-sand-400 font-bold text-xs">{l.price.toLocaleString()} MRU</span>
-                        </td>
-                        <td className="px-5 py-3">
-                          <span className="badge-gold text-[10px]">{l.category}</span>
-                        </td>
-                        <td className="px-5 py-3">
-                          {approved ? (
-                            <span className="flex items-center gap-1 text-xs text-islamic-300 font-semibold">
-                              <CheckCircle2 size={13} /> {isRTL ? "مقبول" : "Approuvé"}
-                            </span>
-                          ) : rejected ? (
-                            <span className="flex items-center gap-1 text-xs text-red-300 font-semibold">
-                              <XCircle size={13} /> {isRTL ? "مرفوض" : "Rejeté"}
-                            </span>
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              <button onClick={() => approve(l.id)} className="p-1.5 rounded-lg bg-islamic-400/20 text-islamic-300 hover:bg-islamic-400/30 transition-colors" title="Approuver">
-                                <CheckCircle2 size={14} />
-                              </button>
-                              <button onClick={() => reject(l.id)} className="p-1.5 rounded-lg bg-red-400/20 text-red-300 hover:bg-red-400/30 transition-colors" title="Rejeter">
-                                <XCircle size={14} />
-                              </button>
-                              <a href={`/annonce/${l.id}`} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg bg-sand-400/20 text-sand-300 hover:bg-sand-400/30 transition-colors">
-                                <Eye size={14} />
-                              </a>
+                          </td>
+                          <td className="px-5 py-3">
+                            <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                              <img src={l.seller.avatar} alt="" className="w-7 h-7 rounded-full" />
+                              <span className="text-sand-300 text-xs">{l.seller.name}</span>
                             </div>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-              {filteredListings.length === 0 && (
-                <p className="text-center py-10 text-sand-400/50 text-sm">{isRTL ? "لا توجد نتائج" : "Aucun résultat"}</p>
-              )}
-            </div>
+                          </td>
+                          <td className="px-5 py-3">
+                            <span className="text-sand-400 font-bold text-xs">{l.price.toLocaleString()} MRU</span>
+                          </td>
+                          <td className="px-5 py-3">
+                            <span className="badge-gold text-[10px]">{l.category}</span>
+                          </td>
+                          <td className="px-5 py-3">
+                            {approved ? (
+                              <span className="flex items-center gap-1 text-xs text-islamic-300 font-semibold">
+                                <CheckCircle2 size={13} /> {isRTL ? "مقبول" : "Approuvé"}
+                              </span>
+                            ) : rejected ? (
+                              <span className="flex items-center gap-1 text-xs text-red-300 font-semibold">
+                                <XCircle size={13} /> {isRTL ? "مرفوض" : "Rejeté"}
+                              </span>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <button onClick={() => approve(l.id)} className="p-1.5 rounded-lg bg-islamic-400/20 text-islamic-300 hover:bg-islamic-400/30 transition-colors" title="Approuver">
+                                  <CheckCircle2 size={14} />
+                                </button>
+                                <button onClick={() => reject(l.id)} className="p-1.5 rounded-lg bg-red-400/20 text-red-300 hover:bg-red-400/30 transition-colors" title="Rejeter">
+                                  <XCircle size={14} />
+                                </button>
+                                <a href={`/annonce/${l.id}`} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg bg-sand-400/20 text-sand-300 hover:bg-sand-400/30 transition-colors">
+                                  <Eye size={14} />
+                                </a>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                {filteredListings.length === 0 && (
+                  <p className="text-center py-10 text-sand-400/50 text-sm">{isRTL ? "لا توجد نتائج" : "Aucun résultat"}</p>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -338,76 +409,82 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-night-600">
-                      {["Utilisateur", "Téléphone", "Annonces", "Note", "Inscrit", "Statut", "Actions"].map((h) => (
-                        <th key={h} className={`px-5 py-3 text-xs text-sand-400/60 font-semibold uppercase tracking-wider ${isRTL ? "text-right" : "text-left"}`}>
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers.map((u) => (
-                      <tr key={u.id} className="border-b border-night-600/50 hover:bg-night-600/30 transition-colors">
-                        <td className="px-5 py-3">
-                          <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
-                            <img src={u.avatar} alt="" className="w-9 h-9 rounded-full flex-shrink-0" />
-                            <div className={isRTL ? "text-right" : ""}>
-                              <p className="text-white text-xs font-medium">{u.name}</p>
-                              <span
-                                className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5"
-                                style={
-                                  u.badge === "pro"
-                                    ? { background: "linear-gradient(135deg, #C9A84C, #B8922E)", color: "#1B2A4A" }
-                                    : u.badge === "verified"
-                                    ? { background: "#E8F4EE", color: "#2D6A4F" }
-                                    : { background: "#2A3550", color: "#C9A84C" }
-                                }
-                              >
-                                {u.badge === "pro" ? "Pro" : u.badge === "verified" ? "Vérifié" : "Standard"}
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3 text-sand-300/70 text-xs">{u.phone}</td>
-                        <td className="px-5 py-3 text-white text-xs font-bold">{u.listings}</td>
-                        <td className="px-5 py-3">
-                          <div className={`flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}>
-                            <Star size={11} className="text-sand-400 fill-sand-400" />
-                            <span className="text-xs text-sand-300">{u.rating}</span>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3 text-sand-400/50 text-xs whitespace-nowrap">{u.joinedStr}</td>
-                        <td className="px-5 py-3">
-                          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold ${u.status === "active" ? "bg-islamic-400/15 text-islamic-300" : "bg-red-400/15 text-red-300"}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${u.status === "active" ? "bg-islamic-400" : "bg-red-400"}`} />
-                            {u.status === "active" ? (isRTL ? "نشط" : "Actif") : (isRTL ? "موقوف" : "Suspendu")}
-                          </span>
-                        </td>
-                        <td className="px-5 py-3">
-                          <div className="flex items-center gap-1">
-                            <a href={`/profil/${u.id}`} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg bg-sand-400/20 text-sand-300 hover:bg-sand-400/30 transition-colors">
-                              <Eye size={13} />
-                            </a>
-                            {u.status === "active" ? (
-                              <button className="p-1.5 rounded-lg bg-red-400/20 text-red-300 hover:bg-red-400/30 transition-colors" title="Suspendre">
-                                <UserX size={13} />
-                              </button>
-                            ) : (
-                              <button className="p-1.5 rounded-lg bg-islamic-400/20 text-islamic-300 hover:bg-islamic-400/30 transition-colors" title="Réactiver">
-                                <UserCheck size={13} />
-                              </button>
-                            )}
-                          </div>
-                        </td>
+              {dataLoading ? (
+                <div className="flex items-center justify-center py-16">
+                  <Loader2 size={24} className="animate-spin text-sand-400" />
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-night-600">
+                        {["Utilisateur", "Téléphone", "Annonces", "Note", "Inscrit", "Statut", "Actions"].map((h) => (
+                          <th key={h} className={`px-5 py-3 text-xs text-sand-400/60 font-semibold uppercase tracking-wider ${isRTL ? "text-right" : "text-left"}`}>
+                            {h}
+                          </th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {filteredUsers.map((u) => (
+                        <tr key={u.id} className="border-b border-night-600/50 hover:bg-night-600/30 transition-colors">
+                          <td className="px-5 py-3">
+                            <div className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
+                              <img src={u.avatar} alt="" className="w-9 h-9 rounded-full flex-shrink-0" />
+                              <div className={isRTL ? "text-right" : ""}>
+                                <p className="text-white text-xs font-medium">{u.name}</p>
+                                <span
+                                  className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5"
+                                  style={
+                                    u.badge === "pro"
+                                      ? { background: "linear-gradient(135deg, #C9A84C, #B8922E)", color: "#1B2A4A" }
+                                      : u.badge === "verified"
+                                      ? { background: "#E8F4EE", color: "#2D6A4F" }
+                                      : { background: "#2A3550", color: "#C9A84C" }
+                                  }
+                                >
+                                  {u.badge === "pro" ? "Pro" : u.badge === "verified" ? "Vérifié" : "Standard"}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-5 py-3 text-sand-300/70 text-xs">{u.phone}</td>
+                          <td className="px-5 py-3 text-white text-xs font-bold">{u.listings}</td>
+                          <td className="px-5 py-3">
+                            <div className={`flex items-center gap-1 ${isRTL ? "flex-row-reverse" : ""}`}>
+                              <Star size={11} className="text-sand-400 fill-sand-400" />
+                              <span className="text-xs text-sand-300">{u.rating}</span>
+                            </div>
+                          </td>
+                          <td className="px-5 py-3 text-sand-400/50 text-xs whitespace-nowrap">{u.joinedStr}</td>
+                          <td className="px-5 py-3">
+                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold ${u.status === "active" ? "bg-islamic-400/15 text-islamic-300" : "bg-red-400/15 text-red-300"}`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${u.status === "active" ? "bg-islamic-400" : "bg-red-400"}`} />
+                              {u.status === "active" ? (isRTL ? "نشط" : "Actif") : (isRTL ? "موقوف" : "Suspendu")}
+                            </span>
+                          </td>
+                          <td className="px-5 py-3">
+                            <div className="flex items-center gap-1">
+                              <a href={`/profil/${u.id}`} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg bg-sand-400/20 text-sand-300 hover:bg-sand-400/30 transition-colors">
+                                <Eye size={13} />
+                              </a>
+                              {u.status === "active" ? (
+                                <button className="p-1.5 rounded-lg bg-red-400/20 text-red-300 hover:bg-red-400/30 transition-colors" title="Suspendre">
+                                  <UserX size={13} />
+                                </button>
+                              ) : (
+                                <button className="p-1.5 rounded-lg bg-islamic-400/20 text-islamic-300 hover:bg-islamic-400/30 transition-colors" title="Réactiver">
+                                  <UserCheck size={13} />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import { X, Send, CheckCircle2, AlertCircle, Clock, Loader2 } from "lucide-react";
-import type { Listing } from "@/data/mockData";
-import { formatPrice } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
+
+interface Listing {
+  id: string;
+  title: string;
+  titleAr: string;
+  price: number;
+}
+
+const formatPrice = (p: number) => p.toLocaleString("fr-FR");
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 

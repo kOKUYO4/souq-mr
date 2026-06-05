@@ -4,14 +4,19 @@ import { useState, useEffect } from "react";
 import { Radio, Users, Flame, MessageCircle, ArrowRight, ArrowLeft, Play, Clock } from "lucide-react";
 import Link from "next/link";
 import IslamicPattern from "@/components/ui/IslamicPattern";
-import { listings, sellers } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/context/ToastContext";
+
+const staticSellers = [
+  { id: "s1", name: "Mohamed Ould Saleck", nameAr: "محمد ولد سالك", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mohamed" },
+  { id: "s2", name: "Fatimetou Mint Ahmed", nameAr: "فاطمة بنت أحمد", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Fatimetou" },
+  { id: "s3", name: "Abdallahi Ould Brahim", nameAr: "عبدالله ولد إبراهيم", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Abdallahi" },
+];
 
 const liveStreams = [
   {
     id: "live1",
-    seller: sellers[0],
+    seller: staticSellers[0],
     listingId: "l1",
     viewers: 234,
     currentBid: 1180000,
@@ -24,7 +29,7 @@ const liveStreams = [
   },
   {
     id: "live2",
-    seller: sellers[1],
+    seller: staticSellers[1],
     listingId: "l34",
     viewers: 89,
     currentBid: 265000,
@@ -37,7 +42,7 @@ const liveStreams = [
   },
   {
     id: "live3",
-    seller: sellers[2],
+    seller: staticSellers[2],
     listingId: "l8",
     viewers: 156,
     currentBid: 6800,

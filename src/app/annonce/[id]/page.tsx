@@ -107,6 +107,8 @@ export default function AnnonceDetailPage() {
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
   const [reported, setReported] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("");
   const [listing, setListing] = useState<Listing | null>(null);
   const [sellerReviews, setSellerReviews] = useState<{ id: string; sellerId: string; rating: number; comment: string; buyerName: string; createdAt: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,14 +117,15 @@ export default function AnnonceDetailPage() {
   const { success, warning } = useToast();
 
   const handleReport = async () => {
-    if (reported || !listing) return;
+    if (reported || !listing || !reportReason) return;
     try {
       await fetch("/api/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ listingId: listing.id, reason: "other" }),
+        body: JSON.stringify({ listing_id: listing.id, reason: reportReason }),
       });
       setReported(true);
+      setReportModalOpen(false);
       warning(isRTL ? "تم الإبلاغ — سيراجع فريقنا خلال ساعة" : "Signalement envoyé — notre équipe examine sous 1h");
     } catch {
       warning(isRTL ? "تعذر الإرسال" : "Impossible d'envoyer le signalement");
@@ -132,13 +135,16 @@ export default function AnnonceDetailPage() {
   const handleShare = async () => {
     if (!listing) return;
     const url = window.location.href;
-    const title = isRTL ? listing.titleAr : listing.title;
+    const text = isRTL
+      ? `${listing.titleAr} — ${formatPrice(listing.price)}`
+      : `${listing.title} — ${formatPrice(listing.price)}`;
     if (navigator.share) {
-      await navigator.share({ title, url }).catch(() => {});
+      await navigator.share({ title: isRTL ? listing.titleAr : listing.title, text, url }).catch(() => {});
     } else {
       await navigator.clipboard.writeText(url).catch(() => {});
       setShareCopied(true);
       setTimeout(() => setShareCopied(false), 2000);
+      success(isRTL ? "تم نسخ الرابط" : "Lien copié !");
     }
   };
 
@@ -257,6 +263,19 @@ export default function AnnonceDetailPage() {
                     className="w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow transition-all hover:scale-110 relative">
                     {shareCopied ? <CheckCircle2 size={16} className="text-islamic-500" /> : <Share2 size={16} className="text-night-400" />}
                   </button>
+                  {listing && (
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent(`${isRTL ? listing.titleAr : listing.title} — ${formatPrice(listing.price)} MRU\n${typeof window !== "undefined" ? window.location.href : ""}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow transition-all hover:scale-110"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                      </svg>
+                    </a>
+                  )}
                   <button className="w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow">
                     <ZoomIn size={16} className="text-night-400" />
                   </button>
@@ -431,13 +450,52 @@ export default function AnnonceDetailPage() {
             </div>
 
             {/* Signalement */}
-            <div className={`text-center ${isRTL ? "" : ""}`}>
-              <button onClick={handleReport} disabled={reported}
+            <div className="text-center">
+              <button onClick={() => !reported && setReportModalOpen(true)} disabled={reported}
                 className={`inline-flex items-center gap-1.5 text-xs transition-colors ${reported ? "text-red-400 cursor-default" : "text-night-400/40 hover:text-red-400"}`}>
                 <Flag size={11} />
                 {reported ? (isRTL ? "تم الإبلاغ ✓" : "Signalé ✓") : (isRTL ? "الإبلاغ عن هذا الإعلان" : "Signaler cette annonce")}
               </button>
             </div>
+
+            {/* Modal signalement */}
+            {reportModalOpen && (
+              <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setReportModalOpen(false)}>
+                <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl" onClick={(e) => e.stopPropagation()}>
+                  <h3 className={`font-bold text-night-500 mb-4 ${isRTL ? "text-right font-arabic" : ""}`}>
+                    {isRTL ? "الإبلاغ عن الإعلان" : "Signaler cette annonce"}
+                  </h3>
+                  <div className="space-y-2 mb-5">
+                    {[
+                      { fr: "Annonce frauduleuse", ar: "إعلان احتيالي", value: "fraud" },
+                      { fr: "Prix incorrect", ar: "سعر خاطئ", value: "wrong_price" },
+                      { fr: "Contenu inapproprié", ar: "محتوى غير لائق", value: "inappropriate" },
+                      { fr: "Autre", ar: "أخرى", value: "other" },
+                    ].map((r) => (
+                      <label key={r.value} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${reportReason === r.value ? "border-sand-400 bg-sand-50" : "border-sand-100 hover:border-sand-200"} ${isRTL ? "flex-row-reverse" : ""}`}>
+                        <input type="radio" name="reason" value={r.value} checked={reportReason === r.value} onChange={() => setReportReason(r.value)} className="sr-only" />
+                        <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${reportReason === r.value ? "border-sand-400" : "border-sand-200"}`}>
+                          {reportReason === r.value && <div className="w-2 h-2 rounded-full bg-sand-400" />}
+                        </div>
+                        <span className={`text-sm text-night-500 ${isRTL ? "font-arabic" : ""}`}>
+                          {isRTL ? r.ar : r.fr}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  <div className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+                    <button onClick={() => setReportModalOpen(false)} className="flex-1 py-2.5 rounded-xl border border-sand-200 text-sm text-night-400 hover:bg-sand-50 transition-colors">
+                      {isRTL ? "إلغاء" : "Annuler"}
+                    </button>
+                    <button onClick={handleReport} disabled={!reportReason}
+                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-40"
+                      style={{ background: reportReason ? "#ef4444" : "#e5e7eb" }}>
+                      {isRTL ? "إرسال البلاغ" : "Envoyer"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ── Sidebar contact ── */}
@@ -482,7 +540,7 @@ export default function AnnonceDetailPage() {
                   </svg>
                   WhatsApp
                 </a>
-                <Link href={`/messages?seller=${listing.seller.id}&listing=${listing.id}`} className="w-full btn-outline py-3 text-sm flex items-center justify-center gap-2">
+                <Link href={`/messages?listing_id=${listing.id}&seller_id=${listing.seller.id}`} className="w-full btn-outline py-3 text-sm flex items-center justify-center gap-2">
                   <MessageCircle size={16} />
                   {isRTL ? "رسالة داخلية" : "Message interne"}
                 </Link>
@@ -674,7 +732,7 @@ export default function AnnonceDetailPage() {
               💬 {isRTL ? "فاوض" : "Négocier"}
             </button>
           ) : (
-            <Link href={`/messages?seller=${listing.seller.id}&listing=${listing.id}`}
+            <Link href={`/messages?listing_id=${listing.id}&seller_id=${listing.seller.id}`}
               className="flex-1 py-3 rounded-xl text-sm font-bold bg-night-500 text-white flex items-center justify-center gap-2">
               <MessageCircle size={16} />
               {isRTL ? "تواصل" : "Contacter"}

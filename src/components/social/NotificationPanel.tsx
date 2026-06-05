@@ -2,9 +2,22 @@
 
 import { useState } from "react";
 import { Bell, X, Check, MessageCircle, Tag, Star, Settings, AlertCircle } from "lucide-react";
-import type { Notification } from "@/data/mockData";
-import { notifications as initialNotifications } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
+
+interface Notification {
+  id: string;
+  type: "offer" | "message" | "sold" | "review" | "system";
+  titleFr: string;
+  titleAr: string;
+  bodyFr: string;
+  bodyAr: string;
+  read: boolean;
+  createdAt: string;
+  link?: string;
+  avatar?: string;
+}
+
+const initialNotifications: Notification[] = [];
 
 const iconMap = {
   offer: <Tag size={14} className="text-sand-400" />,

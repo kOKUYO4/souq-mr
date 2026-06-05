@@ -3,9 +3,17 @@
 import { useState, createContext, useContext } from "react";
 import Link from "next/link";
 import { X, Scale, ArrowRight } from "lucide-react";
-import type { Listing } from "@/data/mockData";
-import { formatPrice } from "@/data/mockData";
 import { useLanguage } from "@/context/LanguageContext";
+
+interface Listing {
+  id: string;
+  title: string;
+  titleAr: string;
+  price: number;
+  images: string[];
+}
+
+const formatPrice = (p: number) => p.toLocaleString("fr-FR") + " MRU";
 
 interface CompareContextType {
   compareList: Listing[];
@@ -80,7 +88,7 @@ function CompareBar() {
                 <img src={l.images[0]} alt="" className="w-8 h-8 rounded-lg object-cover flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-white truncate font-medium">{isRTL ? l.titleAr : l.title}</p>
-                  <p className="text-sand-400 font-bold">{formatPrice(l.price)} MRU</p>
+                  <p className="text-sand-400 font-bold">{formatPrice(l.price)}</p>
                 </div>
               </div>
             ))}

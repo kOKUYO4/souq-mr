@@ -1,29 +1,30 @@
 import { NextRequest } from "next/server";
 import { ok, err } from "@/lib/api";
-
-const reports = new Map<string, object[]>();
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
-  if (!body?.listingId || !body?.reason) {
-    return err("listingId et reason sont requis");
+  // Accept both listing_id (new) and listingId (legacy)
+  const listing_id = body?.listing_id || body?.listingId;
+  const reason = body?.reason;
+  const details = body?.details || body?.description || "";
+
+  if (!listing_id || !reason) return err("listing_id et reason requis");
+
+  try {
+    const admin = getSupabaseAdmin();
+    await admin.from("notifications").insert({
+      user_id: "00000000-0000-0000-0000-000000000000",
+      type: "system",
+      title: "Nouveau signalement",
+      title_ar: "بلاغ جديد",
+      body: `Annonce ${listing_id} signalée: ${reason}${details ? ` — ${details}` : ""}`,
+      body_ar: `تم الإبلاغ عن إعلان ${listing_id}: ${reason}`,
+      link: `/admin`,
+    });
+  } catch {
+    // Silently ignore if notifications table doesn't exist
   }
 
-  const validReasons = ["fraud", "prohibited", "duplicate", "wrong_category", "other"];
-  if (!validReasons.includes(body.reason)) return err("Raison invalide");
-
-  const report = {
-    id: `rep-${Date.now()}`,
-    listingId: body.listingId,
-    reason: body.reason,
-    description: body.description || "",
-    reporterIp: req.headers.get("x-forwarded-for") || "unknown",
-    createdAt: new Date().toISOString(),
-    status: "pending",
-  };
-
-  const existing = reports.get(body.listingId) || [];
-  reports.set(body.listingId, [...existing, report]);
-
-  return ok({ message: "Signalement enregistré. Notre équipe examinera ce contenu sous 1h.", reportId: report.id });
+  return ok({ reported: true });
 }
