@@ -17,6 +17,9 @@ CREATE TABLE IF NOT EXISTS public.orders (
 );
 
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "orders_select" ON public.orders;
+DROP POLICY IF EXISTS "orders_insert" ON public.orders;
+DROP POLICY IF EXISTS "orders_update" ON public.orders;
 CREATE POLICY "orders_select" ON public.orders FOR SELECT USING (true);
 CREATE POLICY "orders_insert" ON public.orders FOR INSERT WITH CHECK (true);
 CREATE POLICY "orders_update" ON public.orders FOR UPDATE USING (true);
@@ -33,12 +36,20 @@ CREATE TABLE IF NOT EXISTS public.delivery_locations (
 );
 
 ALTER TABLE public.delivery_locations ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "locations_select" ON public.delivery_locations;
+DROP POLICY IF EXISTS "locations_insert" ON public.delivery_locations;
 CREATE POLICY "locations_select" ON public.delivery_locations FOR SELECT USING (true);
 CREATE POLICY "locations_insert" ON public.delivery_locations FOR INSERT WITH CHECK (true);
 
--- Enable Realtime
-ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.delivery_locations;
+-- Enable Realtime (ignore error if already added)
+DO $$ BEGIN
+  ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN
+  ALTER PUBLICATION supabase_realtime ADD TABLE public.delivery_locations;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Trigger updated_at for orders
 DROP TRIGGER IF EXISTS trg_orders_updated_at ON public.orders;

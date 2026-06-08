@@ -13,7 +13,13 @@ CREATE TABLE IF NOT EXISTS public.notifications (
 
 CREATE INDEX IF NOT EXISTS notif_user_idx ON public.notifications(user_id, created_at DESC);
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "notif_select" ON public.notifications;
+DROP POLICY IF EXISTS "notif_insert" ON public.notifications;
+DROP POLICY IF EXISTS "notif_update" ON public.notifications;
 CREATE POLICY "notif_select" ON public.notifications FOR SELECT USING (true);
 CREATE POLICY "notif_insert" ON public.notifications FOR INSERT WITH CHECK (true);
 CREATE POLICY "notif_update" ON public.notifications FOR UPDATE USING (true);
-ALTER PUBLICATION supabase_realtime ADD TABLE public.notifications;
+DO $$ BEGIN
+  ALTER PUBLICATION supabase_realtime ADD TABLE public.notifications;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
