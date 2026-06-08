@@ -121,8 +121,11 @@ export async function sendOtpSms(phone: string): Promise<SendSmsResult> {
   const token = process.env.TWILIO_AUTH_TOKEN;
   const from = process.env.TWILIO_PHONE_NUMBER;
 
+  console.log("[SMS] Config check — SID:", sid ? `${sid.slice(0,8)}...` : "MANQUANT", "| FROM:", from ?? "MANQUANT");
+
   if (!sid || !token || !from) {
-    console.error("[SMS] Variables TWILIO manquantes dans l'environnement");
+    const missing = [!sid && "TWILIO_ACCOUNT_SID", !token && "TWILIO_AUTH_TOKEN", !from && "TWILIO_PHONE_NUMBER"].filter(Boolean).join(", ");
+    console.error(`[SMS] Variables manquantes : ${missing}`);
     return { success: false, error: "Service SMS non configuré" };
   }
 
@@ -130,17 +133,17 @@ export async function sendOtpSms(phone: string): Promise<SendSmsResult> {
     const { default: twilio } = await import("twilio");
     const client = twilio(sid, token);
 
-    await client.messages.create({
+    const msg = await client.messages.create({
       to: phone,
       from,
       body: `Votre code SOUQ.MR : ${otp}\n\nValide 10 minutes. Ne le partagez jamais.\n\nرمز سوق.مر: ${otp}`,
     });
 
+    console.log(`[SMS] Envoyé — SID message: ${msg.sid} | Statut: ${msg.status}`);
     return { success: true };
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : "Erreur inconnue";
+    const msg = e instanceof Error ? e.message : String(e);
     console.error("[SMS] Erreur Twilio:", msg);
-    // Ne jamais exposer les détails Twilio au client
     return { success: false, error: "Impossible d'envoyer le SMS. Réessayez." };
   }
 }
