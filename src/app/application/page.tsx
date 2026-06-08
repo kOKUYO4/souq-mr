@@ -36,15 +36,15 @@ export default function ApplicationPage() {
             <div className={`flex-1 ${isRTL ? "text-right font-arabic" : ""}`}>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-sand-400/20 rounded-xl text-sand-300 text-xs font-semibold mb-5">
                 <Smartphone size={14} />
-                {isRTL ? "تطبيق سوق.مر" : "App SOUQ.MR"}
+                {isRTL ? "تطبيق نقطة.مر" : "App NUQTA.MR"}
               </div>
               <h1 className="text-3xl sm:text-4xl font-display font-bold text-white mb-4">
                 {isRTL ? "احمل السوق في جيبك" : "Le souk dans votre poche"}
               </h1>
               <p className="text-sand-300/70 text-sm leading-relaxed mb-7 max-w-md">
                 {isRTL
-                  ? "تطبيق سوق.مر لأنظمة iOS و Android — سريع، آمن، ومتاح بالعربية والفرنسية"
-                  : "L'app SOUQ.MR pour iOS & Android — rapide, sécurisée et disponible en arabe et en français"}
+                  ? "تطبيق نقطة.مر لأنظمة iOS و Android — سريع، آمن، ومتاح بالعربية والفرنسية"
+                  : "L'app NUQTA.MR pour iOS & Android — rapide, sécurisée et disponible en arabe et en français"}
               </p>
 
               <div className={`flex flex-wrap gap-3 mb-8 ${isRTL ? "flex-row-reverse" : ""}`}>

@@ -99,7 +99,7 @@ export default function Logo({ size = "md", variant = "full" }: LogoProps) {
               WebkitFontSmoothing: "antialiased" as never,
             }}
           >
-            {isRTL ? "سوق.مر" : "SOUQ.MR"}
+            {isRTL ? "نقطة.مر" : "NUQTA.MR"}
           </span>
           <span
             className="text-[10px] font-body tracking-widest uppercase leading-none mt-0.5"

@@ -21,6 +21,6 @@ export async function POST(req: NextRequest) {
   const newToken = signToken({ id: updatedUser.id, phone: updatedUser.phone, name: updatedUser.name });
 
   const res = ok({ user: updatedUser, token: newToken });
-  res.headers.set("Set-Cookie", `souq-token=${newToken}; Path=/; HttpOnly; Max-Age=${7 * 24 * 3600}; SameSite=Lax`);
+  res.headers.set("Set-Cookie", `nuqta-token=${newToken}; Path=/; HttpOnly; Max-Age=${7 * 24 * 3600}; SameSite=Lax`);
   return res;
 }

@@ -9,7 +9,7 @@ const steps = {
   fr: [
     {
       icon: "🏪",
-      title: "Bienvenue sur SOUQ.MR !",
+      title: "Bienvenue sur NUQTA.MR !",
       desc: "La première marketplace mauritanienne. Achetez, vendez et négociez en toute confiance.",
       cta: "Commencer →",
     },
@@ -35,7 +35,7 @@ const steps = {
   ar: [
     {
       icon: "🏪",
-      title: "مرحباً في سوق.مر!",
+      title: "مرحباً في نقطة.مر!",
       desc: "أول سوق رقمي موريتاني. اشترِ وبِع وتفاوض بثقة كاملة.",
       cta: "ابدأ ←",
     },

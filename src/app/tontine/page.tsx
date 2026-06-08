@@ -192,7 +192,7 @@ export default function TontinePage() {
         {/* Avantages */}
         <div className="grid sm:grid-cols-3 gap-5">
           {[
-            { icon: Lock, fr: "Fonds sécurisés", ar: "أموال مؤمَّنة", descFr: "Escrow SOUQ.MR protège toutes les contributions", descAr: "ضمان سوق.مر يحمي جميع المساهمات", color: "#1B2A4A" },
+            { icon: Lock, fr: "Fonds sécurisés", ar: "أموال مؤمَّنة", descFr: "Escrow NUQTA.MR protège toutes les contributions", descAr: "ضمان نقطة.مر يحمي جميع المساهمات", color: "#1B2A4A" },
             { icon: CheckCircle2, fr: "Membres vérifiés", ar: "أعضاء موثقون", descFr: "Chaque membre est identifié par numéro mauritanien", descAr: "كل عضو موثق برقم هاتف موريتاني", color: "#2D6A4F" },
             { icon: TrendingUp, fr: "Historique complet", ar: "سجل كامل", descFr: "Toutes les transactions sont enregistrées et traçables", descAr: "جميع المعاملات مسجلة وقابلة للتتبع", color: "#C9A84C" },
           ].map((a, i) => {

@@ -7,24 +7,24 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const faqs = {
   fr: [
-    { q: "Comment vendre sur SOUQ.MR ?", a: "Créez un compte avec votre numéro mauritanien, puis cliquez sur « Vendre ». Ajoutez des photos, une description et votre prix. Votre annonce sera publiée après modération (< 2h)." },
+    { q: "Comment vendre sur NUQTA.MR ?", a: "Créez un compte avec votre numéro mauritanien, puis cliquez sur « Vendre ». Ajoutez des photos, une description et votre prix. Votre annonce sera publiée après modération (< 2h)." },
     { q: "Le paiement est-il sécurisé ?", a: "Oui. Pour les transactions > 50 000 MRU, notre système Escrow bloque les fonds jusqu'à la livraison. Le paiement à la livraison (COD) est aussi disponible pour toutes les transactions." },
     { q: "Comment fonctionne la négociation ?", a: "Chaque annonce marquée « Prix négociable » vous permet de soumettre une offre. Le vendeur peut accepter, refuser ou contre-proposer. Cliquez sur « Dernier prix ? » pour obtenir le meilleur tarif." },
     { q: "Quelles sont les zones de livraison ?", a: "Nous couvrons tous les quartiers de Nouakchott (Tevragh-Zeina, Ksar, Arafat, El Mina, Ryad...), Nouadhibou et les principales villes de Mauritanie. Délai estimé : 1-4 heures en ville." },
     { q: "Comment signaler une annonce frauduleuse ?", a: "Sur chaque annonce, un bouton « Signaler » vous permet de nous alerter. Notre équipe examine les signalements sous 1h. En cas d'arnaque, contactez-nous au +222 XX XX XX XX." },
     { q: "Mon annonce est-elle gratuite ?", a: "Oui, les 5 premières annonces sont totalement gratuites. Pour plus d'annonces ou pour les mettre en vedette, consultez notre Espace Pro à partir de 4 990 MRU/mois." },
     { q: "Comment fonctionne Bankily/Masrvi ?", a: "Lors du paiement, sélectionnez « Mobile Money ». Entrez votre numéro Bankily ou Masrvi. Vous recevrez une notification pour confirmer la transaction." },
-    { q: "Puis-je créer une annonce en arabe ?", a: "Oui ! SOUQ.MR est entièrement bilingue. Vous pouvez rédiger votre annonce en français et en arabe (Hassaniya). Utilisez aussi le mode Souk Vocal pour enregistrer votre annonce par message vocal." },
+    { q: "Puis-je créer une annonce en arabe ?", a: "Oui ! NUQTA.MR est entièrement bilingue. Vous pouvez rédiger votre annonce en français et en arabe (Hassaniya). Utilisez aussi le mode Souk Vocal pour enregistrer votre annonce par message vocal." },
   ],
   ar: [
-    { q: "كيف أبيع على سوق.مر؟", a: "أنشئ حساباً برقم هاتفك الموريتاني، ثم انقر على «أبيع». أضف صوراً ووصفاً وسعرك. سينشر إعلانك بعد المراجعة (أقل من ساعتين)." },
+    { q: "كيف أبيع على نقطة.مر؟", a: "أنشئ حساباً برقم هاتفك الموريتاني، ثم انقر على «أبيع». أضف صوراً ووصفاً وسعرك. سينشر إعلانك بعد المراجعة (أقل من ساعتين)." },
     { q: "هل الدفع آمن؟", a: "نعم. للمعاملات التي تتجاوز 50,000 أوقية، يُجمّد نظام الضمان المالي لدينا الأموال حتى التسليم. الدفع عند الاستلام (COD) متاح أيضاً لجميع المعاملات." },
     { q: "كيف يعمل التفاوض؟", a: "كل إعلان مُعلَّم بـ«السعر قابل للتفاوض» يتيح لك تقديم عرض. يمكن للبائع القبول أو الرفض أو تقديم عرض مضاد. انقر على «آخر سعر؟» للحصول على أفضل سعر." },
     { q: "ما هي مناطق التوصيل؟", a: "نغطي جميع أحياء نواكشوط (تيفرغ زينة، القصر، عرفات، الميناء، الرياض...)، ونواذيبو والمدن الرئيسية في موريتانيا. وقت التقدير: 1-4 ساعات في المدينة." },
     { q: "كيف أبلغ عن إعلان مشبوه؟", a: "في كل إعلان، زر «الإبلاغ» يتيح لك تنبيهنا. يراجع فريقنا البلاغات خلال ساعة. في حالة الاحتيال، تواصل معنا على +222 XX XX XX XX." },
     { q: "هل إعلاني مجاني؟", a: "نعم، أول 5 إعلانات مجانية تماماً. لمزيد من الإعلانات أو تمييزها، راجع مساحة التجار المحترفين من 4,990 أوقية/شهر." },
     { q: "كيف يعمل بانكيلي/مصرفي؟", a: "عند الدفع، اختر «موبايل موني». أدخل رقم بانكيلي أو مصرفي الخاص بك. ستتلقى إشعاراً لتأكيد المعاملة." },
-    { q: "هل يمكنني إنشاء إعلان بالعربية؟", a: "نعم! سوق.مر ثنائي اللغة بالكامل. يمكنك كتابة إعلانك بالفرنسية والعربية (الحسانية). استخدم أيضاً وضع السوق الصوتي لتسجيل إعلانك برسالة صوتية." },
+    { q: "هل يمكنني إنشاء إعلان بالعربية؟", a: "نعم! نقطة.مر ثنائي اللغة بالكامل. يمكنك كتابة إعلانك بالفرنسية والعربية (الحسانية). استخدم أيضاً وضع السوق الصوتي لتسجيل إعلانك برسالة صوتية." },
   ],
 };
 
@@ -60,7 +60,7 @@ export default function AidePage() {
             {isRTL ? "مركز المساعدة" : "Centre d'aide"}
           </h1>
           <p className="text-sand-300/70">
-            {isRTL ? "كل ما تحتاج لمعرفته عن سوق.مر" : "Tout ce que vous devez savoir sur SOUQ.MR"}
+            {isRTL ? "كل ما تحتاج لمعرفته عن نقطة.مر" : "Tout ce que vous devez savoir sur NUQTA.MR"}
           </p>
         </div>
       </div>
@@ -124,7 +124,7 @@ export default function AidePage() {
                 <Phone size={16} />
                 {isRTL ? "اتصل بنا" : "Nous appeler"}
               </a>
-              <a href="mailto:support@souq.mr" className="flex items-center gap-2 px-6 py-3 rounded-xl border border-sand-400/30 text-sand-300 hover:border-sand-400 hover:text-sand-400 transition-all">
+              <a href="mailto:support@nuqta.mr" className="flex items-center gap-2 px-6 py-3 rounded-xl border border-sand-400/30 text-sand-300 hover:border-sand-400 hover:text-sand-400 transition-all">
                 <Mail size={16} />
                 {isRTL ? "راسلنا بالبريد" : "Envoyer un email"}
               </a>

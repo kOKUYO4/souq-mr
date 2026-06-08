@@ -4,7 +4,7 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 
 /* GET /api/stats — statistiques dashboard vendeur */
 export async function GET(req: NextRequest) {
-  const token = req.cookies.get("souq-token")?.value || req.headers.get("authorization")?.replace("Bearer ", "") || getTokenFromRequest(req);
+  const token = req.cookies.get("nuqta-token")?.value || req.headers.get("authorization")?.replace("Bearer ", "") || getTokenFromRequest(req);
   if (!token) return err("Non authentifié", 401);
   const payload = verifyToken(token);
   if (!payload) return err("Token invalide", 401);

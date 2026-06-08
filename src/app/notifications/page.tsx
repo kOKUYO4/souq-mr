@@ -63,7 +63,7 @@ const mockNotifications: Notification[] = [
   },
   {
     id: "n7", type: "system",
-    titleFr: "Bienvenue sur SOUQ.MR !", titleAr: "مرحباً بك في سوق.مر!",
+    titleFr: "Bienvenue sur NUQTA.MR !", titleAr: "مرحباً بك في نقطة.مر!",
     bodyFr: "Votre compte est vérifié. Commencez à vendre ou achetez dès maintenant.", bodyAr: "تم التحقق من حسابك. ابدأ البيع أو الشراء الآن.",
     time: "03/06", read: true,
   },

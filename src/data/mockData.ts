@@ -1,4 +1,4 @@
-/* Données de démonstration pour SOUQ.MR */
+/* Données de démonstration pour NUQTA.MR */
 
 export interface Listing {
   id: string;

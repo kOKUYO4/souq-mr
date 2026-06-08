@@ -75,7 +75,7 @@ describe("AuthContext — useAuth", () => {
     });
     expect(result.current.isAuthenticated).toBe(true);
     expect(result.current.user?.id).toBe("s1");
-    expect(localStorage.getItem("souq-token")).toBe(fakeToken);
+    expect(localStorage.getItem("nuqta-token")).toBe(fakeToken);
   });
 
   it("logout vide user, token et localStorage", async () => {
@@ -99,12 +99,12 @@ describe("AuthContext — useAuth", () => {
     await act(async () => { await result.current.logout(); });
     expect(result.current.isAuthenticated).toBe(false);
     expect(result.current.user).toBeNull();
-    expect(localStorage.getItem("souq-token")).toBeNull();
+    expect(localStorage.getItem("nuqta-token")).toBeNull();
   });
 
   it("refreshUser recharge l'utilisateur depuis le token localStorage", async () => {
     const fakeUser = { id: "s1", name: "Cached User", badge: "verified" };
-    localStorage.setItem("souq-token", "saved.token.here");
+    localStorage.setItem("nuqta-token", "saved.token.here");
     // Avec un token → refreshUser appelle /api/auth/me
     mockNext({ success: true, data: { user: fakeUser } });
 

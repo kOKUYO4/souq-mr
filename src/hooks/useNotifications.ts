@@ -24,7 +24,7 @@ export function useNotifications() {
 
   const fetchNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
-    const token = localStorage.getItem("souq-token");
+    const token = localStorage.getItem("nuqta-token");
     setLoading(true);
     const res = await fetch("/api/notifications", {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -38,7 +38,7 @@ export function useNotifications() {
   }, [isAuthenticated]);
 
   const markAllRead = useCallback(async () => {
-    const token = localStorage.getItem("souq-token");
+    const token = localStorage.getItem("nuqta-token");
     await fetch("/api/notifications", {
       method: "PATCH",
       headers: token ? { Authorization: `Bearer ${token}` } : {},

@@ -29,16 +29,16 @@ const tips = {
     { icon: MapPin, color: "#2D6A4F", bg: "#E8F4EE", title: "Rencontrez-vous en lieu public", desc: "Choisissez toujours un endroit fréquenté comme un café, une banque ou un marché connu. Évitez les rendez-vous isolés, surtout le soir." },
     { icon: Eye, color: "#C9A84C", bg: "#FDF6E3", title: "Vérifiez l'article avant de payer", desc: "Testez le produit, vérifiez le numéro de série, demandez la facture d'origine. Pour les voitures, exigez les papiers complets." },
     { icon: CreditCard, color: "#1B2A4A", bg: "#EEF1F7", title: "Utilisez le paiement sécurisé", desc: "Pour les transactions > 50 000 MRU, utilisez notre système Escrow. Évitez les virements bancaires sans garantie." },
-    { icon: Shield, color: "#2D6A4F", bg: "#E8F4EE", title: "Vérifiez le badge vendeur", desc: "Les vendeurs avec badge ✓ Vérifié ont été validés par notre équipe. Les marchands Pro ont un contrat signé avec SOUQ.MR." },
-    { icon: Phone, color: "#C9A84C", bg: "#FDF6E3", title: "Ne partagez pas vos codes OTP", desc: "SOUQ.MR ne vous demandera JAMAIS votre code OTP par téléphone. Si quelqu'un vous le demande, c'est une arnaque." },
+    { icon: Shield, color: "#2D6A4F", bg: "#E8F4EE", title: "Vérifiez le badge vendeur", desc: "Les vendeurs avec badge ✓ Vérifié ont été validés par notre équipe. Les marchands Pro ont un contrat signé avec NUQTA.MR." },
+    { icon: Phone, color: "#C9A84C", bg: "#FDF6E3", title: "Ne partagez pas vos codes OTP", desc: "NUQTA.MR ne vous demandera JAMAIS votre code OTP par téléphone. Si quelqu'un vous le demande, c'est une arnaque." },
     { icon: AlertTriangle, color: "#E53E3E", bg: "#FFF5F5", title: "Signalez les arnaques", desc: "Utilisez le bouton « Signaler » sur chaque annonce. Notre équipe répond sous 1h. Vous protégez la communauté." },
   ],
   ar: [
     { icon: MapPin, color: "#2D6A4F", bg: "#E8F4EE", title: "التقِ في أماكن عامة", desc: "اختر دائماً مكاناً مكتظاً كمقهى أو بنك أو سوق معروف. تجنب المواعيد المنعزلة، خاصةً في المساء." },
     { icon: Eye, color: "#C9A84C", bg: "#FDF6E3", title: "تحقق من المنتج قبل الدفع", desc: "اختبر المنتج، تحقق من الرقم التسلسلي، اطلب الفاتورة الأصلية. للسيارات، اشترط الأوراق الكاملة." },
     { icon: CreditCard, color: "#1B2A4A", bg: "#EEF1F7", title: "استخدم الدفع الآمن", desc: "للمعاملات التي تتجاوز 50,000 أوقية، استخدم نظام الضمان المالي. تجنب التحويلات البنكية بدون ضمان." },
-    { icon: Shield, color: "#2D6A4F", bg: "#E8F4EE", title: "تحقق من شارة البائع", desc: "البائعون بشارة ✓ موثق تم التحقق منهم من قِبل فريقنا. التجار المحترفون لديهم عقد موقع مع سوق.مر." },
-    { icon: Phone, color: "#C9A84C", bg: "#FDF6E3", title: "لا تشارك رموز OTP", desc: "لن يطلب منك سوق.مر أبداً رمز OTP عبر الهاتف. إذا طلبه أحد، فهذا احتيال." },
+    { icon: Shield, color: "#2D6A4F", bg: "#E8F4EE", title: "تحقق من شارة البائع", desc: "البائعون بشارة ✓ موثق تم التحقق منهم من قِبل فريقنا. التجار المحترفون لديهم عقد موقع مع نقطة.مر." },
+    { icon: Phone, color: "#C9A84C", bg: "#FDF6E3", title: "لا تشارك رموز OTP", desc: "لن يطلب منك نقطة.مر أبداً رمز OTP عبر الهاتف. إذا طلبه أحد، فهذا احتيال." },
     { icon: AlertTriangle, color: "#E53E3E", bg: "#FFF5F5", title: "أبلغ عن عمليات الاحتيال", desc: "استخدم زر «الإبلاغ» في كل إعلان. يستجيب فريقنا خلال ساعة. أنت تحمي المجتمع." },
   ],
 };
@@ -60,7 +60,7 @@ export default function SecuritePage() {
             {isRTL ? "دليل مكافحة الاحتيال" : "Guide anti-arnaque"}
           </h1>
           <p className={`text-sand-300/70 ${isRTL ? "font-arabic" : ""}`}>
-            {isRTL ? "كيف تتعاملون بأمان على سوق.مر" : "Comment acheter et vendre en toute sécurité sur SOUQ.MR"}
+            {isRTL ? "كيف تتعاملون بأمان على نقطة.مر" : "Comment acheter et vendre en toute sécurité sur NUQTA.MR"}
           </p>
         </div>
       </div>
@@ -118,8 +118,8 @@ export default function SecuritePage() {
               </h3>
               <p className={`text-sand-300/70 text-sm mb-4 ${isRTL ? "font-arabic" : ""}`}>
                 {isRTL
-                  ? "للمعاملات التي تتجاوز 50,000 أوقية، يُجمّد سوق.مر المبلغ حتى تأكيد الاستلام. البائع يحصل على المال فقط بعد رضا المشتري."
-                  : "Pour les transactions > 50 000 MRU, SOUQ.MR bloque les fonds jusqu'à confirmation de réception. Le vendeur reçoit le paiement uniquement après la satisfaction de l'acheteur."}
+                  ? "للمعاملات التي تتجاوز 50,000 أوقية، يُجمّد نقطة.مر المبلغ حتى تأكيد الاستلام. البائع يحصل على المال فقط بعد رضا المشتري."
+                  : "Pour les transactions > 50 000 MRU, NUQTA.MR bloque les fonds jusqu'à confirmation de réception. Le vendeur reçoit le paiement uniquement après la satisfaction de l'acheteur."}
               </p>
               <div className={`flex gap-3 flex-wrap ${isRTL ? "flex-row-reverse" : ""}`}>
                 <div className={`flex items-center gap-2 text-xs text-islamic-400 ${isRTL ? "flex-row-reverse" : ""}`}>

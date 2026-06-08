@@ -7,7 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const rights = {
   fr: [
-    { icon: Eye, title: "Droit d'accès", desc: "Demandez à tout moment une copie de vos données personnelles détenues par SOUQ.MR." },
+    { icon: Eye, title: "Droit d'accès", desc: "Demandez à tout moment une copie de vos données personnelles détenues par NUQTA.MR." },
     { icon: Lock, title: "Droit de rectification", desc: "Corrigez toute donnée inexacte vous concernant directement depuis vos paramètres." },
     { icon: Trash2, title: "Droit à l'effacement", desc: "Supprimez votre compte et toutes vos données depuis Paramètres > Supprimer le compte." },
     { icon: Share2, title: "Droit à la portabilité", desc: "Exportez vos données dans un format lisible (JSON) depuis votre tableau de bord." },
@@ -15,7 +15,7 @@ const rights = {
     { icon: Shield, title: "Droit à la limitation", desc: "Demandez la limitation du traitement de vos données en cas de litige." },
   ],
   ar: [
-    { icon: Eye, title: "حق الوصول", desc: "اطلب في أي وقت نسخة من بياناتك الشخصية المحتفظ بها في سوق.مر." },
+    { icon: Eye, title: "حق الوصول", desc: "اطلب في أي وقت نسخة من بياناتك الشخصية المحتفظ بها في نقطة.مر." },
     { icon: Lock, title: "حق التصحيح", desc: "صحّح أي بيانات غير دقيقة مباشرة من الإعدادات." },
     { icon: Trash2, title: "حق الحذف", desc: "احذف حسابك وجميع بياناتك من الإعدادات > حذف الحساب." },
     { icon: Share2, title: "حق نقل البيانات", desc: "صدّر بياناتك بتنسيق JSON من لوحة التحكم." },
@@ -117,7 +117,7 @@ export default function ConfidentialitePage() {
               {isRTL ? "مسؤول حماية البيانات (DPO)" : "Délégué à la Protection des Données (DPO)"}
             </p>
             <p className="text-sand-300/70 text-xs mt-0.5">
-              <a href="mailto:dpo@souq.mr" className="text-sand-400">dpo@souq.mr</a>
+              <a href="mailto:dpo@nuqta.mr" className="text-sand-400">dpo@nuqta.mr</a>
             </p>
           </div>
         </div>

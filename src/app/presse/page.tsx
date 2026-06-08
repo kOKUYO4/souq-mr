@@ -45,8 +45,8 @@ const pressReleases = [
     category: { fr: "Financement", ar: "تمويل" },
     categoryColor: "bg-emerald-100 text-emerald-700",
     title: {
-      fr: "SOUQ.MR lève 2 millions USD pour accélérer son expansion en Mauritanie",
-      ar: "SOUQ.MR تجمع 2 مليون دولار لتسريع توسعها في موريتانيا",
+      fr: "NUQTA.MR lève 2 millions USD pour accélérer son expansion en Mauritanie",
+      ar: "NUQTA.MR تجمع 2 مليون دولار لتسريع توسعها في موريتانيا",
     },
     excerpt: {
       fr: "La plateforme mauritanienne annonce une levée de fonds stratégique pour renforcer ses infrastructures technologiques et étendre sa présence dans toutes les wilayas du pays.",
@@ -58,12 +58,12 @@ const pressReleases = [
     category: { fr: "Produit", ar: "منتج" },
     categoryColor: "bg-blue-100 text-blue-700",
     title: {
-      fr: "Lancement de SOUQ.MR Pay : le paiement sécurisé intégré à la marketplace",
-      ar: "إطلاق SOUQ.MR Pay: الدفع الآمن المدمج في المنصة",
+      fr: "Lancement de NUQTA.MR Pay : le paiement sécurisé intégré à la marketplace",
+      ar: "إطلاق NUQTA.MR Pay: الدفع الآمن المدمج في المنصة",
     },
     excerpt: {
-      fr: "SOUQ.MR dévoile sa solution de paiement intégrée permettant aux acheteurs et vendeurs de finaliser leurs transactions en toute sécurité directement sur la plateforme.",
-      ar: "تكشف SOUQ.MR عن حل الدفع المتكامل الذي يتيح للمشترين والبائعين إتمام معاملاتهم بأمان تام مباشرة على المنصة.",
+      fr: "NUQTA.MR dévoile sa solution de paiement intégrée permettant aux acheteurs et vendeurs de finaliser leurs transactions en toute sécurité directement sur la plateforme.",
+      ar: "تكشف NUQTA.MR عن حل الدفع المتكامل الذي يتيح للمشترين والبائعين إتمام معاملاتهم بأمان تام مباشرة على المنصة.",
     },
   },
   {
@@ -71,8 +71,8 @@ const pressReleases = [
     category: { fr: "Croissance", ar: "نمو" },
     categoryColor: "bg-amber-100 text-amber-700",
     title: {
-      fr: "SOUQ.MR franchit le cap des 200 000 utilisateurs actifs en Mauritanie",
-      ar: "SOUQ.MR تتجاوز 200,000 مستخدم نشط في موريتانيا",
+      fr: "NUQTA.MR franchit le cap des 200 000 utilisateurs actifs en Mauritanie",
+      ar: "NUQTA.MR تتجاوز 200,000 مستخدم نشط في موريتانيا",
     },
     excerpt: {
       fr: "Un an après son lancement, la marketplace mauritanienne atteint un jalon majeur avec 200 000 utilisateurs actifs et plus de 50 000 annonces publiées chaque mois.",
@@ -84,11 +84,11 @@ const pressReleases = [
     category: { fr: "Partenariat", ar: "شراكة" },
     categoryColor: "bg-purple-100 text-purple-700",
     title: {
-      fr: "SOUQ.MR signe un partenariat stratégique avec la Chambre de Commerce de Mauritanie",
-      ar: "SOUQ.MR تبرم شراكة استراتيجية مع غرفة تجارة موريتانيا",
+      fr: "NUQTA.MR signe un partenariat stratégique avec la Chambre de Commerce de Mauritanie",
+      ar: "NUQTA.MR تبرم شراكة استراتيجية مع غرفة تجارة موريتانيا",
     },
     excerpt: {
-      fr: "Ce partenariat vise à digitaliser le commerce mauritanien en accompagnant les PME locales dans leur transition vers le e-commerce via la plateforme SOUQ.MR.",
+      fr: "Ce partenariat vise à digitaliser le commerce mauritanien en accompagnant les PME locales dans leur transition vers le e-commerce via la plateforme NUQTA.MR.",
       ar: "تهدف هذه الشراكة إلى رقمنة التجارة الموريتانية من خلال مرافقة الشركات الصغيرة والمتوسطة المحلية في تحولها نحو التجارة الإلكترونية.",
     },
   },
@@ -112,8 +112,8 @@ const pressMentions = [
     outlet: "La Tribune de Mauritanie",
     date: { fr: "20 mai 2025", ar: "20 مايو 2025" },
     title: {
-      fr: "SOUQ.MR révolutionne le commerce en ligne en Mauritanie",
-      ar: "SOUQ.MR تُحدث ثورة في التجارة الإلكترونية بموريتانيا",
+      fr: "NUQTA.MR révolutionne le commerce en ligne en Mauritanie",
+      ar: "NUQTA.MR تُحدث ثورة في التجارة الإلكترونية بموريتانيا",
     },
     flag: "🇲🇷",
   },
@@ -121,8 +121,8 @@ const pressMentions = [
     outlet: "RIM Actualités",
     date: { fr: "4 mars 2025", ar: "4 مارس 2025" },
     title: {
-      fr: "La fintech mauritanienne SOUQ.MR facilite les paiements locaux",
-      ar: "شركة التكنولوجيا المالية الموريتانية SOUQ.MR تُيسّر المدفوعات المحلية",
+      fr: "La fintech mauritanienne NUQTA.MR facilite les paiements locaux",
+      ar: "شركة التكنولوجيا المالية الموريتانية NUQTA.MR تُيسّر المدفوعات المحلية",
     },
     flag: "🇲🇷",
   },
@@ -130,8 +130,8 @@ const pressMentions = [
     outlet: "Sahara Media",
     date: { fr: "22 janvier 2025", ar: "22 يناير 2025" },
     title: {
-      fr: "200 000 Mauritaniens font confiance à SOUQ.MR pour leurs achats",
-      ar: "200,000 موريتاني يثقون في SOUQ.MR لمشترياتهم",
+      fr: "200 000 Mauritaniens font confiance à NUQTA.MR pour leurs achats",
+      ar: "200,000 موريتاني يثقون في NUQTA.MR لمشترياتهم",
     },
     flag: "🌍",
   },
@@ -139,8 +139,8 @@ const pressMentions = [
     outlet: "TechAfrica",
     date: { fr: "10 novembre 2024", ar: "10 نوفمبر 2024" },
     title: {
-      fr: "Les startups d'Afrique de l'Ouest à suivre en 2025 : SOUQ.MR en tête",
-      ar: "شركات ناشئة في غرب أفريقيا يجب متابعتها في 2025: SOUQ.MR في المقدمة",
+      fr: "Les startups d'Afrique de l'Ouest à suivre en 2025 : NUQTA.MR en tête",
+      ar: "شركات ناشئة في غرب أفريقيا يجب متابعتها في 2025: NUQTA.MR في المقدمة",
     },
     flag: "🌍",
   },
@@ -180,7 +180,7 @@ export default function PressePage() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3 justify-center">
             <a
-              href="mailto:presse@souq.mr"
+              href="mailto:presse@nuqta.mr"
               className="btn-gold inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm"
             >
               <Mail size={16} />
@@ -276,7 +276,7 @@ export default function PressePage() {
                 <h2
                   className={`text-2xl font-display font-bold text-white mb-2 ${arabicClass}`}
                 >
-                  {t === "ar" ? "مجموعة الوسائط الإعلامية" : "Kit médias SOUQ.MR"}
+                  {t === "ar" ? "مجموعة الوسائط الإعلامية" : "Kit médias NUQTA.MR"}
                 </h2>
                 <p className={`text-white/60 text-sm ${arabicClass}`}>
                   {t === "ar"
@@ -320,7 +320,7 @@ export default function PressePage() {
           <h2
             className={`text-2xl font-display font-bold text-night-500 mb-8 ${arabicClass}`}
           >
-            {t === "ar" ? "SOUQ.MR في الإعلام" : "SOUQ.MR dans les médias"}
+            {t === "ar" ? "NUQTA.MR في الإعلام" : "NUQTA.MR dans les médias"}
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {pressMentions.map((mention, i) => (
@@ -385,11 +385,11 @@ export default function PressePage() {
                 className={`flex flex-wrap gap-3 ${isRTL ? "justify-end" : ""}`}
               >
                 <a
-                  href="mailto:presse@souq.mr"
+                  href="mailto:presse@nuqta.mr"
                   className="inline-flex items-center gap-2 btn-gold px-5 py-3 rounded-xl text-sm font-semibold"
                 >
                   <Mail size={15} />
-                  presse@souq.mr
+                  presse@nuqta.mr
                 </a>
                 <a
                   href="tel:+22200000000"

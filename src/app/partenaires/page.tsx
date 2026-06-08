@@ -25,7 +25,7 @@ const partners = {
   media: {
     labelFr: "Médias & Communication", labelAr: "الإعلام والتواصل",
     items: [
-      { name: "RIM Actualités", initials: "RA", color: "#2D3E6A", descFr: "Partenaire médias officiel pour la couverture des événements SOUQ.MR.", descAr: "الشريك الإعلامي الرسمي لتغطية فعاليات سوق.مر." },
+      { name: "RIM Actualités", initials: "RA", color: "#2D3E6A", descFr: "Partenaire médias officiel pour la couverture des événements NUQTA.MR.", descAr: "الشريك الإعلامي الرسمي لتغطية فعاليات نقطة.مر." },
       { name: "Sahara FM", initials: "SF", color: "#6B2060", descFr: "Radio partenaire pour nos campagnes publicitaires nationales.", descAr: "راديو شريك لحملاتنا الإعلانية الوطنية." },
       { name: "TechAfrica", initials: "TA", color: "#B8922E", descFr: "Média tech panafricain couvrant l'écosystème startup mauritanien.", descAr: "وسيلة إعلامية تقنية أفريقية تغطي منظومة الشركات الناشئة الموريتانية." },
     ],
@@ -33,7 +33,7 @@ const partners = {
 };
 
 const partnershipTypes = [
-  { icon: Globe, fr: "Intégration API", ar: "تكامل API", descFr: "Intégrez SOUQ.MR dans votre application via notre API publique. Documentation complète disponible.", descAr: "ادمج سوق.مر في تطبيقك عبر API العامة. وثائق كاملة متاحة." },
+  { icon: Globe, fr: "Intégration API", ar: "تكامل API", descFr: "Intégrez NUQTA.MR dans votre application via notre API publique. Documentation complète disponible.", descAr: "ادمج نقطة.مر في تطبيقك عبر API العامة. وثائق كاملة متاحة." },
   { icon: Truck, fr: "Partenaire Logistique", ar: "شريك لوجستي", descFr: "Rejoignez notre réseau de livraison et servez des milliers d'acheteurs mauritaniens.", descAr: "انضم لشبكة التوصيل لدينا وخدم آلاف المشترين الموريتانيين." },
   { icon: Radio, fr: "Partenaire Médias", ar: "شريك إعلامي", descFr: "Partenariats éditoriaux, affiliation et co-marketing pour médias mauritaniens.", descAr: "شراكات تحريرية وتابعة وتسويق مشترك للإعلام الموريتاني." },
 ];
@@ -72,7 +72,7 @@ export default function PartenairesPage() {
             {isRTL ? "الشركاء والنظام البيئي" : "Partenaires & Écosystème"}
           </h1>
           <p className="text-purple-100/70 text-sm max-w-lg mx-auto">
-            {isRTL ? "سوق.مر تعمل مع أفضل الشركاء لتقديم تجربة متكاملة للمستخدمين الموريتانيين" : "SOUQ.MR collabore avec les meilleurs partenaires pour offrir une expérience complète aux utilisateurs mauritaniens"}
+            {isRTL ? "نقطة.مر تعمل مع أفضل الشركاء لتقديم تجربة متكاملة للمستخدمين الموريتانيين" : "NUQTA.MR collabore avec les meilleurs partenaires pour offrir une expérience complète aux utilisateurs mauritaniens"}
           </p>
         </div>
       </div>
@@ -160,7 +160,7 @@ export default function PartenairesPage() {
                 </div>
               )}
               <p className="text-sand-400/50 text-xs mt-3">
-                <a href="mailto:partenaires@souq.mr" className="hover:text-sand-300">partenaires@souq.mr</a>
+                <a href="mailto:partenaires@nuqta.mr" className="hover:text-sand-300">partenaires@nuqta.mr</a>
               </p>
             </div>
           </div>

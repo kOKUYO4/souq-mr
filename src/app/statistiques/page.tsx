@@ -81,7 +81,7 @@ export default function StatistiquesPage() {
             </h1>
           </div>
           <p className="text-sand-300/70 text-sm">
-            {isRTL ? "بيانات وتحليلات سوق.مر — محدّثة يومياً" : "Données et analyses SOUQ.MR — mises à jour quotidiennement"}
+            {isRTL ? "بيانات وتحليلات نقطة.مر — محدّثة يومياً" : "Données et analyses NUQTA.MR — mises à jour quotidiennement"}
           </p>
           <div className={`mt-3 flex items-center gap-2 text-xs text-sand-400/60 ${isRTL ? "flex-row-reverse justify-end" : ""}`}>
             <div className="w-2 h-2 bg-islamic-400 rounded-full animate-pulse" />

@@ -25,15 +25,15 @@ const articles: Article[] = [
     id: "a1",
     titleFr: "Le marché automobile mauritanien en forte croissance en 2025",
     titleAr: "سوق السيارات الموريتاني في نمو قوي في 2025",
-    excerptFr: "Les ventes de véhicules d'occasion ont bondi de 34% sur SOUQ.MR ce trimestre, portées par la demande en Toyota Hilux et Nissan Patrol.",
-    excerptAr: "قفزت مبيعات السيارات المستعملة بنسبة 34% على سوق.مر هذا الربع، مدفوعةً بالطلب على تويوتا هايلوكس ونيسان باترول.",
+    excerptFr: "Les ventes de véhicules d'occasion ont bondi de 34% sur NUQTA.MR ce trimestre, portées par la demande en Toyota Hilux et Nissan Patrol.",
+    excerptAr: "قفزت مبيعات السيارات المستعملة بنسبة 34% على نقطة.مر هذا الربع، مدفوعةً بالطلب على تويوتا هايلوكس ونيسان باترول.",
     category: "market", date: "2025-01-15", readTime: 4, views: 2341, featured: true,
     image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=600&q=80",
   },
   {
     id: "a2",
-    titleFr: "5 conseils pour vendre plus vite sur SOUQ.MR",
-    titleAr: "5 نصائح للبيع الأسرع على سوق.مر",
+    titleFr: "5 conseils pour vendre plus vite sur NUQTA.MR",
+    titleAr: "5 نصائح للبيع الأسرع على نقطة.مر",
     excerptFr: "Photos HD, prix juste, description bilingue et réponse rapide : les 5 facteurs qui font vendre une annonce en moins de 24h.",
     excerptAr: "صور عالية الدقة، وسعر مناسب، ووصف ثنائي اللغة، واستجابة سريعة: العوامل الخمسة التي تبيع الإعلان في أقل من 24 ساعة.",
     category: "tips", date: "2025-01-12", readTime: 3, views: 1876, featured: true,
@@ -68,10 +68,10 @@ const articles: Article[] = [
   },
   {
     id: "a6",
-    titleFr: "SOUQ.MR dépasse 50 000 annonces actives",
-    titleAr: "سوق.مر يتجاوز 50,000 إعلان نشط",
-    excerptFr: "Milestone historique pour SOUQ.MR : 50 000 annonces actives, 200 000 utilisateurs enregistrés et présence dans toutes les wilayas.",
-    excerptAr: "معلم تاريخي لسوق.مر: 50,000 إعلان نشط، و200,000 مستخدم مسجل، وتواجد في جميع الولايات.",
+    titleFr: "NUQTA.MR dépasse 50 000 annonces actives",
+    titleAr: "نقطة.مر يتجاوز 50,000 إعلان نشط",
+    excerptFr: "Milestone historique pour NUQTA.MR : 50 000 annonces actives, 200 000 utilisateurs enregistrés et présence dans toutes les wilayas.",
+    excerptAr: "معلم تاريخي لنقطة.مر: 50,000 إعلان نشط، و200,000 مستخدم مسجل، وتواجد في جميع الولايات.",
     category: "feature", date: "2025-01-02", readTime: 2, views: 4217, featured: false,
     image: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=600&q=80",
   },
@@ -111,7 +111,7 @@ export default function ActualitesPage() {
             {isRTL ? "أخبار السوق والمدونة" : "Actualités & Blog"}
           </h1>
           <p className="text-sand-300/70 text-sm">
-            {isRTL ? "آخر أخبار سوق.مر وتحليلات السوق الموريتاني" : "Les dernières nouvelles de SOUQ.MR et analyses du marché mauritanien"}
+            {isRTL ? "آخر أخبار نقطة.مر وتحليلات السوق الموريتاني" : "Les dernières nouvelles de NUQTA.MR et analyses du marché mauritanien"}
           </p>
         </div>
       </div>

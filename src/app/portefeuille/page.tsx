@@ -288,7 +288,7 @@ export default function PortefeuillePage() {
               <h1 className={`text-2xl font-display font-bold text-white ${isRTL ? "font-arabic" : ""}`}>
                 {isRTL ? "محفظتي" : "Mon Portefeuille"}
               </h1>
-              <p className="text-sand-300/60 text-xs">SOUQ.MR · Wallet</p>
+              <p className="text-sand-300/60 text-xs">NUQTA.MR · Wallet</p>
             </div>
           </div>
 

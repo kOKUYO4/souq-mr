@@ -101,7 +101,7 @@ function SearchResults() {
                 onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                 onKeyDown={handleKey}
-                placeholder={isRTL ? "ابحث في سوق.مر..." : "Rechercher sur SOUQ.MR..."}
+                placeholder={isRTL ? "ابحث في نقطة.مر..." : "Rechercher sur NUQTA.MR..."}
                 dir={isRTL ? "rtl" : "ltr"}
                 className="flex-1 py-3 bg-transparent text-night-500 placeholder-sand-300 outline-none text-base"
               />

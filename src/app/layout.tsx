@@ -21,24 +21,24 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: { default: "SOUQ.MR — Le grand souk numérique de Mauritanie", template: "%s | SOUQ.MR" },
+  title: { default: "NUQTA.MR — Le grand souk numérique de Mauritanie", template: "%s | NUQTA.MR" },
   description: "La première marketplace mauritanienne. Achetez, vendez et négociez des voitures, téléphones, vêtements et plus à Nouakchott.",
   keywords: ["marketplace mauritanie", "annonces mauritanie", "vente nouakchott", "souq mauritanien", "achat vente mauritanie"],
-  metadataBase: new URL("https://souq.mr"),
+  metadataBase: new URL("https://nuqta.mr"),
   manifest: "/manifest.json",
   robots: { index: true, follow: true },
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "SOUQ.MR" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "NUQTA.MR" },
   openGraph: {
-    title: "SOUQ.MR — Le grand souk numérique de Mauritanie",
+    title: "NUQTA.MR — Le grand souk numérique de Mauritanie",
     description: "La première marketplace mauritanienne — Achetez, vendez, négociez.",
     type: "website",
     locale: "fr_MR",
-    siteName: "SOUQ.MR",
-    url: "https://souq.mr",
+    siteName: "NUQTA.MR",
+    url: "https://nuqta.mr",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SOUQ.MR",
+    title: "NUQTA.MR",
     description: "Le grand souk numérique de Mauritanie",
   },
 };

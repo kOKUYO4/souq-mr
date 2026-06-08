@@ -101,7 +101,7 @@ export function isValidMauritanianPhone(phone: string): boolean {
 /* ── JWT sécurisé HMAC-SHA256 (crypto natif Node.js) ── */
 import crypto from "crypto";
 
-const JWT_SECRET = process.env.JWT_SECRET ?? "souq-mr-dev-secret-change-in-production";
+const JWT_SECRET = process.env.JWT_SECRET ?? "nuqta-mr-dev-secret-change-in-production";
 const JWT_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 jours
 
 function base64url(data: string): string {
@@ -139,6 +139,6 @@ export function getTokenFromRequest(req: Request): string | null {
   const auth = req.headers.get("authorization");
   if (auth?.startsWith("Bearer ")) return auth.slice(7);
   const cookie = req.headers.get("cookie");
-  const match = cookie?.match(/souq-token=([^;]+)/);
+  const match = cookie?.match(/nuqta-token=([^;]+)/);
   return match?.[1] ?? null;
 }

@@ -45,7 +45,7 @@ export default function PWAInstallBanner() {
           </div>
           <div className={`flex-1 ${isRTL ? "text-right" : ""}`}>
             <p className="text-sm font-bold text-white mb-0.5">
-              {isRTL ? "حمّل تطبيق سوق.مر" : "Installer SOUQ.MR"}
+              {isRTL ? "حمّل تطبيق نقطة.مر" : "Installer NUQTA.MR"}
             </p>
             <p className="text-xs text-sand-300/70">
               {isRTL ? "تجربة أفضل، بدون متصفح" : "Meilleure expérience, sans navigateur"}

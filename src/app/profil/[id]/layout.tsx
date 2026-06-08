@@ -10,13 +10,13 @@ export async function generateMetadata({
     if (!res.ok) throw new Error("not found");
     const seller = await res.json();
 
-    const desc = `Profil de ${seller.name} sur SOUQ.MR — Note ${seller.rating}/5, ${seller.reviews} avis, ${seller.listings} annonces actives.`;
+    const desc = `Profil de ${seller.name} sur NUQTA.MR — Note ${seller.rating}/5, ${seller.reviews} avis, ${seller.listings} annonces actives.`;
 
     return {
       title: `${seller.name} — Vendeur`,
       description: desc,
       openGraph: {
-        title: `${seller.name} | SOUQ.MR`,
+        title: `${seller.name} | NUQTA.MR`,
         description: desc,
         images: seller.avatar ? [{ url: seller.avatar, width: 400, height: 400 }] : [],
         type: "profile",

@@ -36,7 +36,7 @@ export default function FavorisPage() {
 
   useEffect(() => {
     const token = typeof window !== "undefined"
-      ? localStorage.getItem("souq-token") || ""
+      ? localStorage.getItem("nuqta-token") || ""
       : "";
     fetch("/api/favorites", {
       headers: token ? { Authorization: `Bearer ${token}` } : {},

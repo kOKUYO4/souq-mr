@@ -8,13 +8,13 @@ import { useLanguage } from "@/context/LanguageContext";
 const contactInfo = {
   fr: [
     { icon: Phone, label: "Téléphone", value: "+222 XX XX XX XX", href: "tel:+22200000000", note: "7j/7, 8h–22h" },
-    { icon: Mail, label: "Email support", value: "support@souq.mr", href: "mailto:support@souq.mr", note: "Réponse sous 2h" },
+    { icon: Mail, label: "Email support", value: "support@nuqta.mr", href: "mailto:support@nuqta.mr", note: "Réponse sous 2h" },
     { icon: MapPin, label: "Adresse", value: "Tevragh-Zeina, Nouakchott", href: "#", note: "Mauritanie" },
     { icon: Clock, label: "Horaires", value: "Lun–Sam 8h–20h", href: "#", note: "Dim 10h–18h" },
   ],
   ar: [
     { icon: Phone, label: "الهاتف", value: "+222 XX XX XX XX", href: "tel:+22200000000", note: "7 أيام، 8ص–10م" },
-    { icon: Mail, label: "البريد الإلكتروني", value: "support@souq.mr", href: "mailto:support@souq.mr", note: "رد خلال ساعتين" },
+    { icon: Mail, label: "البريد الإلكتروني", value: "support@nuqta.mr", href: "mailto:support@nuqta.mr", note: "رد خلال ساعتين" },
     { icon: MapPin, label: "العنوان", value: "تيفرغ زينة، نواكشوط", href: "#", note: "موريتانيا" },
     { icon: Clock, label: "أوقات العمل", value: "الإث–السبت 8ص–8م", href: "#", note: "الأحد 10ص–6م" },
   ],

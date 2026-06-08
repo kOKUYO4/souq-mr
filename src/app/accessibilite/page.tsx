@@ -23,7 +23,7 @@ export default function AccessibilitePage() {
             {isRTL ? "إمكانية الوصول" : "Accessibilité"}
           </h1>
           <p className="text-sand-300/70 text-sm">
-            {isRTL ? "سوق.مر ملتزم بجعل منصته في متناول الجميع" : "SOUQ.MR s'engage à rendre sa plateforme accessible à tous"}
+            {isRTL ? "نقطة.مر ملتزم بجعل منصته في متناول الجميع" : "NUQTA.MR s'engage à rendre sa plateforme accessible à tous"}
           </p>
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function AccessibilitePage() {
               {isRTL ? "هل تواجه صعوبة في الاستخدام؟" : "Vous rencontrez une difficulté d'accès ?"}
             </p>
             <p className="text-sand-300/70 text-xs mt-0.5">
-              {isRTL ? "تواصل معنا: accessibilite@souq.mr" : "Contactez-nous : accessibilite@souq.mr"}
+              {isRTL ? "تواصل معنا: accessibilite@nuqta.mr" : "Contactez-nous : accessibilite@nuqta.mr"}
             </p>
           </div>
         </div>

@@ -17,7 +17,7 @@ export default function ImageUploader({ value, onChange, max = 6 }: ImageUploade
   const inputRef = useRef<HTMLInputElement>(null);
 
   const uploadFile = async (file: File): Promise<string | null> => {
-    const token = localStorage.getItem("souq-token");
+    const token = localStorage.getItem("nuqta-token");
     const fd = new FormData();
     fd.append("file", file);
     const res = await fetch("/api/upload", {

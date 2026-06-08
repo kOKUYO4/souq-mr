@@ -36,7 +36,7 @@ function generateOtp(): string {
 }
 
 function hashOtp(otp: string, phone: string): string {
-  const salt = process.env.JWT_SECRET ?? "souq-mr-otp-salt";
+  const salt = process.env.JWT_SECRET ?? "nuqta-mr-otp-salt";
   return crypto.createHmac("sha256", salt).update(`${phone}:${otp}`).digest("hex");
 }
 
@@ -136,7 +136,7 @@ export async function sendOtpSms(phone: string): Promise<SendSmsResult> {
     const msg = await client.messages.create({
       to: phone,
       from,
-      body: `Votre code SOUQ.MR : ${otp}\n\nValide 10 minutes. Ne le partagez jamais.\n\nرمز سوق.مر: ${otp}`,
+      body: `Votre code NUQTA.MR : ${otp}\n\nValide 10 minutes. Ne le partagez jamais.\n\nرمز نقطة.مر: ${otp}`,
     });
 
     console.log(`[SMS] Envoyé — SID message: ${msg.sid} | Statut: ${msg.status}`);

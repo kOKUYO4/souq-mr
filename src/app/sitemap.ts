@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { categories } from "@/data/categories";
 
-const BASE = "https://souq.mr";
+const BASE = "https://nuqta.mr";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [

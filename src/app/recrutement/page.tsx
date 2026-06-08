@@ -42,8 +42,8 @@ const jobs: Job[] = [
     department: "Opérations", departmentAr: "العمليات",
     type: "CDI", typeAr: "عقد دائم",
     location: "Nouakchott", locationAr: "نواكشوط",
-    descFr: "Assurez la qualité et la sécurité des annonces sur SOUQ.MR. Bilingue FR/AR requis.",
-    descAr: "اضمن جودة وأمان الإعلانات على سوق.مر. إتقان العربية والفرنسية مطلوب.",
+    descFr: "Assurez la qualité et la sécurité des annonces sur NUQTA.MR. Bilingue FR/AR requis.",
+    descAr: "اضمن جودة وأمان الإعلانات على نقطة.مر. إتقان العربية والفرنسية مطلوب.",
     skills: ["Modération", "Excel", "Communication", "FR/AR bilingue"],
     skillsAr: ["مراجعة المحتوى", "Excel", "تواصل", "عربية وفرنسية"],
     featured: false,
@@ -116,7 +116,7 @@ export default function RecrutementPage() {
         <IslamicPattern opacity={0.05} />
         <div className={`relative max-w-4xl mx-auto px-4 sm:px-6 text-center ${isRTL ? "font-arabic" : ""}`}>
           <p className="text-green-200/70 text-sm font-semibold mb-3">
-            {isRTL ? "انضم إلى سوق.مر" : "Rejoignez SOUQ.MR"}
+            {isRTL ? "انضم إلى نقطة.مر" : "Rejoignez NUQTA.MR"}
           </p>
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-white mb-4">
             {isRTL ? "شارك في بناء مستقبل التجارة الرقمية بموريتانيا" : "Construisez avec nous l'avenir du commerce digital en Mauritanie"}
@@ -145,7 +145,7 @@ export default function RecrutementPage() {
         {/* Values */}
         <div>
           <h2 className={`text-xl font-bold text-night-500 mb-6 ${isRTL ? "text-right font-arabic" : ""}`}>
-            {isRTL ? "لماذا سوق.مر؟" : "Pourquoi rejoindre SOUQ.MR ?"}
+            {isRTL ? "لماذا نقطة.مر؟" : "Pourquoi rejoindre NUQTA.MR ?"}
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {values.map((v, i) => (
@@ -248,7 +248,7 @@ export default function RecrutementPage() {
             <p className={`text-sm text-sand-300/70 mb-4 ${isRTL ? "font-arabic" : ""}`}>
               {isRTL ? "أرسل طلبك المفتوح — نحن نقدّر كل موهبة" : "Envoyez une candidature spontanée — nous valorisons chaque talent"}
             </p>
-            <a href="mailto:recrutement@souq.mr"
+            <a href="mailto:recrutement@nuqta.mr"
               className="inline-flex items-center gap-2 btn-gold text-sm">
               <Send size={14} />
               {isRTL ? "تقديم مفتوح" : "Candidature spontanée"}

@@ -36,7 +36,7 @@ export default function RamadanBanner() {
           <span className="text-xl leading-none">🌙</span>
           <div className={isRTL ? "text-right" : ""}>
             <p className={`text-sm font-bold text-night-500 leading-tight ${isRTL ? "font-arabic" : ""}`}>
-              {isRTL ? "رمضان كريم! — عروض خاصة على سوق.مر" : "Ramadan Kareem ! — Offres spéciales sur SOUQ.MR"}
+              {isRTL ? "رمضان كريم! — عروض خاصة على نقطة.مر" : "Ramadan Kareem ! — Offres spéciales sur NUQTA.MR"}
             </p>
             <p className={`text-xs font-medium text-night-500/75 leading-tight mt-0.5 ${isRTL ? "font-arabic" : ""}`}>
               {isRTL ? "تخفيضات حتى 40% على الملابس والإلكترونيات طوال رمضان" : "Jusqu'à -40% sur la mode et l'électronique tout le mois de Ramadan"}

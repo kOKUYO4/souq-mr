@@ -41,7 +41,7 @@ describe("POST /api/auth/verify-otp", () => {
   it("pose un cookie HTTP-only SameSite=Strict", async () => {
     const res = await POST(makeReq({ phone: "+22236000012", otp: "123456" }));
     const cookie = res.headers.get("set-cookie") ?? "";
-    expect(cookie).toMatch(/souq-token=/);
+    expect(cookie).toMatch(/nuqta-token=/);
     expect(cookie).toMatch(/HttpOnly/i);
     expect(cookie).toMatch(/SameSite=Strict/i);
   });

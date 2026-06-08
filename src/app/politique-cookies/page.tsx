@@ -20,8 +20,8 @@ const cookieCategories = [
     icon: BarChart2,
     fr: "Cookies analytiques",
     ar: "ملفات الارتباط التحليلية",
-    descFr: "Nous aident à comprendre comment vous utilisez SOUQ.MR. Données anonymisées uniquement — aucune information personnelle identifiable.",
-    descAr: "تساعدنا على فهم كيفية استخدامك لسوق.مر. بيانات مجهولة الهوية فقط — لا معلومات شخصية.",
+    descFr: "Nous aident à comprendre comment vous utilisez NUQTA.MR. Données anonymisées uniquement — aucune information personnelle identifiable.",
+    descAr: "تساعدنا على فهم كيفية استخدامك لنقطة.مر. بيانات مجهولة الهوية فقط — لا معلومات شخصية.",
     required: false,
     examples: ["_ga", "_gid", "souq_analytics"],
   },
@@ -185,8 +185,8 @@ export default function PolitiqueCookiesPage() {
           <Info size={18} className="text-amber-600 flex-shrink-0 mt-0.5" />
           <p className={`text-sm text-amber-800 leading-relaxed ${isRTL ? "font-arabic text-right" : ""}`}>
             {isRTL
-              ? "لمزيد من المعلومات حول كيفية استخدامنا لبياناتك، راجع سياسة الخصوصية. للاتصال بنا: privacy@souq.mr"
-              : "Pour plus d'informations sur l'utilisation de vos données, consultez notre politique de confidentialité. Contact : privacy@souq.mr"}
+              ? "لمزيد من المعلومات حول كيفية استخدامنا لبياناتك، راجع سياسة الخصوصية. للاتصال بنا: privacy@nuqta.mr"
+              : "Pour plus d'informations sur l'utilisation de vos données, consultez notre politique de confidentialité. Contact : privacy@nuqta.mr"}
           </p>
         </div>
       </div>

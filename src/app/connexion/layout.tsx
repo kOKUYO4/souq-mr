@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Connexion",
-  description: "Connectez-vous à votre compte SOUQ.MR avec votre numéro mauritanien.",
+  description: "Connectez-vous à votre compte NUQTA.MR avec votre numéro mauritanien.",
   robots: { index: false },
 };
 

@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshUser = useCallback(async () => {
-    const savedToken = localStorage.getItem("souq-token");
+    const savedToken = localStorage.getItem("nuqta-token");
     if (!savedToken) { setIsLoading(false); return; }
     try {
       const res = await fetch("/api/auth/me", { headers: { Authorization: `Bearer ${savedToken}` } });
@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(data.user);
         setToken(savedToken);
       } else {
-        localStorage.removeItem("souq-token");
+        localStorage.removeItem("nuqta-token");
       }
     } catch {
       /* réseau indisponible — ignorer */
@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { user: u, token: t } = json.data;
       setUser(u);
       setToken(t);
-      localStorage.setItem("souq-token", t);
+      localStorage.setItem("nuqta-token", t);
     }
     return { success: json.success, error: json.error };
   };
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
     setToken(null);
-    localStorage.removeItem("souq-token");
+    localStorage.removeItem("nuqta-token");
   };
 
   return (

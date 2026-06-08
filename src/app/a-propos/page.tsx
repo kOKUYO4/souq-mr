@@ -25,13 +25,13 @@ const values = {
     { icon: Handshake, title: "Confiance", desc: "Vérification des vendeurs, système Escrow et communauté de notation pour des échanges sécurisés." },
     { icon: MapPin, title: "Local & Hyperlocal", desc: "Livraison par quartier à Nouakchott, des prix adaptés au marché mauritanien, en MRU." },
     { icon: Smartphone, title: "Mobile First", desc: "Conçu pour les smartphones mauritaniens — fonctionne même avec une connexion limitée." },
-    { icon: Star, title: "Culturellement adapté", desc: "Hassaniya, Escrow, négociation souk, Ramadan Mode — SOUQ.MR parle mauritanien." },
+    { icon: Star, title: "Culturellement adapté", desc: "Hassaniya, Escrow, négociation souk, Ramadan Mode — NUQTA.MR parle mauritanien." },
   ],
   ar: [
     { icon: Handshake, title: "الثقة", desc: "التحقق من البائعين ونظام الضمان المالي ومجتمع التقييم لتبادلات آمنة." },
     { icon: MapPin, title: "المحلية والأحياء", desc: "توصيل بالحي في نواكشوط وأسعار تتناسب مع السوق الموريتانية بالأوقية." },
     { icon: Smartphone, title: "الجوال أولاً", desc: "مصمم للهواتف الموريتانية — يعمل حتى مع اتصال محدود." },
-    { icon: Star, title: "متكيف ثقافياً", desc: "الحسانية والضمان المالي والتفاوض في السوق ووضع رمضان — سوق.مر يتكلم الموريتانية." },
+    { icon: Star, title: "متكيف ثقافياً", desc: "الحسانية والضمان المالي والتفاوض في السوق ووضع رمضان — نقطة.مر يتكلم الموريتانية." },
   ],
 };
 
@@ -143,7 +143,7 @@ export default function AProposPage() {
           <IslamicPattern opacity={0.05} />
           <div className="relative">
             <h2 className={`text-2xl font-bold text-white mb-3 ${isRTL ? "font-arabic" : "font-display"}`}>
-              {isRTL ? "انضم إلى سوق.مر اليوم" : "Rejoignez SOUQ.MR aujourd'hui"}
+              {isRTL ? "انضم إلى نقطة.مر اليوم" : "Rejoignez NUQTA.MR aujourd'hui"}
             </h2>
             <p className={`text-sand-300/70 mb-6 text-sm ${isRTL ? "font-arabic" : ""}`}>
               {isRTL ? "ابدأ البيع مجاناً في أكبر سوق رقمي موريتاني" : "Commencez à vendre gratuitement sur le plus grand marché numérique mauritanien"}

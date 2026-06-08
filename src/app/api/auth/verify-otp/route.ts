@@ -48,8 +48,8 @@ export async function POST(req: NextRequest) {
         // 2. Nouvel utilisateur — UUID déterministe basé sur le téléphone
         const newId = phoneToUuid(normalized);
         profile = await upsertProfile(newId, normalized, {
-          name:     "Utilisateur SOUQ.MR",
-          name_ar:  "مستخدم سوق.مر",
+          name:     "Utilisateur NUQTA.MR",
+          name_ar:  "مستخدم نقطة.مر",
           badge:    "regular",
           is_active: true,
         });
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
   res.headers.set(
     "Set-Cookie",
     [
-      `souq-token=${token}`,
+      `nuqta-token=${token}`,
       "HttpOnly",
       "Path=/",
       `Max-Age=${7 * 24 * 3600}`,

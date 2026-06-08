@@ -79,7 +79,7 @@ export default function InscriptionPage() {
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ name, nameAr }),
       });
-      success(isRTL ? "مرحباً بك في سوق.مر! 🎉" : "Bienvenue sur SOUQ.MR ! 🎉");
+      success(isRTL ? "مرحباً بك في نقطة.مر! 🎉" : "Bienvenue sur NUQTA.MR ! 🎉");
       router.push("/tableau-de-bord");
     } catch {
       toastError(isRTL ? "خطأ في إنشاء الحساب" : "Erreur lors de la création du compte");

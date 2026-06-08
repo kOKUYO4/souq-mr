@@ -5,7 +5,7 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const messages = [
   { fr: "🇲🇷 Achetez mauritanien — chaque achat soutient une famille locale", ar: "🇲🇷 اشترِ موريتانياً — كل عملية شراء تدعم عائلة محلية" },
-  { fr: "💛 Commerce local, fierté nationale — bienvenue sur SOUQ.MR", ar: "💛 تجارة محلية، فخر وطني — مرحباً بك في سوق.مر" },
+  { fr: "💛 Commerce local, fierté nationale — bienvenue sur NUQTA.MR", ar: "💛 تجارة محلية، فخر وطني — مرحباً بك في نقطة.مر" },
   { fr: "🤝 Ensemble, construisons l'économie de demain en Mauritanie", ar: "🤝 معاً نبني اقتصاد الغد في موريتانيا" },
 ];
 

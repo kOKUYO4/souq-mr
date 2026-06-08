@@ -19,7 +19,7 @@ export async function generateMetadata({
       title: listing.title,
       description: desc,
       openGraph: {
-        title: `${listing.title} | SOUQ.MR`,
+        title: `${listing.title} | NUQTA.MR`,
         description: desc,
         images: listing.images?.[0] ? [{ url: listing.images[0], width: 1200, height: 630 }] : [],
         type: "website",

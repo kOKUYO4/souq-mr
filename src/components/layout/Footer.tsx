@@ -104,7 +104,7 @@ export default function Footer() {
               </div>
               <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse justify-end" : ""}`}>
                 <Mail size={14} className="text-sand-400 flex-shrink-0" />
-                <span>contact@souq.mr</span>
+                <span>contact@nuqta.mr</span>
               </div>
             </div>
 
@@ -204,7 +204,7 @@ export default function Footer() {
         <div className="mt-12 pt-6 border-t border-night-400/30">
           <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-sand-300/50 ${isRTL ? "sm:flex-row-reverse" : ""}`}>
             <p>
-              © {new Date().getFullYear()} SOUQ.MR — {t.footer.rights}
+              © {new Date().getFullYear()} NUQTA.MR — {t.footer.rights}
             </p>
             <p className="flex items-center gap-1">
               {t.footer.madeWith}

@@ -28,7 +28,7 @@ export default function TableauDeBordPage() {
 
   useEffect(() => {
     if (!isAuthenticated || !user) return;
-    const token = localStorage.getItem("souq-token");
+    const token = localStorage.getItem("nuqta-token");
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
     fetch("/api/listings?limit=50", { headers })

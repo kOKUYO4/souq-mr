@@ -37,8 +37,8 @@ const opportunities = [
     emojiIcon: "🌍",
     fr: "Expansion Régionale",
     ar: "التوسع الإقليمي",
-    descFr: "Duplication du modèle SOUQ.MR en Afrique de l'Ouest francophone : Sénégal, Mali, Côte d'Ivoire.",
-    descAr: "تكرار نموذج سوق.مر في غرب أفريقيا الناطقة بالفرنسية: السنغال ومالي وكوت ديفوار.",
+    descFr: "Duplication du modèle NUQTA.MR en Afrique de l'Ouest francophone : Sénégal, Mali, Côte d'Ivoire.",
+    descAr: "تكرار نموذج نقطة.مر في غرب أفريقيا الناطقة بالفرنسية: السنغال ومالي وكوت ديفوار.",
   },
 ];
 
@@ -67,10 +67,10 @@ export default function InvestisseursPage() {
           </h1>
           <p className="text-sand-300/70 max-w-xl mx-auto text-sm mb-8">
             {isRTL
-              ? "سوق.مر هي المنصة الرائدة للتجارة الإلكترونية في موريتانيا — سوق 4.6 مليون مستهلك بنمو سنوي يتجاوز 30%"
-              : "SOUQ.MR est la plateforme e-commerce leader en Mauritanie — un marché de 4,6M consommateurs avec +30% de croissance annuelle"}
+              ? "نقطة.مر هي المنصة الرائدة للتجارة الإلكترونية في موريتانيا — سوق 4.6 مليون مستهلك بنمو سنوي يتجاوز 30%"
+              : "NUQTA.MR est la plateforme e-commerce leader en Mauritanie — un marché de 4,6M consommateurs avec +30% de croissance annuelle"}
           </p>
-          <a href="mailto:investisseurs@souq.mr"
+          <a href="mailto:investisseurs@nuqta.mr"
             className="inline-flex items-center gap-2 btn-gold text-sm">
             <Mail size={15} />
             {isRTL ? "تواصل مع فريق الاستثمار" : "Contacter l'équipe investissement"}
@@ -152,7 +152,7 @@ export default function InvestisseursPage() {
         {/* Why invest */}
         <div className="bg-white rounded-2xl p-6 shadow-card">
           <h2 className={`font-bold text-night-500 mb-4 ${isRTL ? "text-right font-arabic" : ""}`}>
-            {isRTL ? "لماذا الاستثمار في سوق.مر؟" : "Pourquoi investir dans SOUQ.MR ?"}
+            {isRTL ? "لماذا الاستثمار في نقطة.مر؟" : "Pourquoi investir dans NUQTA.MR ?"}
           </h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {(isRTL ? [
@@ -190,7 +190,7 @@ export default function InvestisseursPage() {
               {isRTL ? "يُسعدنا مشاركتك الـ pitch deck والبيانات المالية تحت اتفاقية سرية" : "Nous partageons volontiers notre pitch deck et données financières sous NDA"}
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <a href="mailto:investisseurs@souq.mr"
+              <a href="mailto:investisseurs@nuqta.mr"
                 className="flex items-center gap-2 btn-gold text-sm">
                 <Mail size={15} />
                 {isRTL ? "تواصل معنا" : "Nous contacter"}

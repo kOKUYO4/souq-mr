@@ -591,7 +591,7 @@ export default function AnnonceDetailPage() {
                     <div className="w-2 h-2 rounded-full bg-sand-400/50" />
                   </div>
                 </div>
-                <div className="absolute bottom-2 right-2 text-[10px] text-night-400/40">© SOUQ.MR Maps</div>
+                <div className="absolute bottom-2 right-2 text-[10px] text-night-400/40">© NUQTA.MR Maps</div>
               </div>
               <div className={`px-4 py-3 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
                 <MapPin size={14} className="text-sand-400 flex-shrink-0" />

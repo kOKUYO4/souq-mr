@@ -69,7 +69,7 @@ export default function ProPage() {
             {isRTL ? "للتجار المحترفين" : "Pour les marchands professionnels"}
           </div>
           <h1 className="text-4xl font-display font-bold text-white mb-4">
-            {isRTL ? "طوّر تجارتك على سوق.مر" : "Développez votre business sur SOUQ.MR"}
+            {isRTL ? "طوّر تجارتك على نقطة.مر" : "Développez votre business sur NUQTA.MR"}
           </h1>
           <p className="text-sand-300/70 max-w-xl mx-auto">
             {isRTL
@@ -197,8 +197,8 @@ export default function ProPage() {
               {
                 nameFr: "Sidi Ould Vall", nameAr: "سيدي ولد فال",
                 roleFr: "Concessionnaire auto", roleAr: "تاجر سيارات",
-                quoteFr: "Depuis que j'ai le badge Pro, mes annonces reçoivent 3× plus de contacts. SOUQ.MR a transformé mon business.",
-                quoteAr: "منذ حصولي على شارة المحترف، تلقت إعلاناتي 3 أضعاف التواصل. سوق.مر غيّر تجارتي.",
+                quoteFr: "Depuis que j'ai le badge Pro, mes annonces reçoivent 3× plus de contacts. NUQTA.MR a transformé mon business.",
+                quoteAr: "منذ حصولي على شارة المحترف، تلقت إعلاناتي 3 أضعاف التواصل. نقطة.مر غيّر تجارتي.",
                 rating: 5, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=SidiVall",
               },
               {

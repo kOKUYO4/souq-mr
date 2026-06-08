@@ -114,7 +114,7 @@ export default function ClassementPage() {
         <div className={`relative max-w-4xl mx-auto px-4 sm:px-6 text-center ${isRTL ? "font-arabic" : ""}`}>
           <div className="text-5xl mb-4">🏆</div>
           <h1 className="text-3xl font-display font-bold text-night-500 mb-2">
-            {isRTL ? "أفضل بائعي سوق.مر" : "Classement SOUQ.MR"}
+            {isRTL ? "أفضل بائعي نقطة.مر" : "Classement NUQTA.MR"}
           </h1>
           <p className="text-night-400/70 text-sm">
             {isRTL ? "أكثر البائعين نشاطاً وموثوقية على المنصة" : "Les vendeurs les plus actifs et fiables de la plateforme"}

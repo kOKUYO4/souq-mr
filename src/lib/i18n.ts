@@ -1,4 +1,4 @@
-/* Système de traduction bilingue FR/AR pour SOUQ.MR */
+/* Système de traduction bilingue FR/AR pour NUQTA.MR */
 
 export type Locale = "fr" | "ar";
 
@@ -107,7 +107,7 @@ export const translations = {
       darkMode: "الوضع الليلي",
     },
     hero: {
-      badge: "🇲🇷 السوق الرقمي الكبير لموريتانيا",
+      badge: "🇲🇷 السوق الرقمي الموريتاني",
       title: "اشتري، بيع،",
       titleHighlight: "فاوض",
       titleEnd: "كما في السوق",
@@ -159,7 +159,7 @@ export const translations = {
       send: "أرسل العرض",
     },
     footer: {
-      tagline: "السوق الرقمي الكبير لموريتانيا",
+      tagline: "السوق الرقمي الموريتاني",
       about: "من نحن",
       contact: "اتصل بنا",
       help: "المساعدة",

@@ -44,12 +44,12 @@ export default function ParrainagePage() {
   };
 
   const shareLink = () => {
-    const url = `https://souq.mr?ref=${REFERRAL_CODE}`;
+    const url = `https://nuqta.mr?ref=${REFERRAL_CODE}`;
     const text = isRTL
-      ? `استخدم رمز الإحالة ${REFERRAL_CODE} على سوق.مر واحصل على 1,000 أوقية مجاناً!`
-      : `Utilise mon code parrainage ${REFERRAL_CODE} sur SOUQ.MR et obtiens 1 000 MRU offerts !`;
+      ? `استخدم رمز الإحالة ${REFERRAL_CODE} على نقطة.مر واحصل على 1,000 أوقية مجاناً!`
+      : `Utilise mon code parrainage ${REFERRAL_CODE} sur NUQTA.MR et obtiens 1 000 MRU offerts !`;
     if (navigator.share) {
-      navigator.share({ title: "SOUQ.MR Parrainage", text, url }).catch(() => {});
+      navigator.share({ title: "NUQTA.MR Parrainage", text, url }).catch(() => {});
     } else {
       navigator.clipboard.writeText(`${text} ${url}`).then(() =>
         success(isRTL ? "تم نسخ رابط الإحالة" : "Lien de parrainage copié")
@@ -69,8 +69,8 @@ export default function ParrainagePage() {
           </h1>
           <p className="text-purple-200/70 max-w-xl mx-auto">
             {isRTL
-              ? "شارك SOUQ.MR مع أصدقائك وكلاكما يكسب مكافأة فورية"
-              : "Partagez SOUQ.MR avec vos proches et gagnez tous les deux une récompense immédiate"}
+              ? "شارك NUQTA.MR مع أصدقائك وكلاكما يكسب مكافأة فورية"
+              : "Partagez NUQTA.MR avec vos proches et gagnez tous les deux une récompense immédiate"}
           </p>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function ParrainagePage() {
           <div className="space-y-3">
             {[
               { fr: "Partagez votre code avec vos amis par WhatsApp, SMS ou Facebook", ar: "شارك رمزك مع أصدقائك عبر واتساب أو SMS أو فيسبوك" },
-              { fr: "Votre ami s'inscrit sur SOUQ.MR et entre votre code", ar: "يسجل صديقك في سوق.مر ويُدخل رمزك" },
+              { fr: "Votre ami s'inscrit sur NUQTA.MR et entre votre code", ar: "يسجل صديقك في نقطة.مر ويُدخل رمزك" },
               { fr: "Dès sa première annonce publiée, vous recevez tous les deux vos récompenses", ar: "بعد نشر أول إعلان، يستلم كلاكما المكافأة فوراً" },
             ].map((s, i) => (
               <div key={i} className={`flex items-start gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>

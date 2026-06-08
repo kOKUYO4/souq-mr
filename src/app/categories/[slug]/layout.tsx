@@ -14,9 +14,9 @@ export async function generateMetadata({
 
   return {
     title: `${cat.name} — ${cat.count.toLocaleString("fr-MR")} annonces`,
-    description: `Parcourez ${cat.count.toLocaleString("fr-MR")} annonces dans la catégorie ${cat.name} sur SOUQ.MR — la première marketplace mauritanienne.`,
+    description: `Parcourez ${cat.count.toLocaleString("fr-MR")} annonces dans la catégorie ${cat.name} sur NUQTA.MR — la première marketplace mauritanienne.`,
     openGraph: {
-      title: `${cat.name} | SOUQ.MR`,
+      title: `${cat.name} | NUQTA.MR`,
       description: `${cat.count.toLocaleString("fr-MR")} annonces disponibles`,
       type: "website",
     },

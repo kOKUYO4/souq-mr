@@ -8,16 +8,16 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const steps = {
   fr: [
-    { icon: CreditCard, title: "Acheteur paie", desc: "L'acheteur verse le montant sur le compte escrow sécurisé SOUQ.MR — pas directement au vendeur." },
+    { icon: CreditCard, title: "Acheteur paie", desc: "L'acheteur verse le montant sur le compte escrow sécurisé NUQTA.MR — pas directement au vendeur." },
     { icon: Lock, title: "Fonds bloqués", desc: "L'argent est sécurisé. Le vendeur est notifié et prépare l'article pour expédition ou remise." },
     { icon: Truck, title: "Livraison / Remise", desc: "L'article est livré ou remis en main propre. L'acheteur a 48h pour vérifier et confirmer." },
-    { icon: ThumbsUp, title: "Confirmation", desc: "Une fois confirmé, les fonds sont libérés au vendeur. En cas de litige, SOUQ.MR arbitre." },
+    { icon: ThumbsUp, title: "Confirmation", desc: "Une fois confirmé, les fonds sont libérés au vendeur. En cas de litige, NUQTA.MR arbitre." },
   ],
   ar: [
-    { icon: CreditCard, title: "المشتري يدفع", desc: "يودع المشتري المبلغ في حساب الضمان المالي الآمن لسوق.مر — وليس مباشرة للبائع." },
+    { icon: CreditCard, title: "المشتري يدفع", desc: "يودع المشتري المبلغ في حساب الضمان المالي الآمن لنقطة.مر — وليس مباشرة للبائع." },
     { icon: Lock, title: "الأموال مجمَّدة", desc: "المال آمن. يتلقى البائع إشعاراً ويجهز المنتج للشحن أو التسليم." },
     { icon: Truck, title: "التسليم", desc: "يُسلَّم المنتج. يملك المشتري 48 ساعة للتحقق والتأكيد." },
-    { icon: ThumbsUp, title: "التأكيد", desc: "بعد التأكيد، تُحرَّر الأموال للبائع. في حال النزاع، يتحكيم سوق.مر." },
+    { icon: ThumbsUp, title: "التأكيد", desc: "بعد التأكيد، تُحرَّر الأموال للبائع. في حال النزاع، يتحكيم نقطة.مر." },
   ],
 };
 
@@ -55,7 +55,7 @@ export default function EscrowPage() {
             {isRTL ? "مدفوعات آمنة 100%" : "Paiements 100% sécurisés"}
           </div>
           <h1 className="text-4xl font-display font-bold text-white mb-4">
-            {isRTL ? "خدمة الضمان المالي" : "Service Escrow SOUQ.MR"}
+            {isRTL ? "خدمة الضمان المالي" : "Service Escrow NUQTA.MR"}
           </h1>
           <p className="text-sand-300/70 max-w-xl mx-auto">
             {isRTL

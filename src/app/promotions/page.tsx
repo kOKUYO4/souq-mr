@@ -77,7 +77,7 @@ export default function PromotionsPage() {
             {isRTL ? "تخفيضات اليوم" : "Promotions du jour"}
           </h1>
           <p className="text-sand-300/70 text-sm">
-            {isRTL ? "أفضل الأسعار على سوق.مر — تحديث يومي" : "Les meilleurs prix sur SOUQ.MR — mise à jour quotidienne"}
+            {isRTL ? "أفضل الأسعار على نقطة.مر — تحديث يومي" : "Les meilleurs prix sur NUQTA.MR — mise à jour quotidienne"}
           </p>
         </div>
       </div>

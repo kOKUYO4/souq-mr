@@ -15,18 +15,18 @@ const categories: CategoryData[] = [
     ar: "عام",
     items: {
       fr: [
-        { q: "Qu'est-ce que SOUQ.MR ?", a: "SOUQ.MR est la première marketplace mauritanienne bilingue (français/arabe), permettant aux particuliers et professionnels de Mauritanie d'acheter et vendre en ligne en toute sécurité." },
+        { q: "Qu'est-ce que NUQTA.MR ?", a: "NUQTA.MR est la première marketplace mauritanienne bilingue (français/arabe), permettant aux particuliers et professionnels de Mauritanie d'acheter et vendre en ligne en toute sécurité." },
         { q: "Comment créer un compte ?", a: "Cliquez sur « S'inscrire », entrez votre numéro de téléphone mauritanien, confirmez par SMS et renseignez votre profil. L'inscription est gratuite et prend moins de 2 minutes." },
-        { q: "SOUQ.MR est-il disponible en dehors de Mauritanie ?", a: "Le site est accessible depuis n'importe où dans le monde, mais les transactions et livraisons sont actuellement limitées à la Mauritanie." },
+        { q: "NUQTA.MR est-il disponible en dehors de Mauritanie ?", a: "Le site est accessible depuis n'importe où dans le monde, mais les transactions et livraisons sont actuellement limitées à la Mauritanie." },
         { q: "Comment modifier mon profil ?", a: "Connectez-vous, accédez à « Mon compte » puis « Paramètres du profil ». Vous pouvez y modifier votre photo, nom, numéro de téléphone et préférences linguistiques." },
-        { q: "Puis-je utiliser SOUQ.MR sur mobile ?", a: "Oui ! SOUQ.MR est entièrement responsive. Une application mobile Android et iOS est également disponible pour une expérience optimale." },
+        { q: "Puis-je utiliser NUQTA.MR sur mobile ?", a: "Oui ! NUQTA.MR est entièrement responsive. Une application mobile Android et iOS est également disponible pour une expérience optimale." },
       ],
       ar: [
-        { q: "ما هو سوق.مر؟", a: "سوق.مر هي أول سوق إلكتروني موريتاني ثنائي اللغة (فرنسي/عربي)، يتيح للأفراد والمحترفين في موريتانيا البيع والشراء عبر الإنترنت بأمان." },
+        { q: "ما هو نقطة.مر؟", a: "نقطة.مر هي أول سوق إلكتروني موريتاني ثنائي اللغة (فرنسي/عربي)، يتيح للأفراد والمحترفين في موريتانيا البيع والشراء عبر الإنترنت بأمان." },
         { q: "كيف أنشئ حساباً؟", a: "انقر على «التسجيل»، أدخل رقم هاتفك الموريتاني، أكّد عبر الرسالة القصيرة واملأ ملفك الشخصي. التسجيل مجاني ويستغرق أقل من دقيقتين." },
-        { q: "هل سوق.مر متاح خارج موريتانيا؟", a: "الموقع متاح للوصول من أي مكان في العالم، لكن المعاملات والتوصيل محدودة حالياً بموريتانيا." },
+        { q: "هل نقطة.مر متاح خارج موريتانيا؟", a: "الموقع متاح للوصول من أي مكان في العالم، لكن المعاملات والتوصيل محدودة حالياً بموريتانيا." },
         { q: "كيف أعدّل ملفي الشخصي؟", a: "سجّل الدخول، ثم انتقل إلى «حسابي» ثم «إعدادات الملف الشخصي». يمكنك تعديل صورتك واسمك ورقم هاتفك وتفضيلات اللغة." },
-        { q: "هل يمكنني استخدام سوق.مر على الهاتف؟", a: "نعم! سوق.مر متجاوب بالكامل. يتوفر أيضاً تطبيق للهاتف على Android وiOS لتجربة مثلى." },
+        { q: "هل يمكنني استخدام نقطة.مر على الهاتف؟", a: "نعم! نقطة.مر متجاوب بالكامل. يتوفر أيضاً تطبيق للهاتف على Android وiOS لتجربة مثلى." },
       ],
     },
   },
@@ -75,14 +75,14 @@ const categories: CategoryData[] = [
     ar: "الدفع",
     items: {
       fr: [
-        { q: "Quels modes de paiement sont acceptés ?", a: "SOUQ.MR accepte : le paiement à la livraison (COD), Bankily, Masrvi, et le virement bancaire pour les montants importants. Le système Escrow est disponible pour les transactions > 50 000 MRU." },
+        { q: "Quels modes de paiement sont acceptés ?", a: "NUQTA.MR accepte : le paiement à la livraison (COD), Bankily, Masrvi, et le virement bancaire pour les montants importants. Le système Escrow est disponible pour les transactions > 50 000 MRU." },
         { q: "Comment fonctionne le système Escrow ?", a: "Pour les grosses transactions, le montant est bloqué sur un compte séquestre après votre paiement. Les fonds ne sont libérés au vendeur qu'après votre confirmation de réception de l'article." },
         { q: "Les paiements sont-ils sécurisés ?", a: "Oui. Toutes les transactions sont cryptées (SSL/TLS). Nous ne stockons jamais vos informations de carte bancaire. Bankily et Masrvi utilisent une authentification à deux facteurs." },
         { q: "Comment obtenir un remboursement ?", a: "En cas de litige, contactez notre service client sous 48h après la livraison. Si le problème est avéré, le remboursement est effectué sur votre moyen de paiement d'origine sous 3-5 jours ouvrables." },
         { q: "Y a-t-il des frais de transaction ?", a: "Le paiement à la livraison est sans frais. Pour Bankily et Masrvi, des frais de 1,5% s'appliquent (minimum 50 MRU). Le système Escrow coûte 2% du montant total de la transaction." },
       ],
       ar: [
-        { q: "ما طرق الدفع المقبولة؟", a: "يقبل سوق.مر: الدفع عند الاستلام (COD)، بانكيلي، مصرفي، والتحويل البنكي للمبالغ الكبيرة. نظام الضمان المالي متاح للمعاملات التي تتجاوز 50,000 أوقية." },
+        { q: "ما طرق الدفع المقبولة؟", a: "يقبل نقطة.مر: الدفع عند الاستلام (COD)، بانكيلي، مصرفي، والتحويل البنكي للمبالغ الكبيرة. نظام الضمان المالي متاح للمعاملات التي تتجاوز 50,000 أوقية." },
         { q: "كيف يعمل نظام الضمان المالي؟", a: "للمعاملات الكبيرة، يُجمَّد المبلغ في حساب ضمان بعد دفعك. لا تُحرَّر الأموال للبائع إلا بعد تأكيدك استلام المنتج." },
         { q: "هل المدفوعات آمنة؟", a: "نعم. جميع المعاملات مشفرة (SSL/TLS). لا نخزن أبداً معلومات بطاقتك البنكية. يستخدم بانكيلي ومصرفي مصادقة ثنائية العوامل." },
         { q: "كيف أحصل على استرداد؟", a: "في حالة نزاع، تواصل مع خدمة العملاء خلال 48 ساعة من التسليم. إذا ثبتت المشكلة، يُعاد المبلغ بطريقة دفعك الأصلية خلال 3-5 أيام عمل." },
@@ -95,14 +95,14 @@ const categories: CategoryData[] = [
     ar: "الأمان",
     items: {
       fr: [
-        { q: "Comment SOUQ.MR protège-t-il mes données ?", a: "Vos données sont stockées sur des serveurs sécurisés en Mauritanie, conformément à la réglementation locale. Nous ne vendons jamais vos données à des tiers. Vous pouvez demander la suppression de votre compte à tout moment." },
+        { q: "Comment NUQTA.MR protège-t-il mes données ?", a: "Vos données sont stockées sur des serveurs sécurisés en Mauritanie, conformément à la réglementation locale. Nous ne vendons jamais vos données à des tiers. Vous pouvez demander la suppression de votre compte à tout moment." },
         { q: "Comment reconnaître une arnaque ?", a: "Méfiez-vous des offres trop belles pour être vraies, des vendeurs demandant un paiement en dehors de la plateforme, des prix anormalement bas sur des articles de luxe, et des profils créés récemment sans évaluations." },
         { q: "Que faire si mon compte est piraté ?", a: "Changez immédiatement votre mot de passe, contactez notre support via le formulaire d'urgence, et signalez l'incident. Nous bloquerons toute activité suspecte dans l'heure suivant votre signalement." },
         { q: "Comment activer la double authentification ?", a: "Dans « Mon compte » > « Sécurité », activez la vérification en deux étapes. À chaque connexion depuis un nouvel appareil, un code SMS sera envoyé à votre numéro enregistré." },
         { q: "Mes informations personnelles sont-elles partagées avec les vendeurs ?", a: "Non. Votre numéro de téléphone et email restent masqués. Les vendeurs ne voient que votre pseudo. Votre adresse de livraison est partagée uniquement lors d'une transaction confirmée." },
       ],
       ar: [
-        { q: "كيف يحمي سوق.مر بياناتي؟", a: "بياناتك مخزّنة على خوادم آمنة في موريتانيا، وفقاً للأنظمة المحلية. لا نبيع بياناتك لأطراف ثالثة أبداً. يمكنك طلب حذف حسابك في أي وقت." },
+        { q: "كيف يحمي نقطة.مر بياناتي؟", a: "بياناتك مخزّنة على خوادم آمنة في موريتانيا، وفقاً للأنظمة المحلية. لا نبيع بياناتك لأطراف ثالثة أبداً. يمكنك طلب حذف حسابك في أي وقت." },
         { q: "كيف أتعرف على الاحتيال؟", a: "احذر من العروض الجيدة جداً لدرجة مريبة، والبائعين الذين يطلبون الدفع خارج المنصة، والأسعار المنخفضة بشكل غير طبيعي للسلع الفاخرة، والملفات الشخصية المنشأة حديثاً دون تقييمات." },
         { q: "ماذا أفعل إذا تعرّض حسابي للاختراق؟", a: "غيّر كلمة المرور فوراً، تواصل مع دعمنا عبر نموذج الطوارئ وأبلغ عن الحادثة. سنوقف أي نشاط مشبوه في غضون ساعة من إبلاغك." },
         { q: "كيف أفعّل المصادقة الثنائية؟", a: "في «حسابي» > «الأمان»، فعّل التحقق بخطوتين. عند كل تسجيل دخول من جهاز جديد، سيُرسَل رمز SMS إلى رقمك المسجّل." },

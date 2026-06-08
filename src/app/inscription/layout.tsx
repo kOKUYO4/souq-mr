@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Créer un compte",
-  description: "Créez votre compte SOUQ.MR gratuitement et commencez à vendre dès aujourd'hui.",
+  description: "Créez votre compte NUQTA.MR gratuitement et commencez à vendre dès aujourd'hui.",
   robots: { index: false },
 };
 

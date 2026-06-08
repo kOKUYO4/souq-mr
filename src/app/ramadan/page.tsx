@@ -86,8 +86,8 @@ export default function RamadanPage() {
           {/* Subtitle */}
           <p className={`text-lg md:text-xl mb-6 ${ar ? "font-arabic" : ""}`} style={{ color: "#D4B896" }}>
             {ar
-              ? "أفضل العروض الخاصة لشهر رمضان المبارك على سوق.مر"
-              : "Les meilleures offres spéciales du Ramadan sur SOUQ.MR"}
+              ? "أفضل العروض الخاصة لشهر رمضان المبارك على نقطة.مر"
+              : "Les meilleures offres spéciales du Ramadan sur NUQTA.MR"}
           </p>
 
           {/* Day counter badge */}

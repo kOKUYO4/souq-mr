@@ -41,7 +41,7 @@ const methods = {
     {
       id: "escrow",
       icon: Shield,
-      title: "Escrow SOUQ.MR",
+      title: "Escrow NUQTA.MR",
       color: "#C9A84C",
       bg: "#FDF6E3",
       pros: ["100% sécurisé", "Argent bloqué jusqu'à réception", "Protection acheteur & vendeur"],
@@ -83,7 +83,7 @@ const methods = {
     {
       id: "escrow",
       icon: Shield,
-      title: "الضمان المالي سوق.مر",
+      title: "الضمان المالي نقطة.مر",
       color: "#C9A84C",
       bg: "#FDF6E3",
       pros: ["أمان 100%", "الأموال محجوزة حتى الاستلام", "حماية للمشتري والبائع"],
@@ -180,7 +180,7 @@ export default function PaiementPage() {
             {[
               { cond: isRTL ? "المبلغ < 50,000 أوقية وفي المدينة" : "Montant < 50 000 MRU en ville", rec: isRTL ? "الدفع عند الاستلام" : "Paiement à la livraison" },
               { cond: isRTL ? "تحويل سريع لأي مكان" : "Transfert rapide partout en Mauritanie", rec: isRTL ? "بانكيلي أو مصرفي" : "Bankily ou Masrvi" },
-              { cond: isRTL ? "المبلغ > 50,000 أوقية" : "Montant > 50 000 MRU", rec: isRTL ? "ضمان مالي سوق.مر" : "Escrow SOUQ.MR" },
+              { cond: isRTL ? "المبلغ > 50,000 أوقية" : "Montant > 50 000 MRU", rec: isRTL ? "ضمان مالي نقطة.مر" : "Escrow NUQTA.MR" },
               { cond: isRTL ? "سيارة أو عقار" : "Voiture ou bien immobilier", rec: isRTL ? "ضمان مالي مطلقاً" : "Escrow obligatoire" },
             ].map((row, i) => (
               <div key={i} className={`flex items-start gap-4 py-3 border-b border-sand-50 last:border-0 ${isRTL ? "flex-row-reverse" : ""}`}>
