@@ -6,7 +6,7 @@ import IslamicPattern from "@/components/ui/IslamicPattern";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/context/ToastContext";
 
-const REFERRAL_CODE = "SOUQ-MR-7X4K";
+const REFERRAL_CODE = "NUQTA-MR-7X4K";
 
 const rewards = {
   fr: [
