@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /api/
 Disallow: /tableau-de-bord
 
-Sitemap: https://souq.mr/sitemap.xml
+Sitemap: https://nuqta.mr/sitemap.xml

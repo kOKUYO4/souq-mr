@@ -60,7 +60,7 @@ export default function ConfidentialitePage() {
           </h1>
           <div className={`flex items-center justify-center gap-2 text-green-200/60 text-xs mt-3 ${isRTL ? "flex-row-reverse" : ""}`}>
             <Calendar size={12} />
-            <span>{isRTL ? "آخر تحديث: 1 يناير 2025" : "Dernière mise à jour : 1er janvier 2025"}</span>
+            <span>{isRTL ? "آخر تحديث: 1 يناير 2026" : "Dernière mise à jour : 1er janvier 2026"}</span>
           </div>
         </div>
       </div>
