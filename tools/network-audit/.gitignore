@@ -1,0 +1,3 @@
+# Données personnelles du réseau : ne jamais committer
+network_audit_reports/
+known_devices.json

@@ -1,0 +1,5 @@
+# Toutes optionnelles : le script fonctionne en mode dégradé si l'une manque.
+speedtest-cli>=2.1.3      # test de débit (backend "python")
+mac-vendor-lookup>=0.1.12 # résolution OUI MAC -> fabricant
+scapy>=2.5.0              # scan ARP actif (root / Administrateur + Npcap sous Windows)
+psutil>=5.9               # masque de sous-réseau et MAC locale, multiplateforme
